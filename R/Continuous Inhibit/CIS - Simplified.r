@@ -6,11 +6,11 @@ library(sp)
 library(sf)
 library(splancs)
 library(rgdal)
-#data("parana")
+#data("parana") # incase you don't have access to a shapefile, you can use this.
 
 # Define the parameters
-poly <- readOGR(dsn="C:/Users/HenryCrosby/Documents/CO example/20200703_BS83TW_Y2021/shapefiles" , layer="Largest_Border",verbose=FALSE)
-##poly <- st_sf(st_sfc(st_polygon(list(as.matrix(matrix(c(parana$borders[,1],parana$borders[,2]),dim(parana$borders)[1],2,byrow=FALSE)))))) # create a polygon from the matrix
+poly <- readOGR(dsn="C:/Users/HenryCrosby/Documents/CO example/20200703_BS83TW_Y2021/shapefiles" , layer="Largest_Border",verbose=FALSE) ## here you can read in any shapefile
+##poly <- st_sf(st_sfc(st_polygon(list(as.matrix(matrix(c(parana$borders[,1],parana$borders[,2]),dim(parana$borders)[1],2,byrow=FALSE)))))) # create a polygon from the matrix ## This is incase you are using the parana dataset.
 size =100 ## to number of locatoins to be sampled
 delta = 0.3 ## minimum permissable distance between any two locations in a sinly sample. 
 delta.fix = FALSE ## is the value fixed or does it vary with the number of close pairs.
