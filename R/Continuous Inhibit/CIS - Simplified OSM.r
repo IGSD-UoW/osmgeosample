@@ -9,16 +9,28 @@ library(osmdata)
 #data("parana")
 
 # Read in the polgyon data that we require.
+
+##### This is test data where I live ######
 dat <- opq(getbb("lower failand")) %>% osmdata_sf ()
 Wraxall_and_Failand <- which (dat$osm_multipolygons$name == "Wraxall and Failand" | dat$osm_multipolygons$name == "Long Ashton")
 id <- rownames (dat$osm_multipolygons [Wraxall_and_Failand])
 AA<-osm_polygons (dat, id)
 poly<-AA
 
+##### This is the border of one of the slums - we can use this directly in our continuous inhibit ######
 Idikan <- readOGR(dsn="W:/workspace/grant_workspace/Tasks/Task1_grant/Idikan/Data/Boundary" , layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
-##poly <- st_sf(st_sfc(st_polygon(list(as.matrix(matrix(c(parana$borders[,1],parana$borders[,2]),dim(parana$borders)[1],2,byrow=FALSE)))))) # create a polygon from the matrix
-##poly<-AA
 
+#### This is data that I extract from osm using the border above #####################
+dat <- opq(bbox(Idikan)) %>% osmdata_sf ()
+Wraxall_and_Failand <- which (dat$osm_polygons$addr.city == "Ibadan")
+id <- rownames (dat$osm_polygons [Wraxall_and_Failand,])
+AA<-osm_polygons (dat, id)
+poly<-AA
+
+############## This is dummy data created by Chipeta using data("parana") ###################
+##poly <- st_sf(st_sfc(st_polygon(list(as.matrix(matrix(c(parana$borders[,1],parana$borders[,2]),dim(parana$borders)[1],2,byrow=FALSE)))))) # create a polygon from the matrix
+
+## This is the, now simplified function ##
 contin.inhibit.simplified <-function(poly,size,delta, delta.fix = FALSE,
                                      k=0,rho=NULL, ntries = 10000, plotit = TRUE) {
   
@@ -62,7 +74,7 @@ contin.inhibit.simplified <-function(poly,size,delta, delta.fix = FALSE,
 # Generate spatially regular sample
 set.seed(5871120)
 contin.inhibit.simplified(Idikan,size=100,delta=100000, delta.fix = FALSE, k=0,rho=NULL, ntries = 100000, plotit = TRUE)
-#contin.inhibit.simplified(poly,size=100,delta=100000, delta.fix = FALSE, k=0,rho=NULL, ntries = 100000, plotit = TRUE)
+contin.inhibit.simplified(poly,size=100,delta=10, delta.fix = FALSE, k=0,rho=NULL, ntries = 1000, plotit = TRUE)
 
 
 # Generate spatially regular sample
