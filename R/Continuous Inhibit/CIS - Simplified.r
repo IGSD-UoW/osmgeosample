@@ -5,12 +5,12 @@ library("geoR")
 library(sp)
 library(sf)
 library(splancs)
-
-data("parana")
+library(rgdal)
+#data("parana")
 
 # Define the parameters
-poly <- st_sf(st_sfc(st_polygon(
-  list(as.matrix(matrix(c(parana$borders[,1],parana$borders[,2]),dim(parana$borders)[1],2,byrow=FALSE)))))) # create a polygon from the matrix
+poly <- readOGR(dsn="C:/Users/HenryCrosby/Documents/CO example/20200703_BS83TW_Y2021/shapefiles" , layer="Largest_Border",verbose=FALSE)
+##poly <- st_sf(st_sfc(st_polygon(list(as.matrix(matrix(c(parana$borders[,1],parana$borders[,2]),dim(parana$borders)[1],2,byrow=FALSE)))))) # create a polygon from the matrix
 size =100 ## to number of locatoins to be sampled
 delta = 0.3 ## minimum permissable distance between any two locations in a sinly sample. 
 delta.fix = FALSE ## is the value fixed or does it vary with the number of close pairs.
@@ -63,7 +63,7 @@ res$sample.locs = sample.locs
 
 # Generate spatially regular sample
 set.seed(5871120)
-contin.inhibit.simplified(poly,size=100,delta=3, delta.fix = FALSE, k=0,rho=NULL, ntries = 100000, plotit = TRUE)
+contin.inhibit.simplified(poly,size=100,delta=100000, delta.fix = FALSE, k=0,rho=NULL, ntries = 100000, plotit = TRUE)
 
 
 # Generate spatially regular sample
@@ -80,6 +80,5 @@ xy.sample2 <- contin.inhibit.simplified(poly,size = 100, delta = 30,
 set.seed(5871123)
 xy.sample3 <- contin.inhibit.simplified(poly,size = 100, delta = 30, delta.fix = TRUE,
                                     k = 10, rho = 15, plotit = TRUE)
-
 
 
