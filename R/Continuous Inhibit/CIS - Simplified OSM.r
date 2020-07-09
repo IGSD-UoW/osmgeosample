@@ -6,13 +6,18 @@ library(sf)
 library(splancs)
 library(rgdal)
 library(osmdata)
+#data("parana")
 
 # Read in the polgyon data that we require.
 dat <- opq(getbb("lower failand")) %>% osmdata_sf ()
-Wraxall_and_Failand <- which (dat$osm_multipolygons$name == "Wraxall and Failand")
+Wraxall_and_Failand <- which (dat$osm_multipolygons$name == "Wraxall and Failand" | dat$osm_multipolygons$name == "Long Ashton")
 id <- rownames (dat$osm_multipolygons [Wraxall_and_Failand])
 AA<-osm_polygons (dat, id)
-poly<-AA[1,]
+poly<-AA
+
+Idikan <- readOGR(dsn="W:/workspace/grant_workspace/Tasks/Task1_grant/Idikan/Data/Boundary" , layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
+##poly <- st_sf(st_sfc(st_polygon(list(as.matrix(matrix(c(parana$borders[,1],parana$borders[,2]),dim(parana$borders)[1],2,byrow=FALSE)))))) # create a polygon from the matrix
+##poly<-AA
 
 contin.inhibit.simplified <-function(poly,size,delta, delta.fix = FALSE,
                                      k=0,rho=NULL, ntries = 10000, plotit = TRUE) {
@@ -56,22 +61,22 @@ contin.inhibit.simplified <-function(poly,size,delta, delta.fix = FALSE,
 
 # Generate spatially regular sample
 set.seed(5871120)
-contin.inhibit.simplified(poly,size=100,delta=100000, delta.fix = FALSE, k=0,rho=NULL, ntries = 100000, plotit = TRUE)
+contin.inhibit.simplified(Idikan,size=100,delta=100000, delta.fix = FALSE, k=0,rho=NULL, ntries = 100000, plotit = TRUE)
+#contin.inhibit.simplified(poly,size=100,delta=100000, delta.fix = FALSE, k=0,rho=NULL, ntries = 100000, plotit = TRUE)
 
 
 # Generate spatially regular sample
 set.seed(5871121)
-xy.sample1 <- contin.inhibit.simplified(poly=poly,size = 100, delta = 30, plotit = TRUE)
+xy.sample1 <- contin.inhibit.simplified(poly=Idikan,size = 100, delta = 30, plotit = TRUE)
+#xy.sample1 <- contin.inhibit.simplified(poly=poly,size = 100, delta = 30, plotit = TRUE)
 
 
 # Generate spatially regular sample with 10 close pairs
 set.seed(5871122)
-xy.sample2 <- contin.inhibit.simplified(poly,size = 100, delta = 30,
-                                        k = 5, rho = 15, plotit = TRUE)
+xy.sample2 <- contin.inhibit.simplified(Idikan,size = 100, delta = 30,k = 5, rho = 15, plotit = TRUE)
+#xy.sample2 <- contin.inhibit.simplified(poly,size = 100, delta = 30,k = 5, rho = 15, plotit = TRUE)
 
 # Generate spatially regular sample with 10 close pairs
 set.seed(5871123)
-xy.sample3 <- contin.inhibit.simplified(poly,size = 100, delta = 30, delta.fix = TRUE,
-                                        k = 10, rho = 15, plotit = TRUE)
-
-
+xy.sample3 <- contin.inhibit.simplified(Idikan,size = 100, delta = 30, delta.fix = TRUE, k = 10, rho = 15, plotit = TRUE)
+#xy.sample3 <- contin.inhibit.simplified(poly,size = 100, delta = 30, delta.fix = TRUE, k = 10, rho = 15, plotit = TRUE)
