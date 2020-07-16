@@ -1,4 +1,7 @@
 ###########Preamble ###############################
+#install packages
+install.packages(c("geoR", "sp", "sf", "splancs", "rgdal","osmdata"))
+
 #read in the correct libraries and data
 library("geoR")
 library(sp)
@@ -8,24 +11,37 @@ library(rgdal)
 library(osmdata)
 #data("parana")
 
-# Read in the polgyon data that we require.
-
-##### This is test data where I live ######
-dat <- opq(getbb("lower failand")) %>% osmdata_sf ()
-Wraxall_and_Failand <- which (dat$osm_multipolygons$name == "Wraxall and Failand" | dat$osm_multipolygons$name == "Long Ashton")
-id <- rownames (dat$osm_multipolygons [Wraxall_and_Failand])
-AA<-osm_polygons (dat, id)
-poly<-AA
-
 ##### This is the border of one of the slums - we can use this directly in our continuous inhibit ######
-Idikan <- readOGR(dsn="W:/workspace/grant_workspace/Tasks/Task1_grant/Idikan/Data/Boundary" , layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
+Idikan <- readOGR(dsn="C:/Users/Henry Crosby/Documents/University of Warwick/Boundaries" , layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
 
 #### This is data that I extract from osm using the border above #####################
-dat <- opq(bbox(Idikan)) %>% osmdata_sf ()
-Wraxall_and_Failand <- which (dat$osm_polygons$addr.city == "Ibadan")
-id <- rownames (dat$osm_polygons [Wraxall_and_Failand,])
-AA<-osm_polygons (dat, id)
-poly<-AA
+dat <-  opq (bbox(Idikan)) %>%
+  add_osm_feature (key="building", value="yes") %>%
+  osmdata_sf ()
+
+plot(dat$osm_polygons$geometry)
+#dat <-  opq (bbox(Idikan)) %>%
+#  add_osm_feature (key="building", value="yes") %>%
+#  osmdata_sp ()
+
+#dat <- opq (bbox(Idikan)) %>%
+#  add_osm_feature (key="building", value="yes") %>%
+#  osmdata_xml ()
+
+id1 <- rownames (dat$osm_multipolygons)
+id2 <- rownames (dat$osm_polygons)
+id3 <- rownames (dat$osm_points)
+id4 <- rownames (dat$osm_multilines)
+id5 <- rownames (dat$osm_lines)
+
+if (!is.null(id1)){dat1<-osm_multipolygons (dat, id1)} 
+if (!is.null(id2)){dat2<-osm_polygons (dat, id2)} 
+if (!is.null(id3)){dat3<-osm_points (dat, as.character(id3))}  ################## For some reason this is not working?? Is there something wrong with the function?
+if (!is.null(id4)){dat4<-osm_multilines (dat, id4)} 
+if (!is.null(id5)){dat5<-osm_lines (dat, id5)} 
+
+poly<-dat3
+poly<-dat2
 
 ############## This is dummy data created by Chipeta using data("parana") ###################
 ##poly <- st_sf(st_sfc(st_polygon(list(as.matrix(matrix(c(parana$borders[,1],parana$borders[,2]),dim(parana$borders)[1],2,byrow=FALSE)))))) # create a polygon from the matrix
@@ -70,6 +86,17 @@ contin.inhibit.simplified <-function(poly,size,delta, delta.fix = FALSE,
   res$sample.locs = sample.locs
   
 }
+library(OpenStreetMap)
+library(ggplot2)
+map <- openmap(xy.sample1, zoom = NULL,
+               type = c("osm", "stamen-toner", "stamen-terrain","stamen-watercolor", "esri","esri-topo")[6],
+               mergeTiles = TRUE)
+library(leaflet)
+r_birthplace_map <- leaflet() %>%
+  addTiles() %>%  # use the default base map which is OpenStreetMap tiles
+  addMarkers(lng=174.768, lat=-36.852,
+             popup="The birthplace of R")
+r_birthplace_map
 
 # Generate spatially regular sample
 set.seed(5871120)
