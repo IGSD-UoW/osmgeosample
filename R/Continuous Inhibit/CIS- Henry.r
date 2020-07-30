@@ -1,3 +1,4 @@
+library(nngeo)
 library("geoR")
 library(sp)
 library(sf)
@@ -9,18 +10,19 @@ library(mapview)
 
 # Boundary {exact: 0, bbox: 1, buffer: 2} Default: 0
 # jointype {intersects: 0, within: 1} Default: 0
+#nearestneighbour {true, false} Default: false
 
-
-#poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries" , layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
-#boundary<- 0
-#jointype <- 1
-#size<-100
-#delta<-100
-#delta.fix <- FALSE
-#k<-200
-#rho<-NULL
-#ntries <- 100
-#plotit <- TRUE
+poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries" , layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
+boundary<- 0
+jointype <- 1
+nearestneighbour <- FALSE
+size<-100
+delta<-100
+delta.fix <- FALSE
+k<-200
+rho<-NULL
+ntries <- 100
+plotit <- TRUE
 
 contin.inhibit.simplified <-function(poly,size,delta, delta.fix = FALSE,
                                      k=0,rho=NULL, ntries = 10000, plotit = TRUE, boundary=0,jointype=0) {
@@ -108,6 +110,24 @@ if (jointype == 0){buildings <-dat_tr$osm_polygons } else {buildings<-dat_tr_ex$
     mapview(st_geometry(buildings), add= TRUE,
             layer.name = c("Building"),
             color=c("cornflowerblue"))
+
+
+  if (nearestneighbour == TRUE) {
+
+    AAA<-st_join(cbind(1,res$sample.locs),buildings, st_nn, k = 1, left = TRUE)
+    AAA<-st_join(buildings, AAA, left = TRUE)
+    AAA$inSample <- NA
+    AAA[!is.na(AAA$osm_id.y),"inSample"] <- 1
+    AAA[is.na(AAA$osm_id.y),"inSample"] <- 0
+    AAA <- AAA[,c("osm_id.x", "inSample")]
+
+    assign ("Spatial_Sample_sf", AAA,  envir = .GlobalEnv)
+    assign ("Spatial_Sample_df", st_coordinates(AAA$geometry)[,c(1,2)],  envir = .GlobalEnv)
+
+  } else {
+    assign ("Spatial_Sample_sf", res$sample.locs,  envir = .GlobalEnv)
+    assign ("Spatial_Sample_df", as.data.frame(st_coordinates(res$sample.locs)),  envir = .GlobalEnv)
+  }
 
 
 }
