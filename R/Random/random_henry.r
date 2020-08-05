@@ -1,16 +1,16 @@
 #######################
 ###############
-<<<<<<< HEAD
+library(nngeo)
+library("geoR")
 library(sp)
 library(sf)
 library(splancs)
+library(rgdal)
 library(osmdata)
-=======
-
->>>>>>> e957ef81415f9c25b8afdfe20aec6701e2f445b6
+library(mapview)
+library("dplyr")
 
 # 1. Sampling from a discrete set of points.
-library("dplyr")
 x <- 0.015+0.03*(1:33)
 xall <- rep(x,33)
 yall <- c(t(matrix(xall,33,33)))
@@ -43,113 +43,83 @@ xy.sample <- random.sample(poly = poly,size = 100, type = "continuum", plotit = 
 
 ###########################################
 
-library(sp)
-library(sf)
-library(splancs)
-<<<<<<< HEAD
-library(osmdata)
-library(rgdal)
-
 poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries" , layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
 
-poly<-"Failand"
-boundary<- 0
-jointype <- 1
-type= "discrete"
-size <- 20
+#poly<-"Failand"
+boundary<- 1
+join_type <- "within"
+type= "continuum"
+size <- 200
 plotit <- TRUE
+plotit_leaflet <- TRUE
 key<- "building"
 value = "yes"
 
-if (boundary == 0) {
-  dat <-  opq (poly@bbox) %>%
-    add_osm_feature (key=key, value=value) %>%
-=======
 
+random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, join_type = "within", type, size, plotit = TRUE, plotit_leaflet = TRUE){
 
-poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries" , layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
-poly <- st_sf(st_sfc(st_polygon(list(as.matrix(poly)))))
+  if (boundary == 0) {
+    dat <-  opq (poly@bbox) %>%
+      add_osm_feature (key=key, value=value) %>%
+      osmdata_sf () ## Returns all buildings within the bounding box
 
-boundary<- 0
-jointype <- 1
+    dat_tr_ex <-trim_osmdata (dat, poly) # Returns all buildings that are fully within the specified area
+    dat_tr <- trim_osmdata (dat, poly, exclude = FALSE) # Returns all buildings that intersect with the specified area
+    bounding <- poly
+  } else if (boundary == 1) {
 
+    dat <-  opq (poly@bbox) %>%
+      add_osm_feature (key=key, value=value) %>%
+      osmdata_sf () ## Returns all buildings within the bounding box
 
-if (boundary == 0) {
-  dat <-  opq (poly@bbox) %>%
-    add_osm_feature (key="building", value="yes") %>%
->>>>>>> e957ef81415f9c25b8afdfe20aec6701e2f445b6
-    osmdata_sf () ## Returns all buildings within the bounding box
+    coords <- rbind(
+      c(poly@bbox[1,1],poly@bbox[2,1]),
+      c(poly@bbox[1,2],poly@bbox[2,1]),
+      c(poly@bbox[1,2],poly@bbox[2,2]),
+      c(poly@bbox[1,1],poly@bbox[2,2]),
+      c(poly@bbox[1,1],poly@bbox[2,1])
+    )
 
-  dat_tr_ex <-trim_osmdata (dat, poly) # Returns all buildings that are fully within the specified area
-  dat_tr <- trim_osmdata (dat, poly, exclude = FALSE) # Returns all buildings that intersect with the specified area
-  bounding <- poly
-} else if (boundary == 1) {
+    dat_tr_ex <-trim_osmdata (dat, coords) # Returns all buildings that are fully within the specified area
+    dat_tr <- trim_osmdata (dat, coords, exclude = FALSE) # Returns all buildings that intersect with the specified area
+    bounding <- poly@bbox
 
-  dat <-  opq (poly@bbox) %>%
-<<<<<<< HEAD
-    add_osm_feature (key=key, value=value) %>%
-=======
-    add_osm_feature (key="building", value="yes") %>%
->>>>>>> e957ef81415f9c25b8afdfe20aec6701e2f445b6
-    osmdata_sf () ## Returns all buildings within the bounding box
+  } else if (boundary == 2) {
 
-  coords <- rbind(
-    c(poly@bbox[1,1],poly@bbox[2,1]),
-    c(poly@bbox[1,2],poly@bbox[2,1]),
-    c(poly@bbox[1,2],poly@bbox[2,2]),
-    c(poly@bbox[1,1],poly@bbox[2,2]),
-    c(poly@bbox[1,1],poly@bbox[2,1])
-  )
+    proj4string(poly) <- CRS("+init=epsg:4326")
+    countries_for_buff <- st_as_sf(poly)
+    pc <- spTransform(poly, CRS( "+init=epsg:3347" ) )
 
-  dat_tr_ex <-trim_osmdata (dat, coords) # Returns all buildings that are fully within the specified area
-  dat_tr <- trim_osmdata (dat, coords, exclude = FALSE) # Returns all buildings that intersect with the specified area
-  bounding <- poly@bbox
+    countries_buff_5km <- st_buffer(countries_for_buff, 0.05)
 
-} else if (boundary == 2) {
+    dat_buf <-  opq (st_bbox(countries_buff_5km)) %>%
+      add_osm_feature (key=key, value=value) %>%
+      osmdata_sf () ## Returns all buildings within the bounding box
 
-  proj4string(poly) <- CRS("+init=epsg:4326")
-  countries_for_buff <- st_as_sf(poly)
-  pc <- spTransform(poly, CRS( "+init=epsg:3347" ) )
+    dat_tr_ex <-trim_osmdata (dat, countries_buff_5km) # Returns all buildings that are fully within the specified area
+    dat_tr <- trim_osmdata (dat, countries_buff_5km, exclude = FALSE) # Returns all buildings that intersect with the specified area
+    boundary <- countries_buff_5km
+  } else {
+    stop("boundary must be 0,1,2 which respectively refer to exact, bounding box and buffer.")
+  }
 
-  countries_buff_5km <- st_buffer(countries_for_buff, 0.05)
+  if (join_type == "within"){
+    obj <-dat_tr$osm_polygons
+    } else if (join_type == "intersect"){
+      obj<-dat_tr_ex$osm_polygons
+    } else {
+        stop("join_type must be 'within' or 'intersect'")
+      }
 
-  dat_buf <-  opq (st_bbox(countries_buff_5km)) %>%
-<<<<<<< HEAD
-    add_osm_feature (key=key, value=value) %>%
-=======
-    add_osm_feature (key="building", value="yes") %>%
->>>>>>> e957ef81415f9c25b8afdfe20aec6701e2f445b6
-    osmdata_sf () ## Returns all buildings within the bounding box
-
-  dat_tr_ex <-trim_osmdata (dat, countries_buff_5km) # Returns all buildings that are fully within the specified area
-  dat_tr <- trim_osmdata (dat, countries_buff_5km, exclude = FALSE) # Returns all buildings that intersect with the specified area
-  boundary <- countries_buff_5km
-}
-
-<<<<<<< HEAD
-if (jointype == 0){obj <-dat_tr$osm_polygons } else {obj<-dat_tr_ex$osm_polygons}
-=======
-if (jointype == 0){buildings <-dat_tr$osm_polygons } else {buildings<-dat_tr_ex$osm_polygons}
->>>>>>> e957ef81415f9c25b8afdfe20aec6701e2f445b6
-
-
-random.sample <- function(obj = NULL, poly = NULL, type, size, plotit = TRUE)
-
-{
   if (is.null(type)){
     stop("\n 'type' must be provided")
   }
-<<<<<<< HEAD
   if (type != "discrete" & type != "continuum"){
     stop("'type' must be either 'discrete' or 'continuum'")
   }
-=======
-  if (type != "discrete" & type != "continuum")
-    stop("'type' must be either 'discrete' or 'continuum'")
-
->>>>>>> e957ef81415f9c25b8afdfe20aec6701e2f445b6
   if (type == "discrete"){
     obj.origin <- obj
+    poly.origin <- poly
     if (is.null(obj))
       stop("\n'obj' must be provided")
     if(!inherits(obj, 'SpatialPointsDataFrame')){
@@ -228,51 +198,73 @@ random.sample <- function(obj = NULL, poly = NULL, type, size, plotit = TRUE)
       as.data.frame %>%
       sf::st_as_sf(coords = c(1,2))
     res <- xy.sample <- sf::st_as_sf(xy.sample)
-<<<<<<< HEAD
     if(class(poly.origin)[1] == "SpatialPolygonsDataFrame"){
       poly.origin<-st_as_sf(poly.origin)
     }
-=======
->>>>>>> e957ef81415f9c25b8afdfe20aec6701e2f445b6
     if(class(xy.sample)[1] != class(poly.origin)[1]){
       res <- sf::as_Spatial(xy.sample, "Spatial")
     }
   }
 
-  if(plotit==TRUE){
+  if(plotit==TRUE && plotit_leaflet == FALSE){
     par(oma=c(5, 5, 5, 5.5), mar=c(5.5, 5.1, 4.1, 2.1), mgp=c(3, 1, 0), las=0)
     if (type == "discrete"){
-<<<<<<< HEAD
       if (class(obj.origin)[1] == "sf"){
         plot(st_geometry(obj.origin), pch = 19, col = "yellow", axes = TRUE,
-           xlab = "longitude", ylab = "lattitude", font.main = 3,
-           cex.main = 1.2, col.main = "blue",
-           main = paste("Random sampling design,", size, "points", sep = " "))
+             xlab = "longitude", ylab = "lattitude", font.main = 3,
+             cex.main = 1.2, col.main = "blue",
+             main = paste("Random sampling design,", size, "points", sep = " "))
       }else{
         plot(obj.origin, pch = 19, col = "yellow", axes = TRUE,
              xlab = "longitude", ylab = "lattitude", font.main = 3,
              cex.main = 1.2, col.main = "blue",
              main = paste("Random sampling design,", size, "points", sep = " "))
-        }
-      plot(st_geometry(xy.sample),pch=19, cex = 0.25, col=1, add = TRUE)
-=======
-      plot(st_geometry(xy.sample), pch = 19, col = 1, axes = TRUE,
-           xlab = "longitude", ylab = "lattitude", font.main = 3,
-           cex.main = 1.2, col.main = "blue",
-           main = paste("Random sampling design,", size, "points", sep = " "))
-      if (class(obj.origin)[1] == "sf"){
-        plot(st_geometry(obj.origin),pch=19, cex = 0.25, col="black", add = TRUE)
-      }else{
-        plot(obj.origin,pch=19, cex = 0.25, col="black", add = TRUE)
       }
->>>>>>> e957ef81415f9c25b8afdfe20aec6701e2f445b6
+      plot(st_geometry(xy.sample),pch=19, cex = 0.25, col=1, add = TRUE)
     } else{
-      plot(st_geometry(xy.sample),pch=19,col=1,axes = TRUE,
+      plot(st_geometry(plot.poly),pch=19,col=1,axes = TRUE,
            xlab="longitude",ylab="lattitude", font.main = 3, cex.main = 1.2, col.main = "blue",
            main = paste("Random sampling design,", size, "points", sep = " "),
            xlim = c(range(st.poly[,1])),
            ylim = c(range(st.poly[,2])))
-      plot(st_geometry(plot.poly), add= TRUE)
+      plot(st_geometry(xy.sample), col="yellow", add= TRUE)
+    }
+  }
+
+  if(plotit_leaflet == TRUE){
+    par(oma=c(5, 5, 5, 5.5), mar=c(5.5, 5.1, 4.1, 2.1), mgp=c(3, 1, 0), las=0)
+    if (type == "discrete"){
+      par(oma=c(5, 5, 5, 5.5), mar=c(5.5, 5.1, 4.1, 2.1), mgp=c(3, 1, 0), las=0)
+      if (class(obj.origin)[1] == "sf"){
+        print(
+        mapview(st_geometry(obj.origin),
+              map.types = c("OpenStreetMap.DE"),
+              layer.name = c("All Locations"),
+              color = c("black"))+
+        mapview((poly.origin), add= TRUE,
+                layer.name = c("Boundary"),
+                color = c("black"))+
+        mapview(st_geometry(xy.sample), add= TRUE,
+                layer.name = c("Sample Locations"),
+                color=c("black")))
+      } else {
+        print(mapview(obj.origin,
+                map.types = c("OpenStreetMap.DE"),
+                layer.name = c("All Locations"),
+                color = c("black"))+
+          mapview((poly.origin), add= TRUE,
+                  layer.name = c("Boundary"),
+                  color = c("black"))+
+          mapview(st_geometry(xy.sample), add= TRUE,
+                  layer.name = c("Sample Locations"),
+                  color=c("black")))
+      }} else {
+          print(mapview((poly.origin), add= TRUE,
+                  layer.name = c("Boundary"),
+                  color = c("black"))+
+          mapview(st_geometry(xy.sample), add= TRUE,
+                  layer.name = c("Sample Locations"),
+                  color=c("black")))
     }
   }
 
@@ -282,10 +274,7 @@ random.sample <- function(obj = NULL, poly = NULL, type, size, plotit = TRUE)
 
 
 
-<<<<<<< HEAD
-random.sample(obj = obj, poly = poly, type="discrete", size, plotit = TRUE)
-=======
-random.sample(obj = buildings, poly = buildings, type, size, plotit = TRUE)
->>>>>>> e957ef81415f9c25b8afdfe20aec6701e2f445b6
+random.sample(poly = poly, key= key, value = value, boundary = boundary, join_type = join_type, type = type, size = size, plotit = plotit, plotit_leaflet = plotit_leaflet)
+
 
 
