@@ -1,5 +1,5 @@
-#######################
-###############
+##########################################
+
 library(nngeo)
 library("geoR")
 library(sp)
@@ -10,57 +10,13 @@ library(osmdata)
 library(mapview)
 library("dplyr")
 
-# 1. Sampling from a discrete set of points.
-x <- 0.015+0.03*(1:33)
-xall <- rep(x,33)
-yall <- c(t(matrix(xall,33,33)))
-xy <- cbind(xall,yall)+matrix(-0.0075+0.015*runif(33*33*2),33*33,2)
-colnames(xy) <- c('X','Y')
-
-# Convert to SF
-xy <- xy %>%
-  as.data.frame %>%
-  sf::st_as_sf(coords = c(1,2))
-xy <- sf::st_as_sf(xy, coords = c('X', 'Y'))
-
-
-# Sampling from a discrete set.
-set.seed(15892)
-xy.sample <- random.sample(obj = xy, size = 100, type = "discrete", plotit = TRUE)
-
-
-# Sampling from a continuum.
-library("geoR")
-data("parana")
-poly <- parana$borders
-poly <- matrix(c(poly[,1],poly[,2]),dim(poly)[1],2,byrow=FALSE)
-# Convert matrix to polygon
-poly <- st_sf(st_sfc(st_polygon(list(as.matrix(poly)))))
-
-set.seed(15892)
-xy.sample <- random.sample(poly = poly,size = 100, type = "continuum", plotit = TRUE)
-
-
 ###########################################
-
-poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries" , layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
-
-#poly<-"Failand"
-boundary<- 2
-buff_dist <- 0.05
-join_type <- "within"
-type= "discrete"
-size <- 200
-plotit <- TRUE
-plotit_leaflet <- TRUE
-key<- "building"
-value = "yes"
-
 
 random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, buff_dist = 0, join_type = "within", type, size, plotit = TRUE, plotit_leaflet = TRUE){
 
+
   if (boundary < 2 && !is.null(buff_dist)) {
-    print("warning: buff_dist is defined despite not requesting a buffered boundary ('boundary' = 2), this will be ignored")
+    warning("buff_dist is defined despite not requesting a buffered boundary ('boundary' = 2), this will be ignored")
   }
   if (boundary == 0) {
     dat <-  opq (poly@bbox) %>%
@@ -84,6 +40,13 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
       c(poly@bbox[1,1],poly@bbox[2,1])
     )
 
+    bounding<-as.data.frame(coords)
+    colnames(bounding)<-c("lat","lon")
+    bounding <- bounding %>%
+      st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+      summarise(geometry = st_combine(geometry)) %>%
+      st_cast("POLYGON")
+
     dat_tr_ex <-trim_osmdata (dat, coords, exclude = TRUE) # Returns all buildings that are fully within the specified area
     dat_tr <- trim_osmdata (dat, coords, exclude = FALSE) # Returns all buildings that intersect with the specified area
     bounding<-as.data.frame(coords)
@@ -98,8 +61,6 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
 
     proj4string(poly) <- CRS("+init=epsg:4326")
     countries_for_buff <- st_as_sf(poly)
-    pc <- spTransform(poly, CRS( "+init=epsg:3347" ) )
-
     countries_buff <- st_buffer(countries_for_buff, buff_dist)
 
     dat <-  opq (st_bbox(countries_buff)) %>%
@@ -114,9 +75,9 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
   }
 
   if (join_type == "within"){
-    obj <-dat_tr$osm_polygons
+    obj <-dat_tr_ex$osm_polygons
     } else if (join_type == "intersect"){
-      obj<-dat_tr_ex$osm_polygons
+      obj<-dat_tr$osm_polygons
     } else {
         stop("join_type must be 'within' or 'intersect'")
       }
@@ -278,13 +239,60 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
     }
   }
 
-  return(res)
-}
+  if (type=="discrete"){
+    xy.sample_df<-as.data.frame(xy.sample)
+    obj.origin_df<-as.data.frame(obj.origin)
+    xy.sample_df <-xy.sample_df[-13]
+    xy.sample_df$inSample <- 1
+    obj.origin_df <-obj.origin_df[-13]
+    results<-merge(obj.origin_df,xy.sample_df, by="osm_id",all.x=TRUE)
+    results<-results[, -grep(".y", colnames(results))]
+    results[is.na(results$inSample),"inSample"]<- 0
+
+    assign ("results", results,  envir = .GlobalEnv)
+  } else {
+    xy.sample_coords <- xy.sample %>%
+      st_cast("MULTIPOINT") %>%
+      st_cast("POINT")
+    xy.sample_coords<-st_coordinates(xy.sample_coords)
+    xy.sample_coords<-(cbind(c(1:nrow(xy.sample_coords)), xy.sample_coords))
+    colnames(xy.sample_coords)<-c("id","lat","long")
+    assign ("results", xy.sample_coords,  envir = .GlobalEnv)
+      }
+  }
 
 
 
+poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
+#poly<-"Failand"
+boundary<- 0
+buff_dist <- 0.005
+join_type <- "intersect"
+type= "discrete"
+size <- 700
+plotit <- TRUE
+plotit_leaflet <- TRUE
+key<- "building"
+value = "yes"
 
 random.sample(poly = poly, key= key, value = value, boundary = boundary, buff_dist = buff_dist, join_type = join_type, type = type, size = size, plotit = plotit, plotit_leaflet = plotit_leaflet)
 
 
+### Buffer is still based on arc degrees
+## failand
+### I am only bringing back polygons
 
+
+################################ This is just code that I am using to play around with....... This will not enter the package.
+
+dat <-  opq (getbb("Failand")) %>%
+  add_osm_feature (key=key, value=value) %>%
+  osmdata_sf () ## Returns all buildings within the bounding box
+dat_tr_ex <-trim_osmdata (dat, poly, exclude = TRUE) # Returns all buildings that are fully within the specified area
+dat_tr <- trim_osmdata (dat, poly, exclude = FALSE) # Returns all buildings that intersect with the specified area
+
+View(dat$bbox)
+mapview(dat$osm_polygons)
+mapview(bbox(dat$osm_polygons)
+
+View(dat)
