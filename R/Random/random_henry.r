@@ -46,9 +46,10 @@ xy.sample <- random.sample(poly = poly,size = 100, type = "continuum", plotit = 
 poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries" , layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
 
 #poly<-"Failand"
-boundary<- 1
+boundary<- 2
+buff_dist <- 0.05
 join_type <- "within"
-type= "continuum"
+type= "discrete"
 size <- 200
 plotit <- TRUE
 plotit_leaflet <- TRUE
@@ -56,14 +57,17 @@ key<- "building"
 value = "yes"
 
 
-random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, join_type = "within", type, size, plotit = TRUE, plotit_leaflet = TRUE){
+random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, buff_dist = 0, join_type = "within", type, size, plotit = TRUE, plotit_leaflet = TRUE){
 
+  if (boundary < 2 && !is.null(buff_dist)) {
+    print("warning: buff_dist is defined despite not requesting a buffered boundary ('boundary' = 2), this will be ignored")
+  }
   if (boundary == 0) {
     dat <-  opq (poly@bbox) %>%
       add_osm_feature (key=key, value=value) %>%
       osmdata_sf () ## Returns all buildings within the bounding box
 
-    dat_tr_ex <-trim_osmdata (dat, poly) # Returns all buildings that are fully within the specified area
+    dat_tr_ex <-trim_osmdata (dat, poly, exclude = TRUE) # Returns all buildings that are fully within the specified area
     dat_tr <- trim_osmdata (dat, poly, exclude = FALSE) # Returns all buildings that intersect with the specified area
     bounding <- poly
   } else if (boundary == 1) {
@@ -80,9 +84,15 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, jo
       c(poly@bbox[1,1],poly@bbox[2,1])
     )
 
-    dat_tr_ex <-trim_osmdata (dat, coords) # Returns all buildings that are fully within the specified area
+    dat_tr_ex <-trim_osmdata (dat, coords, exclude = TRUE) # Returns all buildings that are fully within the specified area
     dat_tr <- trim_osmdata (dat, coords, exclude = FALSE) # Returns all buildings that intersect with the specified area
-    bounding <- poly@bbox
+    bounding<-as.data.frame(coords)
+    colnames(bounding)<-c("lat","lon")
+    bounding <- bounding %>%
+    st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+    summarise(geometry = st_combine(geometry)) %>%
+    st_cast("POLYGON")
+
 
   } else if (boundary == 2) {
 
@@ -90,15 +100,15 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, jo
     countries_for_buff <- st_as_sf(poly)
     pc <- spTransform(poly, CRS( "+init=epsg:3347" ) )
 
-    countries_buff_5km <- st_buffer(countries_for_buff, 0.05)
+    countries_buff <- st_buffer(countries_for_buff, buff_dist)
 
-    dat_buf <-  opq (st_bbox(countries_buff_5km)) %>%
+    dat <-  opq (st_bbox(countries_buff)) %>%
       add_osm_feature (key=key, value=value) %>%
       osmdata_sf () ## Returns all buildings within the bounding box
 
-    dat_tr_ex <-trim_osmdata (dat, countries_buff_5km) # Returns all buildings that are fully within the specified area
-    dat_tr <- trim_osmdata (dat, countries_buff_5km, exclude = FALSE) # Returns all buildings that intersect with the specified area
-    boundary <- countries_buff_5km
+    dat_tr_ex <-trim_osmdata (dat, countries_buff, exclude = TRUE) # Returns all buildings that are fully within the specified area
+    dat_tr <- trim_osmdata (dat, countries_buff, exclude = FALSE) # Returns all buildings that intersect with the specified area
+    bounding <- countries_buff
   } else {
     stop("boundary must be 0,1,2 which respectively refer to exact, bounding box and buffer.")
   }
@@ -241,7 +251,7 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, jo
               map.types = c("OpenStreetMap.DE"),
               layer.name = c("All Locations"),
               color = c("black"))+
-        mapview((poly.origin), add= TRUE,
+        mapview((bounding), add= TRUE,
                 layer.name = c("Boundary"),
                 color = c("black"))+
         mapview(st_geometry(xy.sample), add= TRUE,
@@ -252,14 +262,14 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, jo
                 map.types = c("OpenStreetMap.DE"),
                 layer.name = c("All Locations"),
                 color = c("black"))+
-          mapview((poly.origin), add= TRUE,
+          mapview((bounding), add= TRUE,
                   layer.name = c("Boundary"),
                   color = c("black"))+
           mapview(st_geometry(xy.sample), add= TRUE,
                   layer.name = c("Sample Locations"),
                   color=c("black")))
       }} else {
-          print(mapview((poly.origin), add= TRUE,
+          print(mapview((bounding), add= TRUE,
                   layer.name = c("Boundary"),
                   color = c("black"))+
           mapview(st_geometry(xy.sample), add= TRUE,
@@ -274,7 +284,7 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, jo
 
 
 
-random.sample(poly = poly, key= key, value = value, boundary = boundary, join_type = join_type, type = type, size = size, plotit = plotit, plotit_leaflet = plotit_leaflet)
+random.sample(poly = poly, key= key, value = value, boundary = boundary, buff_dist = buff_dist, join_type = join_type, type = type, size = size, plotit = plotit, plotit_leaflet = plotit_leaflet)
 
 
 
