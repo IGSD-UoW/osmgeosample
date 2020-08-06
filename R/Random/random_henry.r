@@ -208,10 +208,32 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, data_return = c(
   }
 
   if (join_type == "within"){
-    obj <-dat_tr_ex[data_return]
-  } else if (join_type == "intersect"){
+    obj <-dat_tr_ex[[data_return]]
+    obj_for_sampling <- data.frame(NA, NA)
+    names(obj_for_sampling)<-c("osm_id","geometry")
+
+    for (i in 1:length(data_return)) {
+      if (nrow(as.data.frame(obj[i]))==0){} else {osmid<-as.data.frame(obj[[i]])[(colnames(obj[[i]]) %in%  c("osm_id", "geometry"))]}
+    obj_for_sampling<-rbind(obj_for_sampling, osmid)
+    }
+    obj<-as.data.frame(obj_for_sampling[!duplicated(obj_for_sampling$osm_id), ])
+    obj<-obj[-1,]
+    obj <- sf::st_as_sf(obj)
+
+    } else if (join_type == "intersect"){
       obj<-dat_tr[data_return]
-    } else {
+      obj_for_sampling <- data.frame(NA, ncol=2)
+      names(obj_for_sampling)<-c("osm_id","geometry")
+
+      for (i in 1:length(data_return)) {
+        if (nrow(as.data.frame(obj[i]))==0){} else {osmid<-as.data.frame(obj[[i]])[(colnames(obj[[i]]) %in%  c("osm_id", "geometry"))]}
+        obj_for_sampling<-rbind(obj_for_sampling, osmid)
+      }
+      obj<-as.data.frame(obj_for_sampling[!duplicated(obj_for_sampling), ])
+      obj<-obj[-1,]
+      obj <- sf::st_as_sf(obj)
+
+      } else {
         stop("join_type must be 'within' or 'intersect'")
       }
 
@@ -236,13 +258,13 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, data_return = c(
     if(inherits(obj, 'Spatial')){
       obj <- sf::st_as_sf(obj)
     }
-    if (any(!is.numeric(sf::st_coordinates(obj))))
-      stop("\n non-numerical values in 'obj' coordinates")
-    if(any(is.na(sf::st_coordinates(obj)))){
-      warning("\n NA's not allowed in 'obj' coordinates")
-      obj <- obj[complete.cases(st_coordinates(obj)), , drop = FALSE]
-      warning("\n eliminating rows with NA's")
-    }
+    #if (any(!is.numeric(sf::st_coordinates(obj))))
+    #  stop("\n non-numerical values in 'obj' coordinates")
+    #if(any(is.na(sf::st_coordinates(obj)))){
+    #  warning("\n NA's not allowed in 'obj' coordinates")
+    #  obj <- obj[complete.cases(st_coordinates(obj)), , drop = FALSE]
+    #  warning("\n eliminating rows with NA's")
+    #}
     if (is.null(poly)){
       poly <- sf::st_convex_hull(sf::st_union(obj))
     }
@@ -339,6 +361,7 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, data_return = c(
     par(oma=c(5, 5, 5, 5.5), mar=c(5.5, 5.1, 4.1, 2.1), mgp=c(3, 1, 0), las=0)
     if (type == "discrete"){
       if (class(obj.origin)[1] == "sf"){
+        st_crs(obj.origin) = 4326
         print(
         mapview(st_geometry(obj.origin),
               map.types = c("OpenStreetMap.DE"),
@@ -375,10 +398,14 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, data_return = c(
     xy.sample_df<-as.data.frame(xy.sample)
     obj.origin_df<-as.data.frame(obj.origin)
     xy.sample_df <-xy.sample_df[ , !(names(xy.sample_df) %in%  c("geometry"))]
-    xy.sample_df$inSample <- 1
+    xy.sample_df<-as.data.frame(xy.sample_df)
     obj.origin_df <-obj.origin_df[ , !(names(obj.origin_df) %in%  c("geometry"))]
+    obj.origin_df<-as.data.frame(obj.origin_df)
+    xy.sample_df$inSample <- 1
+    names(xy.sample_df)<-c("osm_id","inSample")
+    names(obj.origin_df)<-"osm_id"
     results<-merge(obj.origin_df,xy.sample_df, by="osm_id",all.x=TRUE)
-    results<-results[, -grep(".y", colnames(results))]
+    #results<-results[, -grep(".y", colnames(results))]
     results[is.na(results$inSample),"inSample"]<- 0
 
     assign ("results", results,  envir = .GlobalEnv)
@@ -396,13 +423,12 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, data_return = c(
 
 ###################### testing the function #########################################
 
-poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
-#poly<-"Failand"
+#poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
+poly<-"failand"
 boundary<- 2
 buff_dist <- 1000
-#buff_epsg <- 4326
-#buff_epsg <- 27700
-buff_epsg <- 3857
+#buff_epsg <- 3857
+buff_epsg <- 27700
 join_type <- "within"
 type <- "discrete"
 size <- 70
@@ -411,10 +437,15 @@ plotit_leaflet <- TRUE
 key<- "building"
 value <- "yes"
 data_return <- c("osm_polygons", "osm_points", "osm_multipolygons","multilines","lines")
+data_return <- c("osm_polygons")
 
 random.sample(poly = poly, key= key, value = value, boundary = boundary, buff_dist = buff_dist, buff_epsg = buff_epsg, join_type = join_type, type = type, size = size, plotit = plotit, plotit_leaflet = plotit_leaflet)
 
-### I am only bringing back polygons
-
+### xy.sample is still not working
+### I need to see the output, it is not bringing back the way point etc.
+#### I need to add some warnings/errors that say that the data_returns that you are requesting are empty/null.
 ######### Note for users: find the epsg using the epsg database at http://epsg.io/map#srs=4326&x=-2.686930&y=51.441757&z=14&layer=streets
 
+mapview(obj$geometry)
+
+mapview(obj$geometry)
