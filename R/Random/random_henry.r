@@ -19,13 +19,41 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
     warning("buff_dist is defined despite not requesting a buffered boundary ('boundary' = 2), this will be ignored")
   }
   if (boundary == 0) {
-    dat <-  opq (poly@bbox) %>%
-      add_osm_feature (key=key, value=value) %>%
-      osmdata_sf () ## Returns all buildings within the bounding box
+    if (class(poly)=="character") {
+      dat <-  opq (getbb(poly)) %>%
+        add_osm_feature (key=key, value=value) %>%
+        osmdata_sf () ## Returns all buildings within the bounding box
 
-    dat_tr_ex <-trim_osmdata (dat, poly, exclude = TRUE) # Returns all buildings that are fully within the specified area
-    dat_tr <- trim_osmdata (dat, poly, exclude = FALSE) # Returns all buildings that intersect with the specified area
-    bounding <- poly
+      poly <- rbind(
+        c(getbb(poly)[1,1],getbb(poly)[2,1]),
+        c(getbb(poly)[1,2],getbb(poly)[2,1]),
+        c(getbb(poly)[1,2],getbb(poly)[2,2]),
+        c(getbb(poly)[1,1],getbb(poly)[2,2]),
+        c(getbb(poly)[1,1],getbb(poly)[2,1])
+      )
+
+      poly<-as.data.frame(poly)
+      colnames(poly)<-c("lat","lon")
+      bounding <- poly %>%
+        st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+        summarise(geometry = st_combine(geometry)) %>%
+        st_cast("POLYGON")
+      poly<-bounding
+      dat_tr_ex <-trim_osmdata (dat, bounding, exclude = TRUE) # Returns all buildings that are fully within the specified area
+      dat_tr <- trim_osmdata (dat, bounding, exclude = FALSE) # Returns all buildings that intersect with the specified area
+
+
+      warning("the bounding box is used when poly is of type 'character'")
+
+          } else if (class(poly) == "SpatialPolygonsDataFrame") {
+      dat <-  opq (poly@bbox) %>%
+        add_osm_feature (key=key, value=value) %>%
+        osmdata_sf () ## Returns all buildings within the bounding box
+        dat_tr_ex <-trim_osmdata (dat, poly, exclude = TRUE) # Returns all buildings that are fully within the specified area
+        dat_tr <- trim_osmdata (dat, poly, exclude = FALSE) # Returns all buildings that intersect with the specified area
+        bounding <- poly
+    } else {warning("poly must be of type 'character' or 'SpatialPolygonsDataFrame'")}
+
   } else if (boundary == 1) {
 
     dat <-  opq (poly@bbox) %>%
@@ -276,15 +304,15 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
 
 
 
-poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
-#poly<-"Failand"
-boundary<- 2
+#poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
+poly<-"Failand"
+boundary<- 0
 buff_dist <- 1000
 #buff_epsg <- 4326
 buff_epsg <- 3857
-join_type <- "intersect"
-type= "discrete"
-size <- 700
+join_type <- "within"
+type <- "discrete"
+size <- 70
 plotit <- TRUE
 plotit_leaflet <- TRUE
 key<- "building"
