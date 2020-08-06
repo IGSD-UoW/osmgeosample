@@ -12,7 +12,7 @@ library("dplyr")
 
 ###########################################
 
-random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", type, size, plotit = TRUE, plotit_leaflet = TRUE){
+random.sample <- function(poly = NULL, key= NULL, value = NULL, data_return = c("osm_polygons", "osm_points", "osm_multipolygons","multilines","lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", type, size, plotit = TRUE, plotit_leaflet = TRUE){
 
 
   if (boundary < 2 && !is.null(buff_dist)) {
@@ -208,9 +208,9 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
   }
 
   if (join_type == "within"){
-    obj <-dat_tr_ex$osm_polygons
-    } else if (join_type == "intersect"){
-      obj<-dat_tr$osm_polygons
+    obj <-dat_tr_ex[data_return]
+  } else if (join_type == "intersect"){
+      obj<-dat_tr[data_return]
     } else {
         stop("join_type must be 'within' or 'intersect'")
       }
@@ -394,6 +394,7 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
   }
 
 
+###################### testing the function #########################################
 
 poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
 #poly<-"Failand"
@@ -408,27 +409,12 @@ size <- 70
 plotit <- TRUE
 plotit_leaflet <- TRUE
 key<- "building"
-value = "yes"
+value <- "yes"
+data_return <- c("osm_polygons", "osm_points", "osm_multipolygons","multilines","lines")
 
 random.sample(poly = poly, key= key, value = value, boundary = boundary, buff_dist = buff_dist, buff_epsg = buff_epsg, join_type = join_type, type = type, size = size, plotit = plotit, plotit_leaflet = plotit_leaflet)
-
 
 ### I am only bringing back polygons
 
 ######### Note for users: find the epsg using the epsg database at http://epsg.io/map#srs=4326&x=-2.686930&y=51.441757&z=14&layer=streets
 
-################################ This is just code that I am using to play around with....... This will not enter the package.
-
-dat <-  opq (getbb("Failand")) %>%
-  add_osm_feature (key=key, value=value) %>%
-  osmdata_sf () ## Returns all buildings within the bounding box
-dat_tr_ex <-trim_osmdata (dat, poly, exclude = TRUE) # Returns all buildings that are fully within the specified area
-dat_tr <- trim_osmdata (dat, poly, exclude = FALSE) # Returns all buildings that intersect with the specified area
-
-View(dat$bbox)
-mapview(countries_buff$geometry)+
-mapview(poly$geometry)
-
-    mapview(bbox(dat$osm_polygons)
-
-View(dat)
