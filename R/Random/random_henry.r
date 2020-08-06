@@ -255,9 +255,9 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
   if (type=="discrete"){
     xy.sample_df<-as.data.frame(xy.sample)
     obj.origin_df<-as.data.frame(obj.origin)
-    xy.sample_df <-xy.sample_df[-13]
+    xy.sample_df <-xy.sample_df[ , !(names(xy.sample_df) %in%  c("geometry"))]
     xy.sample_df$inSample <- 1
-    obj.origin_df <-obj.origin_df[-13]
+    obj.origin_df <-obj.origin_df[ , !(names(obj.origin_df) %in%  c("geometry"))]
     results<-merge(obj.origin_df,xy.sample_df, by="osm_id",all.x=TRUE)
     results<-results[, -grep(".y", colnames(results))]
     results[is.na(results$inSample),"inSample"]<- 0
@@ -296,6 +296,7 @@ random.sample(poly = poly, key= key, value = value, boundary = boundary, buff_di
 ## failand
 ### I am only bringing back polygons
 
+######### Note for users: find the epsg using the epsg database at http://epsg.io/map#srs=4326&x=-2.686930&y=51.441757&z=14&layer=streets
 
 ################################ This is just code that I am using to play around with....... This will not enter the package.
 
