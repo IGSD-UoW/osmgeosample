@@ -111,31 +111,61 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
     } else {warning("poly must be of type 'character' or 'SpatialPolygonsDataFrame'")}
 
   } else if (boundary == 2) {
-    if (buff_epsg == 4326) {
-      proj4string(poly) <- CRS("+init=epsg:4326")
-      countries_for_buff <- st_as_sf(poly)
-      pc <- spTransform(poly, CRS( "+init=epsg:3347" ) )
-      countries_buff <- st_buffer(countries_for_buff, 0.05)
-      dat <-  opq (st_bbox(countries_buff)) %>%
-        add_osm_feature (key=key, value=value) %>%
-        osmdata_sf () ## Returns all buildings within the buffer
-    } else {
-    suppressWarnings({CRS.new <- CRS("+init=epsg:3857")})
-    poly <- spTransform(poly, CRS.new)
-    countries_for_buff <- st_as_sf(poly)
-    countries_buff <- st_buffer(countries_for_buff, buff_dist)
-    suppressWarnings({countries_buff<-as(countries_buff, 'Spatial')})
-    suppressWarnings({proj4string(countries_buff) <- CRS(paste0("+init=epsg:",buff_epsg,""))})
-    CRS.new <- CRS("+init=epsg:4326")
-    countries_buff <- spTransform(countries_buff,CRS.new)
-    suppressWarnings({dat <-  opq (st_bbox(countries_buff)) %>%
-      add_osm_feature (key=key, value=value) %>%
-      osmdata_sf ()}) ## Returns all buildings within the buffer
-    }
 
-    dat_tr_ex <-trim_osmdata (dat, countries_buff, exclude = TRUE) # Returns all buildings that are fully within the specified area
-    dat_tr <- trim_osmdata (dat, countries_buff, exclude = FALSE) # Returns all buildings that intersect with the specified area
-    bounding <- countries_buff
+
+    if (class(poly)=="character") {
+      dat <-  opq (getbb(poly)) %>%
+        add_osm_feature (key=key, value=value) %>%
+        osmdata_sf () ## Returns all buildings within the bounding box
+
+      poly <- rbind(
+        c(getbb(poly)[1,1],getbb(poly)[2,1]),
+        c(getbb(poly)[1,2],getbb(poly)[2,1]),
+        c(getbb(poly)[1,2],getbb(poly)[2,2]),
+        c(getbb(poly)[1,1],getbb(poly)[2,2]),
+        c(getbb(poly)[1,1],getbb(poly)[2,1])
+      )
+
+      poly<-as.data.frame(poly)
+      colnames(poly)<-c("lat","lon")
+      bounding <- poly %>%
+        st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+        summarise(geometry = st_combine(geometry)) %>%
+        st_cast("POLYGON")
+      poly<-bounding
+      dat_tr_ex <-trim_osmdata (dat, bounding, exclude = TRUE) # Returns all buildings that are fully within the specified area
+      dat_tr <- trim_osmdata (dat, bounding, exclude = FALSE) # Returns all buildings that intersect with the specified area
+
+      warning("the bounding box is used when poly is of type 'character'")
+
+    } else if (class(poly) == "SpatialPolygonsDataFrame") {
+      if (buff_epsg == 4326) {
+        proj4string(poly) <- CRS("+init=epsg:4326")
+        countries_for_buff <- st_as_sf(poly)
+        pc <- spTransform(poly, CRS( "+init=epsg:3347" ) )
+        countries_buff <- st_buffer(countries_for_buff, 0.05)
+        dat <-  opq (st_bbox(countries_buff)) %>%
+          add_osm_feature (key=key, value=value) %>%
+          osmdata_sf () ## Returns all buildings within the buffer
+      } else {
+        suppressWarnings({CRS.new <- CRS("+init=epsg:3857")})
+        poly <- spTransform(poly, CRS.new)
+        countries_for_buff <- st_as_sf(poly)
+        countries_buff <- st_buffer(countries_for_buff, buff_dist)
+        suppressWarnings({countries_buff<-as(countries_buff, 'Spatial')})
+        suppressWarnings({proj4string(countries_buff) <- CRS(paste0("+init=epsg:",buff_epsg,""))})
+        CRS.new <- CRS("+init=epsg:4326")
+        countries_buff <- spTransform(countries_buff,CRS.new)
+        suppressWarnings({dat <-  opq (st_bbox(countries_buff)) %>%
+          add_osm_feature (key=key, value=value) %>%
+          osmdata_sf ()}) ## Returns all buildings within the buffer
+      }
+
+      dat_tr_ex <-trim_osmdata (dat, countries_buff, exclude = TRUE) # Returns all buildings that are fully within the specified area
+      dat_tr <- trim_osmdata (dat, countries_buff, exclude = FALSE) # Returns all buildings that intersect with the specified area
+      bounding <- countries_buff
+    } else {warning("poly must be of type 'character' or 'SpatialPolygonsDataFrame'")}
+
   } else {
     stop("boundary must be 0,1,2 which respectively refer to exact, bounding box and buffer.")
   }
