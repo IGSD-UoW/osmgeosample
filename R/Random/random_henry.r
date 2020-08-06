@@ -12,7 +12,7 @@ library("dplyr")
 
 ###########################################
 
-random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, buff_dist = 0, join_type = "within", type, size, plotit = TRUE, plotit_leaflet = TRUE){
+random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", type, size, plotit = TRUE, plotit_leaflet = TRUE){
 
 
   if (boundary < 2 && !is.null(buff_dist)) {
@@ -58,14 +58,27 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
 
 
   } else if (boundary == 2) {
-
-    proj4string(poly) <- CRS("+init=epsg:4326")
+    if (buff_epsg == 4326) {
+      proj4string(poly) <- CRS("+init=epsg:4326")
+      countries_for_buff <- st_as_sf(poly)
+      pc <- spTransform(poly, CRS( "+init=epsg:3347" ) )
+      countries_buff <- st_buffer(countries_for_buff, 0.05)
+      dat <-  opq (st_bbox(countries_buff)) %>%
+        add_osm_feature (key=key, value=value) %>%
+        osmdata_sf () ## Returns all buildings within the buffer
+    } else {
+    suppressWarnings({CRS.new <- CRS("+init=epsg:3857")})
+    poly <- spTransform(poly, CRS.new)
     countries_for_buff <- st_as_sf(poly)
     countries_buff <- st_buffer(countries_for_buff, buff_dist)
-
-    dat <-  opq (st_bbox(countries_buff)) %>%
+    suppressWarnings({countries_buff<-as(countries_buff, 'Spatial')})
+    suppressWarnings({proj4string(countries_buff) <- CRS(paste0("+init=epsg:",buff_epsg,""))})
+    CRS.new <- CRS("+init=epsg:4326")
+    countries_buff <- spTransform(countries_buff,CRS.new)
+    suppressWarnings({dat <-  opq (st_bbox(countries_buff)) %>%
       add_osm_feature (key=key, value=value) %>%
-      osmdata_sf () ## Returns all buildings within the bounding box
+      osmdata_sf ()}) ## Returns all buildings within the buffer
+    }
 
     dat_tr_ex <-trim_osmdata (dat, countries_buff, exclude = TRUE) # Returns all buildings that are fully within the specified area
     dat_tr <- trim_osmdata (dat, countries_buff, exclude = FALSE) # Returns all buildings that intersect with the specified area
@@ -265,8 +278,10 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
 
 poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
 #poly<-"Failand"
-boundary<- 0
-buff_dist <- 0.005
+boundary<- 2
+buff_dist <- 1000
+#buff_epsg <- 4326
+buff_epsg <- 3857
 join_type <- "intersect"
 type= "discrete"
 size <- 700
@@ -275,10 +290,9 @@ plotit_leaflet <- TRUE
 key<- "building"
 value = "yes"
 
-random.sample(poly = poly, key= key, value = value, boundary = boundary, buff_dist = buff_dist, join_type = join_type, type = type, size = size, plotit = plotit, plotit_leaflet = plotit_leaflet)
+random.sample(poly = poly, key= key, value = value, boundary = boundary, buff_dist = buff_dist, buff_epsg = buff_epsg, join_type = join_type, type = type, size = size, plotit = plotit, plotit_leaflet = plotit_leaflet)
 
 
-### Buffer is still based on arc degrees
 ## failand
 ### I am only bringing back polygons
 
@@ -292,7 +306,7 @@ dat_tr_ex <-trim_osmdata (dat, poly, exclude = TRUE) # Returns all buildings tha
 dat_tr <- trim_osmdata (dat, poly, exclude = FALSE) # Returns all buildings that intersect with the specified area
 
 View(dat$bbox)
-mapview(dat$osm_polygons)
+mapview(countries_buff$geometry)
 mapview(bbox(dat$osm_polygons)
 
 View(dat)
