@@ -108,31 +108,68 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
         st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
         summarise(geometry = st_combine(geometry)) %>%
         st_cast("POLYGON")
+
     } else {warning("poly must be of type 'character' or 'SpatialPolygonsDataFrame'")}
 
   } else if (boundary == 2) {
 
 
     if (class(poly)=="character") {
-      dat <-  opq (getbb(poly)) %>%
-        add_osm_feature (key=key, value=value) %>%
-        osmdata_sf () ## Returns all buildings within the bounding box
 
-      poly <- rbind(
-        c(getbb(poly)[1,1],getbb(poly)[2,1]),
-        c(getbb(poly)[1,2],getbb(poly)[2,1]),
-        c(getbb(poly)[1,2],getbb(poly)[2,2]),
-        c(getbb(poly)[1,1],getbb(poly)[2,2]),
-        c(getbb(poly)[1,1],getbb(poly)[2,1])
-      )
+      if (buff_epsg == 4326) {
+        poly <- rbind(
+          c(getbb(poly)[1,1],getbb(poly)[2,1]),
+          c(getbb(poly)[1,2],getbb(poly)[2,1]),
+          c(getbb(poly)[1,2],getbb(poly)[2,2]),
+          c(getbb(poly)[1,1],getbb(poly)[2,2]),
+          c(getbb(poly)[1,1],getbb(poly)[2,1])
+        )
 
-      poly<-as.data.frame(poly)
-      colnames(poly)<-c("lat","lon")
-      bounding <- poly %>%
-        st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-        summarise(geometry = st_combine(geometry)) %>%
-        st_cast("POLYGON")
-      poly<-bounding
+        poly<-as.data.frame(poly)
+        colnames(poly)<-c("lat","lon")
+        bounding <- poly %>%
+          st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+          summarise(geometry = st_combine(geometry)) %>%
+          st_cast("POLYGON")
+        st_crs(bounding) = 4326
+        poly<-bounding
+        countries_for_buff <- st_as_sf(poly)
+        countries_buff <- st_buffer(countries_for_buff, buff_dist)
+        suppressWarnings({CRS.new <- CRS("+init=epsg:4326")})
+        countries_buff <- st_transform(countries_buff, CRS.new)
+        bounding<-countries_buff
+        dat <-  opq (st_bbox(countries_buff)) %>%
+          add_osm_feature (key=key, value=value) %>%
+          osmdata_sf () ## Returns all buildings within the buffer
+      } else {
+        poly <- rbind(
+          c(getbb(poly)[1,1],getbb(poly)[2,1]),
+          c(getbb(poly)[1,2],getbb(poly)[2,1]),
+          c(getbb(poly)[1,2],getbb(poly)[2,2]),
+          c(getbb(poly)[1,1],getbb(poly)[2,2]),
+          c(getbb(poly)[1,1],getbb(poly)[2,1])
+        )
+
+        poly<-as.data.frame(poly)
+        colnames(poly)<-c("lat","lon")
+        bounding <- poly %>%
+          st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+          summarise(geometry = st_combine(geometry)) %>%
+          st_cast("POLYGON")
+        st_crs(bounding) = 4326
+        poly<-bounding
+        suppressWarnings({CRS.new <- CRS(paste0("+init=epsg:", buff_epsg))})
+        poly <- st_transform(poly, CRS.new)
+        countries_for_buff <- st_as_sf(poly)
+        countries_buff <- st_buffer(countries_for_buff, buff_dist)
+        suppressWarnings({CRS.new <- CRS("+init=epsg:4326")})
+        countries_buff <- st_transform(countries_buff, CRS.new)
+        bounding<-countries_buff
+        dat <-  opq (st_bbox(countries_buff)) %>%
+          add_osm_feature (key=key, value=value) %>%
+          osmdata_sf () ## Returns all buildings within the buffer
+      }
+
       dat_tr_ex <-trim_osmdata (dat, bounding, exclude = TRUE) # Returns all buildings that are fully within the specified area
       dat_tr <- trim_osmdata (dat, bounding, exclude = FALSE) # Returns all buildings that intersect with the specified area
 
@@ -143,12 +180,12 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
         proj4string(poly) <- CRS("+init=epsg:4326")
         countries_for_buff <- st_as_sf(poly)
         pc <- spTransform(poly, CRS( "+init=epsg:3347" ) )
-        countries_buff <- st_buffer(countries_for_buff, 0.05)
+        countries_buff <- st_buffer(countries_for_buff, buff_dist)
         dat <-  opq (st_bbox(countries_buff)) %>%
           add_osm_feature (key=key, value=value) %>%
           osmdata_sf () ## Returns all buildings within the buffer
       } else {
-        suppressWarnings({CRS.new <- CRS("+init=epsg:3857")})
+        suppressWarnings({CRS.new <- CRS(paste0("+init=epsg:", buff_epsg))})
         poly <- spTransform(poly, CRS.new)
         countries_for_buff <- st_as_sf(poly)
         countries_buff <- st_buffer(countries_for_buff, buff_dist)
@@ -301,7 +338,6 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
   if(plotit_leaflet == TRUE){
     par(oma=c(5, 5, 5, 5.5), mar=c(5.5, 5.1, 4.1, 2.1), mgp=c(3, 1, 0), las=0)
     if (type == "discrete"){
-      par(oma=c(5, 5, 5, 5.5), mar=c(5.5, 5.1, 4.1, 2.1), mgp=c(3, 1, 0), las=0)
       if (class(obj.origin)[1] == "sf"){
         print(
         mapview(st_geometry(obj.origin),
@@ -361,9 +397,10 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, boundary = 0, bu
 
 poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
 #poly<-"Failand"
-boundary<- 1
+boundary<- 2
 buff_dist <- 1000
 #buff_epsg <- 4326
+#buff_epsg <- 27700
 buff_epsg <- 3857
 join_type <- "within"
 type <- "discrete"
@@ -376,7 +413,6 @@ value = "yes"
 random.sample(poly = poly, key= key, value = value, boundary = boundary, buff_dist = buff_dist, buff_epsg = buff_epsg, join_type = join_type, type = type, size = size, plotit = plotit, plotit_leaflet = plotit_leaflet)
 
 
-## failand
 ### I am only bringing back polygons
 
 ######### Note for users: find the epsg using the epsg database at http://epsg.io/map#srs=4326&x=-2.686930&y=51.441757&z=14&layer=streets
@@ -390,7 +426,9 @@ dat_tr_ex <-trim_osmdata (dat, poly, exclude = TRUE) # Returns all buildings tha
 dat_tr <- trim_osmdata (dat, poly, exclude = FALSE) # Returns all buildings that intersect with the specified area
 
 View(dat$bbox)
-mapview(countries_buff$geometry)
-mapview(bbox(dat$osm_polygons)
+mapview(countries_buff$geometry)+
+mapview(poly$geometry)
+
+    mapview(bbox(dat$osm_polygons)
 
 View(dat)
