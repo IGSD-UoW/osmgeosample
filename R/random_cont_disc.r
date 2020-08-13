@@ -5,6 +5,7 @@ library(sf)
 library(splancs)
 library(rgdal)
 library(osmdata)
+library(processx)
 library(mapview)
 library("dplyr")
 
@@ -399,7 +400,12 @@ random.sample <- function(poly = NULL, key = NULL, value = NULL, data_return = c
     results <- merge(obj.origin_df, xy.sample_df, by = "osm_id", all.x = TRUE)
     # results<-results[, -grep('.y', colnames(results))]
     results[is.na(results$inSample), "inSample"] <- 0
-
+    suppressWarnings({
+      results <- cbind(results, obj.origin %>% st_centroid() %>% st_geometry())
+    })
+    results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>% matrix(ncol = 2, byrow = TRUE) %>% as_tibble() %>%
+                       setNames(c("centroid_lon", "centroid_lat")))
+    results <- results[, !(names(results) %in% c("geometry"))]
     assign("results", results, envir = .GlobalEnv)
   } else {
     xy.sample_coords <- xy.sample %>% st_cast("MULTIPOINT") %>% st_cast("POINT")
