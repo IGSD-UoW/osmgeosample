@@ -213,7 +213,7 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, data_return = c(
     names(obj_for_sampling)<-c("osm_id","geometry")
 
     for (i in 1:length(data_return)) {
-      if (nrow(as.data.frame(obj[i]))==0){} else {osmid<-as.data.frame(obj[[i]])[(colnames(obj[[i]]) %in%  c("osm_id", "geometry"))]}
+      if (nrow(as.data.frame(obj[i]))==0){} else {osmid<-as.data.frame(obj[i])[(colnames(obj[i]) %in%  c("osm_id", "geometry"))]}
     obj_for_sampling<-rbind(obj_for_sampling, osmid)
     }
     obj<-as.data.frame(obj_for_sampling[!duplicated(obj_for_sampling$osm_id), ])
@@ -424,22 +424,22 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, data_return = c(
 ###################### testing the function #########################################
 
 #poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
-poly<-"failand"
+poly<-"Coventry, UK"
 boundary<- 2
 buff_dist <- 1000
 #buff_epsg <- 3857
 buff_epsg <- 27700
-join_type <- "within"
+join_type <- "intersect"
 type <- "discrete"
-size <- 70
+size <- 500
 plotit <- TRUE
 plotit_leaflet <- TRUE
 key<- "building"
 value <- "yes"
-data_return <- c("osm_polygons", "osm_points", "osm_multipolygons","multilines","lines")
+#data_return <- c("osm_polygons", "osm_points", "osm_multipolygons","multilines","lines")
 data_return <- c("osm_polygons")
 
-random.sample(poly = poly, key= key, value = value, boundary = boundary, buff_dist = buff_dist, buff_epsg = buff_epsg, join_type = join_type, type = type, size = size, plotit = plotit, plotit_leaflet = plotit_leaflet)
+random.sample(poly = poly, key= key, value = value, boundary = boundary, buff_dist = buff_dist, buff_epsg = buff_epsg, join_type = join_type, type = type, size = size, plotit = plotit, plotit_leaflet = plotit_leaflet, data_return=data_return)
 
 ### xy.sample is still not working
 ### I need to see the output, it is not bringing back the way point etc.
@@ -448,4 +448,3 @@ random.sample(poly = poly, key= key, value = value, boundary = boundary, buff_di
 
 mapview(obj$geometry)
 
-mapview(obj$geometry)
