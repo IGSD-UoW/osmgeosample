@@ -7,9 +7,23 @@ Authors@R:
            role = c("aut", "cre"),
            email = "first.last@example.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Description: This package utilises the functoinality provided by the OSMData and 
+    geosample to allow users to create spatially continuous or discrete
+    random samples from a pre-defined spatial border using OSM data. 
 License: file LICENSE | GPL-2
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+Imports: 
+    geoR,
+    dplyr,
+    mapview,
+    nngeo,
+    osmdata,
+    ps,
+    rgdal,
+    sp,
+    sf,
+    splancs
+    

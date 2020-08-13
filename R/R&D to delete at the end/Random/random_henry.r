@@ -488,26 +488,24 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, data_return = c(
 
 #poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
 poly<-"Kenilworth, UK"
-boundary<- 2
-buff_dist <- 1000
-#buff_epsg <- 3857
-buff_epsg <- 27700
-join_type <- "intersect"
+boundary<- 0
+buff_dist <- 100
+buff_epsg <- 3857
+#buff_epsg <- 27700
+join_type <- "within"
 type <- "discrete"
 size <- 500
 plotit <- TRUE
 plotit_leaflet <- TRUE
 key<- "building"
-value <- "yes"
+value <- NULL
+#value <- "yes"
 #data_return <- c("osm_polygons", "osm_points", "osm_multipolygons","multilines","lines")
 data_return <- c("osm_polygons")
 
 random.sample(poly = poly, key= key, value = value, boundary = boundary, buff_dist = buff_dist, buff_epsg = buff_epsg, join_type = join_type, type = type, size = size, plotit = plotit, plotit_leaflet = plotit_leaflet, data_return=data_return)
 
-### xy.sample is still not working
 ### I need to see the output, it is not bringing back the way point etc.
 #### I need to add some warnings/errors that say that the data_returns that you are requesting are empty/null.
 ######### Note for users: find the epsg using the epsg database at http://epsg.io/map#srs=4326&x=-2.686930&y=51.441757&z=14&layer=streets
-
-mapview(obj$geometry)
 
