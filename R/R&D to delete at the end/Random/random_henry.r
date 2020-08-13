@@ -12,11 +12,14 @@ library("dplyr")
 
 ###########################################
 
-random.sample <- function(poly = NULL, key= NULL, value = NULL, data_return = c("osm_polygons", "osm_points", "osm_multipolygons","multilines","lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", type, size, plotit = TRUE, plotit_leaflet = TRUE){
+random.sample <- function(bounding_geom = NULL, key= NULL, value = NULL, data_return = c("osm_polygons", "osm_points", "osm_multipolygons","multilines","lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", dis_or_cont, sample_size, plotit = TRUE, plotit_leaflet = TRUE){
+  poly<-bounding_geom
+  type<-dis_or_cont
+  size<-sample_size
 
   if (is.null(key)){stop("A key must be specified")} else {}
   if (boundary < 2 && !is.null(buff_dist)) {
-    warning("buff_dist is defined despite not requesting a buffered boundary ('boundary' = 2) - buff_dist ignored")
+    warning("buff_dist is defined despite not requesting a buffered boundary ('boundary' = 2). buff_dist has been ignored")
   }
   if (boundary == 0) {
     if (class(poly)=="character") {
@@ -426,31 +429,35 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, data_return = c(
       if (class(obj.origin)[1] == "sf"){
         st_crs(obj.origin) = 4326
         print(
-          mapview(st_geometry(obj.origin),
+          mapview((bounding),
                   map.types = c("OpenStreetMap.DE"),
+                  layer.name = c("Boundary"),
+                  color = c("black"),
+                  alpha = 0.3) +
+            mapview(st_geometry(obj.origin), add= TRUE,
                   layer.name = c("All Locations"),
                   color = c("black"))+
-            mapview((bounding), add= TRUE,
-                    layer.name = c("Boundary"),
-                    color = c("black"))+
             mapview(st_geometry(xy.sample), add= TRUE,
                     layer.name = c("Sample Locations"),
                     color=c("black")))
       } else {
-        print(mapview(obj.origin,
-                      map.types = c("OpenStreetMap.DE"),
-                      layer.name = c("All Locations"),
-                      color = c("black"))+
-                mapview((bounding), add= TRUE,
+        print(
+                mapview((bounding),
+                        map.types = c("OpenStreetMap.DE"),
                         layer.name = c("Boundary"),
-                        color = c("black"))+
-                mapview(st_geometry(xy.sample), add= TRUE,
+                        color = c("black"),
+                        alpha = 0.3)+
+                  mapview(obj.origin, add= TRUE,
+                          layer.name = c("All Locations"),
+                          color = c("black"))+
+                  mapview(st_geometry(xy.sample), add= TRUE,
                         layer.name = c("Sample Locations"),
                         color=c("black")))
       }} else {
         print(mapview((bounding), add= TRUE,
                       layer.name = c("Boundary"),
-                      color = c("black"))+
+                      color = c("black"),
+                      alpha = 0.3)+
                 mapview(st_geometry(xy.sample), add= TRUE,
                         layer.name = c("Sample Locations"),
                         color=c("black")))
@@ -491,15 +498,15 @@ random.sample <- function(poly = NULL, key= NULL, value = NULL, data_return = c(
 
 ###################### testing the function #########################################
 
-poly <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
-#poly<-"Kenilworth, UK"
-boundary<- 2
+#bounding_geom <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
+bounding_geom<-"Pontesbury, UK"
+boundary<- 0
 buff_dist <- 1000
-buff_epsg <- 3857
-#buff_epsg <- 27700
+#buff_epsg <- 1168
+buff_epsg <- 27700
 join_type <- "within"
-type <- "discrete"
-size <- 70
+dis_or_cont <- "discrete"
+sample_size <- 70
 plotit <- TRUE
 plotit_leaflet <- TRUE
 key<- "building"
@@ -508,7 +515,7 @@ value <- NULL
 #data_return <- c("osm_polygons", "osm_points", "osm_multipolygons","multilines","lines")
 data_return <- c("osm_polygons")
 
-random.sample(poly = poly, key= key, value = value, boundary = boundary, buff_epsg = buff_epsg, join_type = join_type, type = type, size = size, plotit = plotit, plotit_leaflet = plotit_leaflet, data_return=data_return)
+random.sample(bounding_geom = bounding_geom, key= key, value = value, boundary = boundary, buff_dist=buff_dist, buff_epsg = buff_epsg, join_type = join_type, dis_or_cont = dis_or_cont, sample_size = sample_size, plotit = plotit, plotit_leaflet = plotit_leaflet, data_return=data_return)
 
 #### I need to add some warnings/errors that say that the data_returns that you are requesting are empty/null.
 ######### Note for users: find the epsg using the epsg database at http://epsg.io/map#srs=4326&x=-2.686930&y=51.441757&z=14&layer=streets

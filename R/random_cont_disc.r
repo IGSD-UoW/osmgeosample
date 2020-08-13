@@ -11,16 +11,19 @@ library("dplyr")
 
 ###########################################
 
-random.sample <- function(poly = NULL, key = NULL, value = NULL, data_return = c("osm_polygons", "osm_points", "osm_multipolygons",
-                                                                                 "multilines", "lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", type, size, plotit = TRUE,
-                          plotit_leaflet = TRUE) {
+random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_return = c("osm_polygons", "osm_points", "osm_multipolygons",
+                                                                                          "multilines", "lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", dis_or_cont, sample_size,
+                          plotit = TRUE, plotit_leaflet = TRUE) {
+  poly <- bounding_geom
+  type <- dis_or_cont
+  size <- sample_size
 
   if (is.null(key)) {
     stop("A key must be specified")
   } else {
   }
   if (boundary < 2 && !is.null(buff_dist)) {
-    warning("buff_dist is defined despite not requesting a buffered boundary ('boundary' = 2) - buff_dist ignored")
+    warning("buff_dist is defined despite not requesting a buffered boundary ('boundary' = 2). buff_dist has been ignored")
   }
   if (boundary == 0) {
     if (class(poly) == "character") {
@@ -373,17 +376,17 @@ random.sample <- function(poly = NULL, key = NULL, value = NULL, data_return = c
     if (type == "discrete") {
       if (class(obj.origin)[1] == "sf") {
         st_crs(obj.origin) = 4326
-        print(mapview(st_geometry(obj.origin), map.types = c("OpenStreetMap.DE"), layer.name = c("All Locations"),
-                      color = c("black")) + mapview((bounding), add = TRUE, layer.name = c("Boundary"), color = c("black")) +
+        print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
+                      alpha = 0.3) + mapview(st_geometry(obj.origin), add = TRUE, layer.name = c("All Locations"), color = c("black")) +
                 mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"), color = c("black")))
       } else {
-        print(mapview(obj.origin, map.types = c("OpenStreetMap.DE"), layer.name = c("All Locations"), color = c("black")) +
-                mapview((bounding), add = TRUE, layer.name = c("Boundary"), color = c("black")) + mapview(st_geometry(xy.sample),
-                                                                                                          add = TRUE, layer.name = c("Sample Locations"), color = c("black")))
+        print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
+                      alpha = 0.3) + mapview(obj.origin, add = TRUE, layer.name = c("All Locations"), color = c("black")) + mapview(st_geometry(xy.sample),
+                                                                                                                                    add = TRUE, layer.name = c("Sample Locations"), color = c("black")))
       }
     } else {
-      print(mapview((bounding), add = TRUE, layer.name = c("Boundary"), color = c("black")) + mapview(st_geometry(xy.sample),
-                                                                                                      add = TRUE, layer.name = c("Sample Locations"), color = c("black")))
+      print(mapview((bounding), add = TRUE, layer.name = c("Boundary"), color = c("black"), alpha = 0.3) + mapview(st_geometry(xy.sample),
+                                                                                                                   add = TRUE, layer.name = c("Sample Locations"), color = c("black")))
     }
   }
 
@@ -415,3 +418,4 @@ random.sample <- function(poly = NULL, key = NULL, value = NULL, data_return = c
     assign("results", xy.sample_coords, envir = .GlobalEnv)
   }
 }
+
