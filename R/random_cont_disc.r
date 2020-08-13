@@ -1,3 +1,52 @@
+##' @title Spatially random sample
+##' @description This function draws a spatially random sample from a either (1) a discrete set of OSM features defined in the function parameters or (2) a continuous surface defined by a user definted geographical region.
+##' @param bounding_geom a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, optionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{"discrete"} set of points, see \code{'type'} below for details.
+##' @param dis_or_cont random sampling, a choice of either \code{"discrete"}, from a set of \eqn{N} potential sampling points or \code{"continuum"} from independent, compeletely random points.
+##' @param sample_size a non-negative integer giving the total number of locations to be sampled.
+##' @param plotit 'logical' specifying if graphical output is required. Default is \code{plotit = TRUE}.
+##' @param plotit_leaflet 'logical' specifying if leaflet (html) graphical output is required. This is prioritised over plotit if both are selected. Default is \code{plotit_leaflet = TRUE}.
+##' @param boundary aas
+##' @param buff_dist aas
+##' @param buff_epsg aas
+##' @param join_type aas
+##' @param key aas
+##' @param value aas
+##' @param data_return aas
+##'
+##'
+##' @return a \code{df} object of dimension \eqn{n} by \code{4} containing the final sampled osm_ids, centroid locations and whether the instance is in the selected sample (0/1), if sampling from a \code{"discrete"} set of points. A \code{df} object of dimension \eqn{n} by \code{3} containing the serial id and centroid locations for all sample instances,if sampling from a \code{"continuum"}.
+##'
+##' @examples
+##' set.seed(15892)
+##' xy.sample <-
+##'
+##' set.seed(15892)
+##' xy.sample <-
+##'
+##' set.seed(15892)
+##' xy.sample
+##'
+##'
+##' @author Henry J. Crosby \email{henry.crosby@warwick.ac.uk}
+##' @author Godwin Yeboah \email{godwin.yeboah@warwick.ac.uk}
+##' @author J. Porto De Albuquerque \email{J.Porto@warwick.ac.uk}
+##'
+##' @references Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis code in S-Plus. Computers and Geosciences, 19, 627-655
+##'
+##' @import sp
+##' @import sf
+##' @importFrom splancs csr
+##' @import nngeo
+##' @import geoR
+##' @import rgdal
+##' @import osmdata
+##' @import processx
+##' @import mapview
+##' @import dplyr
+##' @export
+
+
+
 library(nngeo)
 library("geoR")
 library(sp)
