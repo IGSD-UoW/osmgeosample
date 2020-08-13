@@ -47,16 +47,16 @@
 
 
 
-library(nngeo)
-library("geoR")
-library(sp)
-library(sf)
-library(splancs)
-library(rgdal)
-library(osmdata)
-library(processx)
-library(mapview)
-library("dplyr")
+#library(nngeo)
+#library("geoR")
+#library(sp)
+#library(sf)
+#library(splancs)
+#library(rgdal)
+#library(osmdata)
+#library(processx)
+#library(mapview)
+#library("dplyr")
 
 ###########################################
 
