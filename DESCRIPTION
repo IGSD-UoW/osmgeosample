@@ -6,7 +6,6 @@ Authors@R: as.person(c(
     "Godwin Yeobah <Godwin.Yeobah@warwick.ac.uk>",
     "João Porto De Albuquerque <J.Porto@warwick.ac.uk>"
   ))
-Authors@R: Henry Crosby, Godwin Yeobah, João Porto De Albuquerque
 Maintainer: Henry Crosby <henry.crosby@warwick.ac.uk>
 Imports: dplyr, geoR, graphics, mapview, nngeo, osmdata, pdist, processx, rgdal,
         sp, sf, splancs, stats
