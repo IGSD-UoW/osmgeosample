@@ -268,17 +268,54 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
     }
 
     if (join_type == "within") {
-        obj <- dat_tr_ex[[data_return]]
-        obj_for_sampling <- data.frame(NA, NA)
-        names(obj_for_sampling) <- c("osm_id", "geometry")
 
-        for (i in 1:length(data_return)) {
-            if (nrow(as.data.frame(obj[i])) == 0) {
-            } else {
-                osmid <- as.data.frame(obj[i])[(colnames(obj[i]) %in% c("osm_id", "geometry"))]
-            }
-            obj_for_sampling <- rbind(obj_for_sampling, osmid)
+        if (is.null(dat_tr_ex$osm_points) &&  c("osm_points") %in% data_return) {
+            data_return<- data_return[!(data_return) %in% c("osm_points")]
+            print("OSM have no osm_points within the specified area")
         }
+        if (is.null(dat_tr_ex$osm_lines) &&  c("osm_lines") %in% data_return) {
+            data_return<-data_return[!(data_return) %in% c("osm_lines")]
+            print("OSM have no osm_lines within the specified area")
+        }
+        if (is.null(dat_tr_ex$osm_polygons) &&  c("osm_polygons") %in% data_return) {
+            data_return<-data_return[!(data_return) %in% c("osm_polygons")]
+            print("OSM have no osm_polygons within the specified area")
+        }
+        if (is.null(dat_tr_ex$osm_multilines) &&  c("osm_multilines") %in% data_return) {
+            data_return<-data_return[!(data_return) %in% c("osm_multilines")]
+            print("OSM have no osm_multilines within the specified area")
+        }
+        if (is.null(dat_tr_ex$osm_multipolygons) &&  c("osm_multipolygons") %in% data_return) {
+            data_return<-data_return[!(data_return) %in% c("osm_multipolygons")]
+            print("OSM have no osm_multipolygons within the specified area")
+        }
+
+        if (length(data_return) == 1) {
+            obj <- dat_tr_ex[[data_return]]
+            obj<-obj[c("osm_id","geometry")]
+        } else {
+            obj <- dat_tr_ex[data_return]
+            obj3<-data.frame(NA, NA)
+            names(obj3) <- c("osm_id", "geometry")
+            for (i in 1:length(obj)){
+                obj2<-obj[[i]]
+                obj3<-rbind(obj3,obj2[c("osm_id","geometry")])
+            }
+            obj<-obj3[-1,]
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        obj_for_sampling <- obj
         obj <- as.data.frame(obj_for_sampling[!duplicated(obj_for_sampling$osm_id), ])
         obj <- obj[-1, ]
         obj <- sf::st_as_sf(obj)
