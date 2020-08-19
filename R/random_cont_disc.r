@@ -51,7 +51,7 @@
 
 ###########################################
 
-random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_return = c("osm_polygons", "osm_points", "osm_multipolygons",
+osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_return = c("osm_polygons", "osm_points", "osm_multipolygons",
                                                                                           "multilines", "lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", dis_or_cont, sample_size,
                           plotit = TRUE, plotit_leaflet = TRUE) {
     poly <- bounding_geom
