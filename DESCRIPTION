@@ -3,8 +3,8 @@ Title: Construction of Geostatistical Sampling Designs with OSM data
 Version: 0.0.0.9000
 Authors@R: as.person(c(
     "Henry Crosby <henry.crosby@warwick.ac.uk> [cre]", 
-    "Godwin Yeobah <Godwin.Yeobah@warwick.ac.uk>",
-    "J. Porto De Albuquerque <J.Porto@warwick.ac.uk>"
+    "Godwin Yeobah <Godwin.Yeobah@warwick.ac.uk> [aut]",
+    "J. Porto De Albuquerque <J.Porto@warwick.ac.uk> [aut]"
   ))
 Maintainer: Henry Crosby <henry.crosby@warwick.ac.uk>
 Imports: dplyr, geoR, graphics, mapview, nngeo, osmdata, pdist, processx, rgdal,

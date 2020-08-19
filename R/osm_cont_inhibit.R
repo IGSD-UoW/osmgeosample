@@ -1,4 +1,4 @@
-##' @title Continuous Inhibitory sample
+##' @title OSM Continuous Inhibitory sample
 ##' @description Draws a spatially continous sample of locations within a polygonal sampling region according to an \bold{"inhibitory plus close pairs"} specification. The region can be defined using OSM data or a user defined polygon.
 ##' @param bounding_geom a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, optionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.
 ##' @param sample_size a non-negative integer giving the total number of locations to be sampled.
