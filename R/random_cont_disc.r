@@ -53,8 +53,8 @@
 ###########################################
 
 random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_return = c("osm_polygons", "osm_points", "osm_multipolygons",
-    "multilines", "lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", dis_or_cont, sample_size,
-    plotit = TRUE, plotit_leaflet = TRUE) {
+                                                                                          "multilines", "lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", dis_or_cont, sample_size,
+                          plotit = TRUE, plotit_leaflet = TRUE) {
     poly <- bounding_geom
     type <- dis_or_cont
     size <- sample_size
@@ -76,7 +76,7 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
             }
 
             poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1,
-                2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
+                                                                                                                          2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
 
             poly <- as.data.frame(poly)
             colnames(poly) <- c("lat", "lon")
@@ -114,7 +114,7 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
             }
 
             poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1,
-                2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
+                                                                                                                          2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
 
             poly <- as.data.frame(poly)
             colnames(poly) <- c("lat", "lon")
@@ -135,7 +135,7 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
             }
 
             coords <- rbind(c(poly@bbox[1, 1], poly@bbox[2, 1]), c(poly@bbox[1, 2], poly@bbox[2, 1]), c(poly@bbox[1, 2], poly@bbox[2,
-                2]), c(poly@bbox[1, 1], poly@bbox[2, 2]), c(poly@bbox[1, 1], poly@bbox[2, 1]))
+                                                                                                                                   2]), c(poly@bbox[1, 1], poly@bbox[2, 2]), c(poly@bbox[1, 1], poly@bbox[2, 1]))
 
             bounding <- as.data.frame(coords)
             colnames(bounding) <- c("lat", "lon")
@@ -160,54 +160,54 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
 
             if (buff_epsg == 4326) {
                 poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1,
-                  2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
+                                                                                                                              2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
 
                 poly <- as.data.frame(poly)
                 colnames(poly) <- c("lat", "lon")
                 bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>%
-                  st_cast("POLYGON")
+                    st_cast("POLYGON")
                 st_crs(bounding) = 4326
                 poly <- bounding
                 countries_for_buff <- st_as_sf(poly)
                 countries_buff <- st_buffer(countries_for_buff, buff_dist)
                 suppressWarnings({
-                  CRS.new <- CRS("+init=epsg:4326")
+                    CRS.new <- CRS("+init=epsg:4326")
                 })
                 countries_buff <- st_transform(countries_buff, CRS.new)
                 bounding <- countries_buff
 
                 if (is.null(value)) {
-                  dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
+                    dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
                 } else {
-                  dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
+                    dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
                 }
 
             } else {
                 poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1,
-                  2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
+                                                                                                                              2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
 
                 poly <- as.data.frame(poly)
                 colnames(poly) <- c("lat", "lon")
                 bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>%
-                  st_cast("POLYGON")
+                    st_cast("POLYGON")
                 st_crs(bounding) = 4326
                 poly <- bounding
                 suppressWarnings({
-                  CRS.new <- CRS(paste0("+init=epsg:", buff_epsg))
+                    CRS.new <- CRS(paste0("+init=epsg:", buff_epsg))
                 })
                 poly <- st_transform(poly, CRS.new)
                 countries_for_buff <- st_as_sf(poly)
                 countries_buff <- st_buffer(countries_for_buff, buff_dist)
                 suppressWarnings({
-                  CRS.new <- CRS("+init=epsg:4326")
+                    CRS.new <- CRS("+init=epsg:4326")
                 })
                 countries_buff <- st_transform(countries_buff, CRS.new)
                 bounding <- countries_buff
 
                 if (is.null(value)) {
-                  dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
+                    dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
                 } else {
-                  dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
+                    dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
                 }
 
             }
@@ -225,33 +225,33 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
                 countries_buff <- st_buffer(countries_for_buff, buff_dist)
 
                 if (is.null(value)) {
-                  dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
+                    dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
                 } else {
-                  dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
+                    dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
                 }
 
             } else {
                 suppressWarnings({
-                  CRS.new <- CRS(paste0("+init=epsg:", buff_epsg))
+                    CRS.new <- CRS(paste0("+init=epsg:", buff_epsg))
                 })
                 poly <- spTransform(poly, CRS.new)
                 countries_for_buff <- st_as_sf(poly)
                 countries_buff <- st_buffer(countries_for_buff, buff_dist)
                 suppressWarnings({
-                  countries_buff <- as(countries_buff, "Spatial")
+                    countries_buff <- as(countries_buff, "Spatial")
                 })
                 suppressWarnings({
-                  proj4string(countries_buff) <- CRS(paste0("+init=epsg:", buff_epsg, ""))
+                    proj4string(countries_buff) <- CRS(paste0("+init=epsg:", buff_epsg, ""))
                 })
                 CRS.new <- CRS("+init=epsg:4326")
                 countries_buff <- spTransform(countries_buff, CRS.new)
                 suppressWarnings({
 
-                  if (is.null(value)) {
-                    dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
-                  } else {
-                    dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
-                  }
+                    if (is.null(value)) {
+                        dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
+                    } else {
+                        dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
+                    }
 
                 })
             }
@@ -268,7 +268,7 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
     }
 
     if (join_type == "within") {
-        obj <- dat_tr_ex[data_return]
+        obj <- dat_tr_ex[[data_return]]
         obj_for_sampling <- data.frame(NA, NA)
         names(obj_for_sampling) <- c("osm_id", "geometry")
 
@@ -317,7 +317,7 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
         if (!inherits(obj, "SpatialPointsDataFrame")) {
             if (!inherits(obj, "SpatialPoints")) {
                 if (!inherits(obj, "sf") & !inherits(obj, "data.frame")) {
-                  stop("\n 'obj' must be of class 'sp' or 'sf'")
+                    stop("\n 'obj' must be of class 'sp' or 'sf'")
                 }
             }
         }
@@ -363,12 +363,12 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
             poly.origin <- poly
             if (!inherits(poly, "SpatialPolygonsDataFrame"))
                 if (!inherits(poly, "SpatialPolygons"))
-                  if (!inherits(poly, "Polygons"))
-                    if (!inherits(poly, "Polygon"))
-                      if (!inherits(poly, "sfc_POLYGON"))
-                        if (!inherits(poly, "sfc"))
-                          if (!inherits(poly, "sf"))
-                            stop("\n 'poly' must be of class 'sp' or 'sf'")
+                    if (!inherits(poly, "Polygons"))
+                        if (!inherits(poly, "Polygon"))
+                            if (!inherits(poly, "sfc_POLYGON"))
+                                if (!inherits(poly, "sfc"))
+                                    if (!inherits(poly, "sf"))
+                                        stop("\n 'poly' must be of class 'sp' or 'sf'")
         }
         if (inherits(poly, "Spatial")) {
             plot.poly <- sf::st_as_sf(poly)
@@ -397,17 +397,17 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
         if (type == "discrete") {
             if (class(obj.origin)[1] == "sf") {
                 plot(st_geometry(obj.origin), pch = 19, col = "yellow", axes = TRUE, xlab = "longitude", ylab = "lattitude",
-                  font.main = 3, cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points",
-                    sep = " "))
+                     font.main = 3, cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points",
+                                                                                    sep = " "))
             } else {
                 plot(obj.origin, pch = 19, col = "yellow", axes = TRUE, xlab = "longitude", ylab = "lattitude", font.main = 3,
-                  cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points", sep = " "))
+                     cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points", sep = " "))
             }
             plot(st_geometry(xy.sample), pch = 19, cex = 0.25, col = 1, add = TRUE)
         } else {
             plot(st_geometry(plot.poly), pch = 19, col = 1, axes = TRUE, xlab = "longitude", ylab = "lattitude", font.main = 3,
-                cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points", sep = " "), xlim = c(range(st.poly[,
-                  1])), ylim = c(range(st.poly[, 2])))
+                 cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points", sep = " "), xlim = c(range(st.poly[,
+                                                                                                                                               1])), ylim = c(range(st.poly[, 2])))
             plot(st_geometry(xy.sample), col = "yellow", add = TRUE)
         }
     }
@@ -418,16 +418,16 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
             if (class(obj.origin)[1] == "sf") {
                 st_crs(obj.origin) = 4326
                 print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
-                  alpha = 0.3) + mapview(st_geometry(obj.origin), add = TRUE, layer.name = c("All Locations"), color = c("black")) +
-                  mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"), color = c("black")))
+                              alpha = 0.3, label = "Boundary") + mapview(st_geometry(obj.origin), add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) +
+                          mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), label = xy.sample$osm_id))
             } else {
                 print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
-                  alpha = 0.3) + mapview(obj.origin, add = TRUE, layer.name = c("All Locations"), color = c("black")) + mapview(st_geometry(xy.sample),
-                  add = TRUE, layer.name = c("Sample Locations"), color = c("black")))
+                              alpha = 0.3, label = "Boundary") + mapview(obj.origin, add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) + mapview(st_geometry(xy.sample),
+                                                                                                                                                                       add = TRUE, layer.name = c("Sample Locations"), size = 4, color = c("yellow"), label = xy.sample$osm_id))
             }
         } else {
-            print(mapview((bounding), add = TRUE, layer.name = c("Boundary"), color = c("black"), alpha = 0.3) + mapview(st_geometry(xy.sample),
-                add = TRUE, layer.name = c("Sample Locations"), color = c("black")))
+            print(mapview((bounding), add = TRUE, layer.name = c("Boundary"), color = c("black"), alpha = 0.3, label = "Boundary") + mapview(st_geometry(xy.sample),
+                                                                                                                                             add = TRUE, layer.name = c("Sample Locations"), size = 4, color = c("yellow"), label = xy.sample$osm_id))
         }
     }
 
@@ -448,7 +448,7 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
             results <- cbind(results, obj.origin %>% st_centroid() %>% st_geometry())
         })
         results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>% matrix(ncol = 2, byrow = TRUE) %>% as_tibble() %>%
-            setNames(c("centroid_lon", "centroid_lat")))
+                             setNames(c("centroid_lon", "centroid_lat")))
         results <- results[, !(names(results) %in% c("geometry"))]
         assign("results", results, envir = .GlobalEnv)
     } else {
