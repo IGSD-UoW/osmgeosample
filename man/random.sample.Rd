@@ -21,7 +21,7 @@ random.sample(
 )
 }
 \arguments{
-\item{bounding_geom}{a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, optionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{"discrete"} set of points, see \code{'type'} below for details.}
+\item{bounding_geom}{a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, optionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.}
 
 \item{key}{aas}
 
@@ -37,7 +37,7 @@ random.sample(
 
 \item{join_type}{aas}
 
-\item{dis_or_cont}{random sampling, a choice of either \code{"discrete"}, from a set of \eqn{N} potential sampling points or \code{"continuum"} from independent, compeletely random points.}
+\item{dis_or_cont}{random sampling, a choice of either \code{'discrete'}, from a set of \eqn{N} potential sampling points or \code{'continuum'} from independent, compeletely random points.}
 
 \item{sample_size}{a non-negative integer giving the total number of locations to be sampled.}
 
@@ -46,7 +46,7 @@ random.sample(
 \item{plotit_leaflet}{'logical' specifying if leaflet (html) graphical output is required. This is prioritised over plotit if both are selected. Default is \code{plotit_leaflet = TRUE}.}
 }
 \value{
-a \code{df} object of dimension \eqn{n} by \code{4} containing the final sampled osm_ids, centroid locations and whether the instance is in the selected sample (0/1), if sampling from a \code{"discrete"} set of points. A \code{df} object of dimension \eqn{n} by \code{3} containing the serial id and centroid locations for all sample instances,if sampling from a \code{"continuum"}.
+a \code{df} object of dimension \eqn{n} by \code{4} containing the final sampled osm_ids, centroid locations and whether the instance is in the selected sample (0/1), if sampling from a \code{'discrete'} set of points. A \code{df} object of dimension \eqn{n} by \code{3} containing the serial id and centroid locations for all sample instances,if sampling from a \code{'continuum'}.
 }
 \description{
 This function draws a spatially random sample from a either (1) a discrete set of OSM features defined in the function parameters or (2) a continuous surface defined by a user definted geographical region.
