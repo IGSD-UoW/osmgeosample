@@ -37,7 +37,6 @@
 ##' @import sf
 ##' @importFrom splancs csr
 ##' @import nngeo
-##' @import geoR
 ##' @import rgdal
 ##' @import osmdata
 ##' @import processx
