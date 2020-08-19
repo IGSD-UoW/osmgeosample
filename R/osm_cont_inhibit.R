@@ -58,7 +58,7 @@ osm.contin.inhibit <- function(bounding_geom = NULL,boundary = 0, buff_dist = 0,
   {
 
   poly <- bounding_geom
-  size <- sample_size
+  size <- sample_size+1
 
   if (boundary < 2 && !is.null(buff_dist)) {
     warning("buff_dist is defined despite not requesting a buffered boundary ('boundary' = 2). buff_dist has been ignored")
@@ -275,6 +275,8 @@ osm.contin.inhibit <- function(bounding_geom = NULL,boundary = 0, buff_dist = 0,
        sample.locs <- sf::st_as_sf(xy.sample)
 
        xy.sample <- sample.locs
+       st_crs(xy.sample) = 4326
+       xy.sample <- st_intersection(st_geometry(poly), xy.sample$geometry)
 
        if(plotit==TRUE){
          par(oma=c(5, 5, 5, 5.5), mar=c(5.5, 5.1, 4.1, 2.1), mgp=c(3, 1, 0), las=0)
@@ -287,16 +289,6 @@ osm.contin.inhibit <- function(bounding_geom = NULL,boundary = 0, buff_dist = 0,
               ylim = c(range(st.poly[,2])))
          plot(st_geometry(poly), add= TRUE)
        }
-       res <- list()
-       res$size <- dim(unique(xy.sample))[1]
-       res$delta = delta
-       res$k <- k
-       res$sample.locs = sample.locs
-
-
-
-
-
 
   if (plotit_leaflet == TRUE) {
     par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0), las = 0)
