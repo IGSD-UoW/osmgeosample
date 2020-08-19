@@ -50,15 +50,15 @@
 # library(nngeo) library('geoR') library(sp) library(sf) library(splancs) library(rgdal) library(osmdata)
 # library(processx) library(mapview) library('dplyr')
 
-########################################### 
+###########################################
 
-random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_return = c("osm_polygons", "osm_points", "osm_multipolygons", 
-    "multilines", "lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", dis_or_cont, sample_size, 
+random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_return = c("osm_polygons", "osm_points", "osm_multipolygons",
+    "multilines", "lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", dis_or_cont, sample_size,
     plotit = TRUE, plotit_leaflet = TRUE) {
     poly <- bounding_geom
     type <- dis_or_cont
     size <- sample_size
-    
+
     if (is.null(key)) {
         stop("A key must be specified")
     } else {
@@ -68,103 +68,103 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
     }
     if (boundary == 0) {
         if (class(poly) == "character") {
-            
+
             if (is.null(value)) {
                 dat <- opq(getbb(poly)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
             } else {
                 dat <- opq(getbb(poly)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
             }
-            
-            poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1, 
+
+            poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1,
                 2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
-            
+
             poly <- as.data.frame(poly)
             colnames(poly) <- c("lat", "lon")
-            bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>% 
+            bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>%
                 st_cast("POLYGON")
             poly <- bounding
             dat_tr_ex <- trim_osmdata(dat, bounding, exclude = TRUE)  # Returns all buildings that are fully within the specified area
             dat_tr <- trim_osmdata(dat, bounding, exclude = FALSE)  # Returns all buildings that intersect with the specified area
-            
+
             warning("the bounding box is used when poly is of type 'character'")
-            
+
         } else if (class(poly) == "SpatialPolygonsDataFrame") {
-            
+
             if (is.null(value)) {
                 dat <- opq(poly@bbox) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
             } else {
                 dat <- opq(poly@bbox) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
             }
-            
+
             dat_tr_ex <- trim_osmdata(dat, poly, exclude = TRUE)  # Returns all buildings that are fully within the specified area
             dat_tr <- trim_osmdata(dat, poly, exclude = FALSE)  # Returns all buildings that intersect with the specified area
             bounding <- poly
         } else {
             warning("poly must be of type 'character' or 'SpatialPolygonsDataFrame'")
         }
-        
+
     } else if (boundary == 1) {
-        
+
         if (class(poly) == "character") {
-            
+
             if (is.null(value)) {
                 dat <- opq(getbb(poly)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
             } else {
                 dat <- opq(getbb(poly)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
             }
-            
-            poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1, 
+
+            poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1,
                 2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
-            
+
             poly <- as.data.frame(poly)
             colnames(poly) <- c("lat", "lon")
-            bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>% 
+            bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>%
                 st_cast("POLYGON")
             poly <- bounding
             dat_tr_ex <- trim_osmdata(dat, bounding, exclude = TRUE)  # Returns all buildings that are fully within the specified area
             dat_tr <- trim_osmdata(dat, bounding, exclude = FALSE)  # Returns all buildings that intersect with the specified area
-            
+
             warning("the bounding box is used when poly is of type 'character'")
-            
+
         } else if (class(poly) == "SpatialPolygonsDataFrame") {
-            
+
             if (is.null(value)) {
                 dat <- opq(poly@bbox) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
             } else {
                 dat <- opq(poly@bbox) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
             }
-            
-            coords <- rbind(c(poly@bbox[1, 1], poly@bbox[2, 1]), c(poly@bbox[1, 2], poly@bbox[2, 1]), c(poly@bbox[1, 2], poly@bbox[2, 
+
+            coords <- rbind(c(poly@bbox[1, 1], poly@bbox[2, 1]), c(poly@bbox[1, 2], poly@bbox[2, 1]), c(poly@bbox[1, 2], poly@bbox[2,
                 2]), c(poly@bbox[1, 1], poly@bbox[2, 2]), c(poly@bbox[1, 1], poly@bbox[2, 1]))
-            
+
             bounding <- as.data.frame(coords)
             colnames(bounding) <- c("lat", "lon")
-            bounding <- bounding %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>% 
+            bounding <- bounding %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>%
                 st_cast("POLYGON")
-            
+
             dat_tr_ex <- trim_osmdata(dat, coords, exclude = TRUE)  # Returns all buildings that are fully within the specified area
             dat_tr <- trim_osmdata(dat, coords, exclude = FALSE)  # Returns all buildings that intersect with the specified area
             bounding <- as.data.frame(coords)
             colnames(bounding) <- c("lat", "lon")
-            bounding <- bounding %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>% 
+            bounding <- bounding %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>%
                 st_cast("POLYGON")
-            
+
         } else {
             warning("poly must be of type 'character' or 'SpatialPolygonsDataFrame'")
         }
-        
+
     } else if (boundary == 2) {
-        
-        
+
+
         if (class(poly) == "character") {
-            
+
             if (buff_epsg == 4326) {
-                poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1, 
+                poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1,
                   2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
-                
+
                 poly <- as.data.frame(poly)
                 colnames(poly) <- c("lat", "lon")
-                bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>% 
+                bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>%
                   st_cast("POLYGON")
                 st_crs(bounding) = 4326
                 poly <- bounding
@@ -175,20 +175,20 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
                 })
                 countries_buff <- st_transform(countries_buff, CRS.new)
                 bounding <- countries_buff
-                
+
                 if (is.null(value)) {
                   dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
                 } else {
                   dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
                 }
-                
+
             } else {
-                poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1, 
+                poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1,
                   2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
-                
+
                 poly <- as.data.frame(poly)
                 colnames(poly) <- c("lat", "lon")
-                bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>% 
+                bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>%
                   st_cast("POLYGON")
                 st_crs(bounding) = 4326
                 poly <- bounding
@@ -203,33 +203,33 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
                 })
                 countries_buff <- st_transform(countries_buff, CRS.new)
                 bounding <- countries_buff
-                
+
                 if (is.null(value)) {
                   dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
                 } else {
                   dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
                 }
-                
+
             }
-            
+
             dat_tr_ex <- trim_osmdata(dat, bounding, exclude = TRUE)  # Returns all buildings that are fully within the specified area
             dat_tr <- trim_osmdata(dat, bounding, exclude = FALSE)  # Returns all buildings that intersect with the specified area
-            
+
             warning("the bounding box is used when poly is of type 'character'")
-            
+
         } else if (class(poly) == "SpatialPolygonsDataFrame") {
             if (buff_epsg == 4326) {
                 proj4string(poly) <- CRS("+init=epsg:4326")
                 countries_for_buff <- st_as_sf(poly)
                 pc <- spTransform(poly, CRS("+init=epsg:3347"))
                 countries_buff <- st_buffer(countries_for_buff, buff_dist)
-                
+
                 if (is.null(value)) {
                   dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
                 } else {
                   dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
                 }
-                
+
             } else {
                 suppressWarnings({
                   CRS.new <- CRS(paste0("+init=epsg:", buff_epsg))
@@ -246,32 +246,32 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
                 CRS.new <- CRS("+init=epsg:4326")
                 countries_buff <- spTransform(countries_buff, CRS.new)
                 suppressWarnings({
-                  
+
                   if (is.null(value)) {
                     dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
                   } else {
                     dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key, value = value) %>% osmdata_sf()  ## Returns all within the bounding box
                   }
-                  
+
                 })
             }
-            
+
             dat_tr_ex <- trim_osmdata(dat, countries_buff, exclude = TRUE)  # Returns all buildings that are fully within the specified area
             dat_tr <- trim_osmdata(dat, countries_buff, exclude = FALSE)  # Returns all buildings that intersect with the specified area
             bounding <- countries_buff
         } else {
             warning("poly must be of type 'character' or 'SpatialPolygonsDataFrame'")
         }
-        
+
     } else {
         stop("boundary must be 0,1,2 which respectively refer to exact, bounding box and buffer.")
     }
-    
+
     if (join_type == "within") {
-        obj <- dat_tr_ex[[data_return]]
+        obj <- dat_tr_ex[data_return]
         obj_for_sampling <- data.frame(NA, NA)
         names(obj_for_sampling) <- c("osm_id", "geometry")
-        
+
         for (i in 1:length(data_return)) {
             if (nrow(as.data.frame(obj[i])) == 0) {
             } else {
@@ -282,12 +282,12 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
         obj <- as.data.frame(obj_for_sampling[!duplicated(obj_for_sampling$osm_id), ])
         obj <- obj[-1, ]
         obj <- sf::st_as_sf(obj)
-        
+
     } else if (join_type == "intersect") {
         obj <- dat_tr[data_return]
         obj_for_sampling <- data.frame(NA, ncol = 2)
         names(obj_for_sampling) <- c("osm_id", "geometry")
-        
+
         for (i in 1:length(data_return)) {
             if (nrow(as.data.frame(obj[i])) == 0) {
             } else {
@@ -298,11 +298,11 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
         obj <- as.data.frame(obj_for_sampling[!duplicated(obj_for_sampling), ])
         obj <- obj[-1, ]
         obj <- sf::st_as_sf(obj)
-        
+
     } else {
         stop("join_type must be 'within' or 'intersect'")
     }
-    
+
     if (is.null(type)) {
         stop("\n 'type' must be provided")
     }
@@ -312,7 +312,7 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
     if (type == "discrete") {
         obj.origin <- obj
         poly.origin <- poly
-        if (is.null(obj)) 
+        if (is.null(obj))
             stop("\n'obj' must be provided")
         if (!inherits(obj, "SpatialPointsDataFrame")) {
             if (!inherits(obj, "SpatialPoints")) {
@@ -331,10 +331,10 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
             poly <- sf::st_convex_hull(sf::st_union(obj))
         }
         if (length(size) > 0) {
-            if (!is.numeric(size) | size <= 0) 
+            if (!is.numeric(size) | size <= 0)
                 stop("\n 'size' must be a positive integer")
         }
-        if (size >= dim(obj)[1]) 
+        if (size >= dim(obj)[1])
             stop("\n 'size' must be less than the total
            number of locations to sample from")
         if (size == 1) {
@@ -353,21 +353,21 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
             res <- sf::as_Spatial(xy.sample, "Spatial")
         }
     }
-    
-    
+
+
     if (type == "continuum") {
         if (is.null(poly)) {
             stop("\n Provide polygon in which to generate sample points")
         }
         if (!is.null(poly)) {
             poly.origin <- poly
-            if (!inherits(poly, "SpatialPolygonsDataFrame")) 
-                if (!inherits(poly, "SpatialPolygons")) 
-                  if (!inherits(poly, "Polygons")) 
-                    if (!inherits(poly, "Polygon")) 
-                      if (!inherits(poly, "sfc_POLYGON")) 
-                        if (!inherits(poly, "sfc")) 
-                          if (!inherits(poly, "sf")) 
+            if (!inherits(poly, "SpatialPolygonsDataFrame"))
+                if (!inherits(poly, "SpatialPolygons"))
+                  if (!inherits(poly, "Polygons"))
+                    if (!inherits(poly, "Polygon"))
+                      if (!inherits(poly, "sfc_POLYGON"))
+                        if (!inherits(poly, "sfc"))
+                          if (!inherits(poly, "sf"))
                             stop("\n 'poly' must be of class 'sp' or 'sf'")
         }
         if (inherits(poly, "Spatial")) {
@@ -375,7 +375,7 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
         } else {
             plot.poly <- poly
         }
-        
+
         st.poly <- sf::st_coordinates(plot.poly)[, c(1:2)]
         xy.sample <- matrix(csr(st.poly, 1), 1, 2)
         for (i in 2:size) {
@@ -391,46 +391,46 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
             res <- sf::as_Spatial(xy.sample, "Spatial")
         }
     }
-    
+
     if (plotit == TRUE && plotit_leaflet == FALSE) {
         par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0), las = 0)
         if (type == "discrete") {
             if (class(obj.origin)[1] == "sf") {
-                plot(st_geometry(obj.origin), pch = 19, col = "yellow", axes = TRUE, xlab = "longitude", ylab = "lattitude", 
-                  font.main = 3, cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points", 
+                plot(st_geometry(obj.origin), pch = 19, col = "yellow", axes = TRUE, xlab = "longitude", ylab = "lattitude",
+                  font.main = 3, cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points",
                     sep = " "))
             } else {
-                plot(obj.origin, pch = 19, col = "yellow", axes = TRUE, xlab = "longitude", ylab = "lattitude", font.main = 3, 
+                plot(obj.origin, pch = 19, col = "yellow", axes = TRUE, xlab = "longitude", ylab = "lattitude", font.main = 3,
                   cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points", sep = " "))
             }
             plot(st_geometry(xy.sample), pch = 19, cex = 0.25, col = 1, add = TRUE)
         } else {
-            plot(st_geometry(plot.poly), pch = 19, col = 1, axes = TRUE, xlab = "longitude", ylab = "lattitude", font.main = 3, 
-                cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points", sep = " "), xlim = c(range(st.poly[, 
+            plot(st_geometry(plot.poly), pch = 19, col = 1, axes = TRUE, xlab = "longitude", ylab = "lattitude", font.main = 3,
+                cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points", sep = " "), xlim = c(range(st.poly[,
                   1])), ylim = c(range(st.poly[, 2])))
             plot(st_geometry(xy.sample), col = "yellow", add = TRUE)
         }
     }
-    
+
     if (plotit_leaflet == TRUE) {
         par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0), las = 0)
         if (type == "discrete") {
             if (class(obj.origin)[1] == "sf") {
                 st_crs(obj.origin) = 4326
-                print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"), 
-                  alpha = 0.3) + mapview(st_geometry(obj.origin), add = TRUE, layer.name = c("All Locations"), color = c("black")) + 
+                print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
+                  alpha = 0.3) + mapview(st_geometry(obj.origin), add = TRUE, layer.name = c("All Locations"), color = c("black")) +
                   mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"), color = c("black")))
             } else {
-                print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"), 
-                  alpha = 0.3) + mapview(obj.origin, add = TRUE, layer.name = c("All Locations"), color = c("black")) + mapview(st_geometry(xy.sample), 
+                print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
+                  alpha = 0.3) + mapview(obj.origin, add = TRUE, layer.name = c("All Locations"), color = c("black")) + mapview(st_geometry(xy.sample),
                   add = TRUE, layer.name = c("Sample Locations"), color = c("black")))
             }
         } else {
-            print(mapview((bounding), add = TRUE, layer.name = c("Boundary"), color = c("black"), alpha = 0.3) + mapview(st_geometry(xy.sample), 
+            print(mapview((bounding), add = TRUE, layer.name = c("Boundary"), color = c("black"), alpha = 0.3) + mapview(st_geometry(xy.sample),
                 add = TRUE, layer.name = c("Sample Locations"), color = c("black")))
         }
     }
-    
+
     if (type == "discrete") {
         xy.sample_df <- as.data.frame(xy.sample)
         obj.origin_df <- as.data.frame(obj.origin)
@@ -447,7 +447,7 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
         suppressWarnings({
             results <- cbind(results, obj.origin %>% st_centroid() %>% st_geometry())
         })
-        results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>% matrix(ncol = 2, byrow = TRUE) %>% as_tibble() %>% 
+        results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>% matrix(ncol = 2, byrow = TRUE) %>% as_tibble() %>%
             setNames(c("centroid_lon", "centroid_lat")))
         results <- results[, !(names(results) %in% c("geometry"))]
         assign("results", results, envir = .GlobalEnv)
