@@ -457,15 +457,15 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
             if (class(obj.origin)[1] == "sf") {
                 print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
                               alpha = 0.3, label = "Boundary") + mapview(st_geometry(obj.origin), add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) +
-                          mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), label = xy.sample$osm_id, lwd = 4))
+                          mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), label = xy.sample$osm_id, lwd = 2))
             } else {
                 print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
                               alpha = 0.3, label = "Boundary") + mapview(obj.origin, add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) + mapview(st_geometry(xy.sample),
-                                                                                                                                                                       add = TRUE, layer.name = c("Sample Locations"), color = c("yellow") , lwd = 4, label = xy.sample$osm_id))
+                                                                                                                                                                       add = TRUE, layer.name = c("Sample Locations"), color = c("yellow") , lwd = 2, label = xy.sample$osm_id))
             }
         } else {
             print(mapview((bounding), add = TRUE, layer.name = c("Boundary"), color = c("black"), alpha = 0.3, label = "Boundary") + mapview(st_geometry(xy.sample),
-                                                                                                                                             add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), label = xy.sample$osm_id , lwd = 4))
+                                                                                                                                             add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), label = xy.sample$osm_id , lwd = 2))
         }
     }
 
