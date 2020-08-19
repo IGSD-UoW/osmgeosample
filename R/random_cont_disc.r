@@ -451,20 +451,21 @@ random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_r
 
     if (plotit_leaflet == TRUE) {
         par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0), las = 0)
+        st_crs(xy.sample) = 4326
+        st_crs(obj.origin) = 4326
         if (type == "discrete") {
             if (class(obj.origin)[1] == "sf") {
-                st_crs(obj.origin) = 4326
                 print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
                               alpha = 0.3, label = "Boundary") + mapview(st_geometry(obj.origin), add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) +
-                          mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), label = xy.sample$osm_id))
+                          mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), label = xy.sample$osm_id, lwd = 4))
             } else {
                 print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
                               alpha = 0.3, label = "Boundary") + mapview(obj.origin, add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) + mapview(st_geometry(xy.sample),
-                                                                                                                                                                       add = TRUE, layer.name = c("Sample Locations"), size = 4, color = c("yellow"), label = xy.sample$osm_id))
+                                                                                                                                                                       add = TRUE, layer.name = c("Sample Locations"), color = c("yellow") , lwd = 4, label = xy.sample$osm_id))
             }
         } else {
             print(mapview((bounding), add = TRUE, layer.name = c("Boundary"), color = c("black"), alpha = 0.3, label = "Boundary") + mapview(st_geometry(xy.sample),
-                                                                                                                                             add = TRUE, layer.name = c("Sample Locations"), size = 4, color = c("yellow"), label = xy.sample$osm_id))
+                                                                                                                                             add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), label = xy.sample$osm_id , lwd = 4))
         }
     }
 
