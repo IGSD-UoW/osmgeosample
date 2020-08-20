@@ -1,6 +1,5 @@
 ##' @title Spatially discrete sampling
 ##' @description Draw a spatially discrete sample from a specified set of spatial locations within a polygonal sampling region according to an \bold{"inhibitory plus close pairs"} specification.
-##' @param obj a \code{sf} or \code{sp} object where each line corresponds to a spatial location containing values of two-dimensional coordinates and, optionally, the values of one or more associated values, typically an outcome of interest and any associated covariates.
 ##' @param delta minimum permissible distance between any two locations in preliminary sample. This can be allowed to vary with number of \code{'close pairs'} if a \bold{simple inhibitory} design is compared to one of the \bold{inhibitory plus close pairs} design.
 ##' @param delta.fix 'logical' specifies whether \code{'delta'} is fixed or allowed to vary with number of close pairs \eqn{k}. Default is \code{delta.fix = FALSE}.
 ##' @param k number of close-pair locations in the sample. Must be an integer between 0 and \code{size}/2.

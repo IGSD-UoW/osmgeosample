@@ -62,8 +62,6 @@ discrete.inhibit.sample(
 \item{ntries}{number of rejected proposals after which the algorithm terminates.}
 
 \item{poly}{'optional', a \code{sf} or \code{sp} polygon object in which the design sits. The default is the bounding box of points given by \code{obj}.}
-
-\item{obj}{a \code{sf} or \code{sp} object where each line corresponds to a spatial location containing values of two-dimensional coordinates and, optionally, the values of one or more associated values, typically an outcome of interest and any associated covariates.}
 }
 \value{
 a list with the following four components:
