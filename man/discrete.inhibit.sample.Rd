@@ -14,7 +14,6 @@ discrete.inhibit.sample(
   buff_dist = 0,
   buff_epsg = 4326,
   join_type = "within",
-  dis_or_cont,
   sample_size,
   plotit = TRUE,
   plotit_leaflet = TRUE,
@@ -43,8 +42,6 @@ discrete.inhibit.sample(
 \item{buff_epsg}{if \code{boundary = 2}) then this value determines the local geographic grid reference so that the buffer can be calculated in meters. The default is  \code{buff_epsg = 4326}) which will use decimal degrees instead of meters. As an example, 27700 relates to the British National Grid.}
 
 \item{join_type}{aas}
-
-\item{dis_or_cont}{random sampling, a choice of either \code{'discrete'}, from a set of \eqn{N} potential sampling points or \code{'continuum'} from independent, compeletely random points.}
 
 \item{sample_size}{a non-negative integer giving the total number of locations to be sampled.}
 
