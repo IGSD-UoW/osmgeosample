@@ -593,70 +593,55 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
 
   if (plotit == TRUE && plotit_leaflet == FALSE) {
     par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0), las = 0)
-    if (type == "discrete") {
-      if (class(obj.origin)[1] == "sf") {
-        plot(st_geometry(obj.origin), pch = 19, col = "yellow", axes = TRUE, xlab = "longitude", ylab = "lattitude",
-             font.main = 3, cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points",
-                                                                            sep = " "))
-      } else {
-        plot(obj.origin, pch = 19, col = "yellow", axes = TRUE, xlab = "longitude", ylab = "lattitude", font.main = 3,
-             cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points", sep = " "))
-      }
-      plot(st_geometry(xy.sample), pch = 19, cex = 0.25, col = 1, add = TRUE)
+
+    if (class(obj.origin)[1] == "sf") {
+      plot(st_geometry(obj.origin), pch = 19, col = "yellow", axes = TRUE, xlab = "longitude", ylab = "lattitude",
+           font.main = 3, cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points",
+                                                                          sep = " "))
     } else {
-      plot(st_geometry(plot.poly), pch = 19, col = 1, axes = TRUE, xlab = "longitude", ylab = "lattitude", font.main = 3,
-           cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points", sep = " "), xlim = c(range(st.poly[,
-                                                                                                                                         1])), ylim = c(range(st.poly[, 2])))
-      plot(st_geometry(xy.sample), col = "yellow", add = TRUE)
+      plot(obj.origin, pch = 19, col = "yellow", axes = TRUE, xlab = "longitude", ylab = "lattitude", font.main = 3,
+           cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,", size, "points", sep = " "))
     }
+    plot(st_geometry(xy.sample), pch = 19, cex = 0.25, col = 1, add = TRUE)
+
   }
 
   if (plotit_leaflet == TRUE) {
     par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0), las = 0)
     st_crs(xy.sample) = 4326
     st_crs(obj.origin) = 4326
-    if (type == "discrete") {
-      if (class(obj.origin)[1] == "sf") {
-        print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
-                      alpha = 0.3, label = "Boundary") + mapview(st_geometry(obj.origin), add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) +
-                mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), label = xy.sample$osm_id, lwd = 2))
-      } else {
-        print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
-                      alpha = 0.3, label = "Boundary") + mapview(obj.origin, add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) + mapview(st_geometry(xy.sample),
-                                                                                                                                                               add = TRUE, layer.name = c("Sample Locations"), color = c("yellow") , lwd = 2, label = xy.sample$osm_id))
-      }
+
+    if (class(obj.origin)[1] == "sf") {
+      print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
+                    alpha = 0.3, label = "Boundary") + mapview(st_geometry(obj.origin), add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) +
+              mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), label = xy.sample$osm_id, lwd = 2))
     } else {
-      print(mapview((bounding), add = TRUE, layer.name = c("Boundary"), color = c("black"), alpha = 0.3, label = "Boundary") + mapview(st_geometry(xy.sample),
-                                                                                                                                       add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), label = xy.sample$osm_id , lwd = 2))
+      print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
+                    alpha = 0.3, label = "Boundary") + mapview(obj.origin, add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) + mapview(st_geometry(xy.sample),
+                                                                                                                                                             add = TRUE, layer.name = c("Sample Locations"), color = c("yellow") , lwd = 2, label = xy.sample$osm_id))
     }
+
   }
 
-  if (type == "discrete") {
-    xy.sample_df <- as.data.frame(xy.sample)
-    obj.origin_df <- as.data.frame(obj.origin)
-    xy.sample_df <- xy.sample_df[, !(names(xy.sample_df) %in% c("geometry"))]
-    xy.sample_df <- as.data.frame(xy.sample_df)
-    obj.origin_df <- obj.origin_df[, !(names(obj.origin_df) %in% c("geometry"))]
-    obj.origin_df <- as.data.frame(obj.origin_df)
-    xy.sample_df$inSample <- 1
-    names(xy.sample_df) <- c("osm_id", "inSample")
-    names(obj.origin_df) <- "osm_id"
-    results <- merge(obj.origin_df, xy.sample_df, by = "osm_id", all.x = TRUE)
-    # results<-results[, -grep('.y', colnames(results))]
-    results[is.na(results$inSample), "inSample"] <- 0
-    suppressWarnings({
-      results <- cbind(results, obj.origin %>% st_centroid() %>% st_geometry())
-    })
-    results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>% matrix(ncol = 2, byrow = TRUE) %>% as_tibble() %>%
-                       setNames(c("centroid_lon", "centroid_lat")))
-    results <- results[, !(names(results) %in% c("geometry"))]
-    assign("results", results, envir = .GlobalEnv)
-  } else {
-    xy.sample_coords <- xy.sample %>% st_cast("MULTIPOINT") %>% st_cast("POINT")
-    xy.sample_coords <- st_coordinates(xy.sample_coords)
-    xy.sample_coords <- (cbind(c(1:nrow(xy.sample_coords)), xy.sample_coords))
-    colnames(xy.sample_coords) <- c("id", "lat", "long")
-    assign("results", xy.sample_coords, envir = .GlobalEnv)
-  }
+
+  xy.sample_df <- as.data.frame(xy.sample)
+  obj.origin_df <- as.data.frame(obj.origin)
+  xy.sample_df <- xy.sample_df[, !(names(xy.sample_df) %in% c("geometry"))]
+  xy.sample_df <- as.data.frame(xy.sample_df)
+  obj.origin_df <- obj.origin_df[, !(names(obj.origin_df) %in% c("geometry"))]
+  obj.origin_df <- as.data.frame(obj.origin_df)
+  xy.sample_df$inSample <- 1
+  names(xy.sample_df) <- c("osm_id", "inSample")
+  names(obj.origin_df) <- "osm_id"
+  results <- merge(obj.origin_df, xy.sample_df, by = "osm_id", all.x = TRUE)
+  # results<-results[, -grep('.y', colnames(results))]
+  results[is.na(results$inSample), "inSample"] <- 0
+  suppressWarnings({
+    results <- cbind(results, obj.origin %>% st_centroid() %>% st_geometry())
+  })
+  results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>% matrix(ncol = 2, byrow = TRUE) %>% as_tibble() %>%
+                     setNames(c("centroid_lon", "centroid_lat")))
+  results <- results[, !(names(results) %in% c("geometry"))]
+  assign("results", results, envir = .GlobalEnv)
+
 }
-
