@@ -77,6 +77,7 @@
 
 ###########################################
 
+
 discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = NULL,
                                      data_return = c("osm_polygons", "osm_points", "osm_multipolygons","multilines", "lines"),
                                      boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", dis_or_cont, sample_size,
@@ -84,7 +85,6 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
                                      zeta, ntries = 10000, poly = NULL) {
 
   poly <- bounding_geom
-  type <- dis_or_cont
   size <- sample_size
 
   if (is.null(key)) {
@@ -189,7 +189,6 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
       if (buff_epsg == 4326) {
         poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1,
                                                                                                                       2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
-
         poly <- as.data.frame(poly)
         colnames(poly) <- c("lat", "lon")
         bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>%
@@ -404,6 +403,15 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
 
 
 
+
+
+
+
+
+
+
+
+
   obj.origin <- obj
   if(!inherits(obj, 'SpatialPointsDataFrame')){
     if(!inherits(obj, 'SpatialPoints')){
@@ -502,19 +510,24 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
     N   <- dim(res1)[1]
     index  <- 1:N
     index.sample  <- sample(index, 1, replace = FALSE)
-    xy.sample  <- res1[index.sample,]
+    xy.sample<- sf::st_as_sf(res1[index.sample,], coords = c("X", "Y"))
     for (i in 2:size){
       dmin  <- 0
       iter <- 1
-      while (dmin < dsq){
+      while (as.numeric(dmin) < dsq){
         take <- sample(index, 1)
         iter <- iter+1
-        dvec<-(res1[take,1]-xy.sample[,1])^2+(res1[take,2]-xy.sample[,2])^2
+        st_crs(xy.sample) = 4326
+
+        res1take<- sf::st_as_sf(res1[take,], coords = c("X", "Y"))
+        st_crs(res1take) = 4326
+        dvec<-st_distance(res1take, xy.sample, by_element = TRUE)
+        #dvec<-(res1[take,1]-xy.sample[,1])^2+(res1[take,2]-xy.sample[,2])^2
         dmin<-min(dvec)
         if(iter == ntries)
           break
       }
-      xy.sample[i,]  <- res1[take,]
+      xy.sample[i,]  <- res1take
       num <- dim(xy.sample)[1]
       if(iter == ntries && dim(xy.sample)[1] < size){
         warning("\n For the given 'delta' and 'size', only ", num,
@@ -539,8 +552,15 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
     if(cp.criterion == "cp.neighb"){
       for (j in 1:k) {
         take1<-take[j,1]; take2<-take[j,2]
-        xy1<-as.numeric(c(xy.sample[take1,]))
-        dvec<-(res1[,1]-xy1[1])^2+(res1[,2]-xy1[2])^2
+        #xy1<-as.numeric(c(xy.sample[take1,]))
+
+        xy1<- sf::st_as_sf(xy.sample[take1,], coords = c("X", "Y"))
+        res1take<- sf::st_as_sf(res1, coords = c("X", "Y"))
+        st_crs(res1take) = 4326
+        xy1 <- st_transform(xy1, 4326)
+        st_crs(xy1) = 4326
+        dvec<-st_distance(res1take, xy1, by_element = TRUE)
+        #dvec<-(res1[,1]-xy1[1])^2+(res1[,2]-xy1[2])^2
         neighbour<-order(dvec)[2]
         xy.sample[take2,]<-res1[neighbour,]
       }
