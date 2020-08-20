@@ -10,7 +10,6 @@
 ##' @param poly 'optional', a \code{sf} or \code{sp} polygon object in which the design sits. The default is the bounding box of points given by \code{obj}.
 ##' @param plotit 'logical' specifying if graphical output is required. Default is \code{plotit = TRUE}.
 ##' @param bounding_geom a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, optionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.
-##' @param dis_or_cont random sampling, a choice of either \code{'discrete'}, from a set of \eqn{N} potential sampling points or \code{'continuum'} from independent, compeletely random points.
 ##' @param sample_size a non-negative integer giving the total number of locations to be sampled.
 ##' @param plotit 'logical' specifying if graphical output is required. Default is \code{plotit = TRUE}.
 ##' @param plotit_leaflet 'logical' specifying if leaflet (html) graphical output is required. This is prioritised over plotit if both are selected. Default is \code{plotit_leaflet = TRUE}.
@@ -74,11 +73,16 @@
 ##' @import dplyr
 ##' @export
 
+
+
 ###########################################
 
-osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, data_return = c("osm_polygons", "osm_points", "osm_multipolygons",
-                                                                                              "multilines", "lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", dis_or_cont, sample_size,
-                              plotit = TRUE, plotit_leaflet = TRUE) {
+discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = NULL,
+                                     data_return = c("osm_polygons", "osm_points", "osm_multipolygons","multilines", "lines"),
+                                     boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within", dis_or_cont, sample_size,
+                                     plotit = TRUE, plotit_leaflet = TRUE, delta, delta.fix = FALSE, k = 0, cp.criterion = NULL,
+                                     zeta, ntries = 10000, poly = NULL) {
+
   poly <- bounding_geom
   type <- dis_or_cont
   size <- sample_size
@@ -379,94 +383,213 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, da
     stop("join_type must be 'within' or 'intersect'")
   }
 
-  if (is.null(type)) {
-    stop("\n 'type' must be provided")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  obj.origin <- obj
+  if(!inherits(obj, 'SpatialPointsDataFrame')){
+    if(!inherits(obj, 'SpatialPoints')){
+      if(!inherits(obj,"sf") & !inherits(obj, "data.frame")){
+        stop("\n 'obj' must be of class 'sp' or 'sf'")
+      }
+    }
   }
-  if (type != "discrete" & type != "continuum") {
-    stop("'type' must be either 'discrete' or 'continuum'")
+  if(inherits(obj, 'Spatial')){
+    obj <- sf::st_as_sf(obj)
   }
-  if (type == "discrete") {
-    obj.origin <- obj
+  if (any(!is.numeric(sf::st_coordinates(obj))))
+    stop("\n non-numerical values in the coordinates")
+  if(any(is.na(sf::st_geometry(obj)))){
+    warning("\n NA's not allowed in 'obj' coordinates")
+    obj <- obj[complete.cases(obj), , drop = FALSE]
+    warning("\n eliminating rows with NA's")
+  }
+  if(!is.null(poly)){
     poly.origin <- poly
-    if (is.null(obj))
-      stop("\n'obj' must be provided")
-    if (!inherits(obj, "SpatialPointsDataFrame")) {
-      if (!inherits(obj, "SpatialPoints")) {
-        if (!inherits(obj, "sf") & !inherits(obj, "data.frame")) {
-          stop("\n 'obj' must be of class 'sp' or 'sf'")
+    if(!inherits(poly, 'SpatialPolygonsDataFrame'))
+      if(!inherits(poly, 'SpatialPolygons'))
+        if(!inherits(poly, 'Polygons'))
+          if(!inherits(poly, 'Polygon'))
+            if(!inherits(poly, 'sfc_POLYGON'))
+              if(!inherits(poly, 'sfc'))
+                if(!inherits(poly, 'sf'))
+                  stop("\n 'poly' must be of class 'sp' or 'sf'")
+  }
+  if (inherits(poly, 'Spatial')){
+    poly <- st_as_sf(poly)
+  } else{
+    poly <- poly
+    if (!identical(st_crs(obj), st_crs(poly)))
+      stop("\n 'obj' and 'poly' are not in the same coordinate system")
+  }
+  if(length(size) > 0){
+    if(!is.numeric(size) | size <= 0)
+      stop("\n 'size' must be a positive integer")
+    else
+      orig.size <- size
+  }
+  if(length(k) > 0){
+    if(k > 0){
+      if(!is.numeric(k) | k < 0)
+        stop("\n 'k' must be a positive integer >= 0")
+      if (k > size/2)
+        stop("\n 'k' must be between 0 and size/2")
+      if(is.null(cp.criterion))
+        stop("\n Close pairs selection criterion 'cp.criterion' must be provided")
+      if (cp.criterion != "cp.zeta" & cp.criterion != "cp.neighb")
+        stop("\n 'cp.criterion' must be either 'cp.neighb' or 'cp.zeta'")
+    }
+  }
+  if(length(delta) > 0){
+    if(!is.numeric(delta) | delta < 0)
+      stop("\n 'delta' must be a positive integer >= 0")
+  }
+  if(delta == 0){
+    if(k>0){
+      stop("\n close pairs not allowed for completely random sample")
+    } else {
+      res1 <- as.data.frame(unique(st_coordinates(obj)))
+      N   <- dim(res1)[1]
+      index  <- 1:N
+      index.sample  <- sample(index, size, replace = FALSE)
+      xy.sample  <- res1[index.sample,]; dim(xy.sample) #to remove this
+    }
+  } else {
+    delta.orig <- delta
+    if (delta.fix == TRUE){
+      delta = delta
+    } else {
+      delta <- delta * sqrt(size/(size - k));delta
+    }
+    dsq  <- delta*delta; dsq
+    if (is.null(poly)){
+      poly.shape <- sf::st_convex_hull(st_union(obj))
+    } else {
+      poly.shape <- poly
+    }
+    if(!is.infinite(size) && (size * pi * dsq/4 > as.numeric(sf::st_area(poly.shape))))
+      stop("\n Polygon is too small to fit ", size, " points, with 'k' = ", k, " close pairs,",
+           " at minimum separation ", round(delta, digits = 4))
+
+    # "XnotinF" Function
+    xnotiny  <- function(a1,a2)
+    {
+      a1.vec <- apply(a1, 1, paste, collapse = "")
+      a2.vec <- apply(a2, 1, paste, collapse = "")
+      a1.without.a2.rows <- as.data.frame(a1[!a1.vec %in% a2.vec,])
+      return(a1.without.a2.rows)
+    }
+
+    res1 <- as.data.frame(unique(sf::st_coordinates(obj)))
+    N   <- dim(res1)[1]
+    index  <- 1:N
+    index.sample  <- sample(index, 1, replace = FALSE)
+    xy.sample  <- res1[index.sample,]
+    for (i in 2:size){
+      dmin  <- 0
+      iter <- 1
+      while (dmin < dsq){
+        take <- sample(index, 1)
+        iter <- iter+1
+        dvec<-(res1[take,1]-xy.sample[,1])^2+(res1[take,2]-xy.sample[,2])^2
+        dmin<-min(dvec)
+        if(iter == ntries)
+          break
+      }
+      xy.sample[i,]  <- res1[take,]
+      num <- dim(xy.sample)[1]
+      if(iter == ntries && dim(xy.sample)[1] < size){
+        warning("\n For the given 'delta' and 'size', only ", num,
+                " inhibitory sample locations placed out of ", size,
+                ". Consider revising 'delta' and/or 'size'")
+        break
+      }
+    }
+  }
+
+  if (k>0) {
+    k.origin <- k
+    size <- dim(unique(xy.sample))[1]
+    reduction <- ((orig.size - size)/orig.size)
+    if (k > size/2){
+      k <- floor(k*(1-reduction))
+      warning("\n For the given parameters, only ", k,
+              " close pairs could be placed out of ", k.origin)
+    }
+    take<-matrix(sample(1:size,2*k,replace=FALSE),k,2)
+    xy.sample <- unique(xy.sample)
+    if(cp.criterion == "cp.neighb"){
+      for (j in 1:k) {
+        take1<-take[j,1]; take2<-take[j,2]
+        xy1<-as.numeric(c(xy.sample[take1,]))
+        dvec<-(res1[,1]-xy1[1])^2+(res1[,2]-xy1[2])^2
+        neighbour<-order(dvec)[2]
+        xy.sample[take2,]<-res1[neighbour,]
+      }
+    }
+    if(cp.criterion == "cp.zeta"){
+      if(!is.numeric(zeta) | zeta < 0)
+        stop("\n 'zeta' must be between > 0 and 'delta'/2")
+      if(zeta < delta.orig*0.005)
+        stop("\n 'zeta' too small.")
+      if(zeta > delta.orig/2)
+        stop("\n 'zeta' must be between > 0 and 'delta'/2")
+      for (j in 1:k){
+        take1<-take[j,1]; take2<-take[j,2]
+        xy1<-as.numeric(c(xy.sample[take1,]))
+        dvec<-(res1[,1]-xy1[1])^2+(res1[,2]-xy1[2])^2
+        z.vec <- which(dvec > 0 & dvec <= zeta*0.25)
+        z.vec.pts <- (1:dim(res1)[1])[z.vec]
+        avail.locs <- xnotiny(res1[z.vec,], xy.sample)
+        if (nrow(avail.locs) > 0) {
+          rep.loc <- sample(1:dim(avail.locs)[1],1,replace = F)
+          xy.sample[take2,]<-avail.locs[rep.loc,]
+        } else {
+          warning("\n One or more locations do not have
+                      eligible 'close pairs'")
+          break
         }
       }
     }
-    if (inherits(obj, "Spatial")) {
-      obj <- sf::st_as_sf(obj)
-    }
-    # if (any(!is.numeric(sf::st_coordinates(obj)))) stop('\n non-numerical values in 'obj' coordinates')
-    # if(any(is.na(sf::st_coordinates(obj)))){ warning('\n NA's not allowed in 'obj' coordinates') obj <-
-    # obj[complete.cases(st_coordinates(obj)), , drop = FALSE] warning('\n eliminating rows with NA's') }
-    if (is.null(poly)) {
-      poly <- sf::st_convex_hull(sf::st_union(obj))
-    }
-    if (length(size) > 0) {
-      if (!is.numeric(size) | size <= 0)
-        stop("\n 'size' must be a positive integer")
-    }
-    if (size >= dim(obj)[1])
-      stop("\n 'size' must be less than the total
-           number of locations to sample from")
-    if (size == 1) {
-      xy.sample <- obj[sample(1:dim(obj)[1], size, replace = FALSE), ]
-      xy.sample <- xy.sample[which(!duplicated(xy.sample$geometry)), ]
-    } else {
-      ctr <- 1
-      while (ctr < size) {
-        xy.sample <- obj[sample(1:dim(obj)[1], size, replace = FALSE), ]
-        xy.sample <- xy.sample[which(!duplicated(xy.sample$geometry)), ]
-        ctr <- dim(xy.sample)[1]
-      }
-    }
-    res <- xy.sample
-    if (class(xy.sample)[1] != class(obj.origin)[1]) {
-      res <- sf::as_Spatial(xy.sample, "Spatial")
-    }
   }
 
+  xy.sample <- sf::st_as_sf(xy.sample, coords = c("X", "Y"))
+  st_crs(xy.sample) <- st_crs(obj)
+  xy.sample <- obj[xy.sample, ]
 
-  if (type == "continuum") {
-    if (is.null(poly)) {
-      stop("\n Provide polygon in which to generate sample points")
-    }
-    if (!is.null(poly)) {
-      poly.origin <- poly
-      if (!inherits(poly, "SpatialPolygonsDataFrame"))
-        if (!inherits(poly, "SpatialPolygons"))
-          if (!inherits(poly, "Polygons"))
-            if (!inherits(poly, "Polygon"))
-              if (!inherits(poly, "sfc_POLYGON"))
-                if (!inherits(poly, "sfc"))
-                  if (!inherits(poly, "sf"))
-                    stop("\n 'poly' must be of class 'sp' or 'sf'")
-    }
-    if (inherits(poly, "Spatial")) {
-      plot.poly <- sf::st_as_sf(poly)
-    } else {
-      plot.poly <- poly
-    }
 
-    st.poly <- sf::st_coordinates(plot.poly)[, c(1:2)]
-    xy.sample <- matrix(csr(st.poly, 1), 1, 2)
-    for (i in 2:size) {
-      xy.try <- c(csr(st.poly, 1))
-      xy.sample <- rbind(xy.sample, xy.try)
-    }
-    xy.sample <- xy.sample %>% as.data.frame %>% sf::st_as_sf(coords = c(1, 2))
-    res <- xy.sample <- sf::st_as_sf(xy.sample)
-    if (class(poly.origin)[1] == "SpatialPolygonsDataFrame") {
-      poly.origin <- st_as_sf(poly.origin)
-    }
-    if (class(xy.sample)[1] != class(poly.origin)[1]) {
-      res <- sf::as_Spatial(xy.sample, "Spatial")
-    }
-  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   if (plotit == TRUE && plotit_leaflet == FALSE) {
     par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0), las = 0)

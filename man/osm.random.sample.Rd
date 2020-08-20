@@ -29,11 +29,11 @@ osm.random.sample(
 
 \item{data_return}{aas}
 
-\item{boundary}{aas}
+\item{boundary}{categorical variable to determine whether the exact boundary provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a buffer around the boundary \code{boundary = 2}) is used for sampling. Default is \code{boundary = 0}.}
 
-\item{buff_dist}{aas}
+\item{buff_dist}{if \code{boundary = 2}) then this value determines the size of the buffer by distance. The default is \code{buff_dist is NULL}).}
 
-\item{buff_epsg}{aas}
+\item{buff_epsg}{if \code{boundary = 2}) then this value determines the local geographic grid reference so that the buffer can be calculated in meters. The default is  \code{buff_epsg = 4326}) which will use decimal degrees instead of meters. As an example, 27700 relates to the British National Grid.}
 
 \item{join_type}{aas}
 
