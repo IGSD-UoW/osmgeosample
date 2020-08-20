@@ -2,7 +2,7 @@
 % Please edit documentation in R/osm_cont_inhibit.R
 \name{osm.contin.inhibit}
 \alias{osm.contin.inhibit}
-\title{Continuous Inhibitory sample}
+\title{OSM Continuous Inhibitory sample}
 \usage{
 osm.contin.inhibit(
   bounding_geom = NULL,
@@ -22,11 +22,11 @@ osm.contin.inhibit(
 \arguments{
 \item{bounding_geom}{a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, optionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.}
 
-\item{boundary}{aas}
+\item{boundary}{categorical variable to determine whether the exact boundary provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a buffer around the boundary \code{boundary = 2}) is used for sampling. Default is \code{boundary = 0}.}
 
-\item{buff_dist}{aas}
+\item{buff_dist}{if \code{boundary = 2}) then this value determines the size of the buffer by distance. The default is \code{buff_dist is NULL}).}
 
-\item{buff_epsg}{aas}
+\item{buff_epsg}{if \code{boundary = 2}) then this value determines the local geographic grid reference so that the buffer can be calculated in meters. The default is  \code{buff_epsg = 4326}) which will use decimal degrees instead of meters. As an example, 27700 relates to the British National Grid.}
 
 \item{sample_size}{a non-negative integer giving the total number of locations to be sampled.}
 

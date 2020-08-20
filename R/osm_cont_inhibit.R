@@ -4,9 +4,9 @@
 ##' @param sample_size a non-negative integer giving the total number of locations to be sampled.
 ##' @param plotit 'logical' specifying if graphical output is required. Default is \code{plotit = TRUE}.
 ##' @param plotit_leaflet 'logical' specifying if leaflet (html) graphical output is required. This is prioritised over plotit if both are selected. Default is \code{plotit_leaflet = TRUE}.
-##' @param boundary aas
-##' @param buff_dist aas
-##' @param buff_epsg aas
+##' @param boundary categorical variable to determine whether the exact boundary provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a buffer around the boundary \code{boundary = 2}) is used for sampling. Default is \code{boundary = 0}.
+##' @param buff_dist if \code{boundary = 2}) then this value determines the size of the buffer by distance. The default is \code{buff_dist is NULL}).
+##' @param buff_epsg if \code{boundary = 2}) then this value determines the local geographic grid reference so that the buffer can be calculated in meters. The default is  \code{buff_epsg = 4326}) which will use decimal degrees instead of meters. As an example, 27700 relates to the British National Grid.
 ##' @param delta minimum permissible distance between any two locations in preliminary sample. This can be allowed to vary with the number of \code{'close pairs'} if a \bold{simple inhibitory} design is compared to one of the \bold{inhibitory plus close pairs} design.
 ##' @param delta.fix 'logical' specifies whether \code{delta} is fixed or allowed to vary with number of close pairs \eqn{k}. Default is \code{delta.fix = FALSE}.
 ##' @param k number of locations in preliminary sample to be replaced by near neighbours of other preliminary sample locations to form \code{close pairs} (integer between 0 and \code{size/2}). A \bold{simple inhibitory} deisgn is generated when \eqn{k = 0}.
@@ -74,8 +74,6 @@
 
 
 
-# library(nngeo) library('geoR') library(sp) library(sf) library(splancs) library(rgdal) library(osmdata)
-# library(processx) library(mapview) library('dplyr')
 
 ###########################################
 
