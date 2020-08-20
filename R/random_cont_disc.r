@@ -5,10 +5,10 @@
 ##' @param sample_size a non-negative integer giving the total number of locations to be sampled.
 ##' @param plotit 'logical' specifying if graphical output is required. Default is \code{plotit = TRUE}.
 ##' @param plotit_leaflet 'logical' specifying if leaflet (html) graphical output is required. This is prioritised over plotit if both are selected. Default is \code{plotit_leaflet = TRUE}.
-##' @param boundary aas
-##' @param buff_dist aas
-##' @param buff_epsg aas
-##' @param join_type aas
+##' @param boundary categorical variable to determine whether the exact boundary provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a buffer around the boundary \code{boundary = 2}) is used for sampling. Default is \code{boundary = 0}.
+##' @param buff_dist if \code{boundary = 2}) then this value determines the size of the buffer by distance. The default is \code{buff_dist is NULL}).
+##' @param buff_epsg if \code{boundary = 2}) then this value determines the local geographic grid reference so that the buffer can be calculated in meters. The default is  \code{buff_epsg = 4326}) which will use decimal degrees instead of meters. As an example, 27700 relates to the British National Grid.
+@param join_type aas
 ##' @param key aas
 ##' @param value aas
 ##' @param data_return aas
