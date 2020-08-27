@@ -54,12 +54,12 @@
 ##' @references Chipeta  M G, Terlouw D J, Phiri K S and Diggle P J. (2016). Inhibitory geostatistical designs for spatial prediction taking account of uncertain covariance structure, \emph{Enviromentrics}, pp. 1-11.
 ##' @references Diggle P J. (2014). \emph{Statistical Analysis of Spatial and Spatio-Temporal Point Patterns.} 3rd ed., Boca Raton: CRC Press
 ##' @references Diggle P J and Lophaven S. (2006). Bayesian geostatistical design, \emph{Scandinavian Journal of Statistics} \bold{33}(1) pp. 53 - 64.
+##' @references Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis code in S-Plus. Computers and Geosciences, 19, 627-655
 ##'
 ##' @author Henry J. Crosby \email{henry.crosby@warwick.ac.uk}
 ##' @author Godwin Yeboah \email{godwin.yeboah@warwick.ac.uk}
 ##' @author J. Porto De Albuquerque \email{J.Porto@warwick.ac.uk}
 ##'
-##' @references Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis code in S-Plus. Computers and Geosciences, 19, 627-655
 ##'
 ##' @import sp
 ##' @import sf
@@ -632,11 +632,11 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
 
     if (class(obj.origin)[1] == "sf") {
       print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
-                    alpha = 0.3, label = "Boundary") + mapview(st_geometry(obj.origin), add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) +
+                    alpha.regions = 0.3, label = "Boundary") + mapview(st_geometry(obj.origin), add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) +
               mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), label = xy.sample$osm_id, lwd = 2))
     } else {
       print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"), color = c("black"),
-                    alpha = 0.3, label = "Boundary") + mapview(obj.origin, add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) + mapview(st_geometry(xy.sample),
+                    alpha.regions = 0.3, label = "Boundary") + mapview(obj.origin, add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) + mapview(st_geometry(xy.sample),
                                                                                                                                                              add = TRUE, layer.name = c("Sample Locations"), color = c("yellow") , lwd = 2, label = xy.sample$osm_id))
     }
 
@@ -664,3 +664,4 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
   assign("results", results, envir = .GlobalEnv)
 
 }
+View(results)
