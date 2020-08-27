@@ -422,8 +422,8 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
   if(inherits(obj, 'Spatial')){
     obj <- sf::st_as_sf(obj)
   }
-  if (any(!is.numeric(sf::st_coordinates(obj))))
-    stop("\n non-numerical values in the coordinates")
+  if (any(!is.numeric(sf::st_coordinates(obj)))) {
+    stop("\n non-numerical values in the coordinates")}
   if(any(is.na(sf::st_geometry(obj)))){
     warning("\n NA's not allowed in 'obj' coordinates")
     obj <- obj[complete.cases(obj), , drop = FALSE]
@@ -561,7 +561,7 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
         dvec<-st_distance(res1take, xy1, by_element = TRUE)
         #dvec<-(res1[,1]-xy1[1])^2+(res1[,2]-xy1[2])^2
         neighbour<-order(dvec)[2]
-        xy.sample[take2,]<-res1[neighbour,]
+        xy.sample[take2,]<-sf::st_as_sf(res1[neighbour,], coords = c("X", "Y"))
       }
     }
     if(cp.criterion == "cp.zeta"){
