@@ -573,9 +573,13 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
         stop("\n 'zeta' must be between > 0 and 'delta'/2")
       for (j in 1:k){
         take1<-take[j,1]; take2<-take[j,2]
-        xy1<-as.numeric(c(xy.sample[take1,]))
-        dvec<-(res1[,1]-xy1[1])^2+(res1[,2]-xy1[2])^2
-        z.vec <- which(dvec > 0 & dvec <= zeta*0.25)
+        xy1<- sf::st_as_sf(xy.sample[take1,], coords = c("X", "Y"))
+        st_crs(res1take) = 4326
+        xy1 <- st_transform(xy1, 4326)
+        st_crs(xy1) = 4326
+        dvec<-st_distance(res1take, xy1, by_element = TRUE)
+        #dvec<-(res1[,1]-xy1[1])^2+(res1[,2]-xy1[2])^2
+        z.vec <- which(as.numeric(dvec) > 0 & as.numeric(dvec) <= zeta*0.25)
         z.vec.pts <- (1:dim(res1)[1])[z.vec]
         avail.locs <- xnotiny(res1[z.vec,], xy.sample)
         if (nrow(avail.locs) > 0) {
@@ -664,4 +668,6 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
   assign("results", results, envir = .GlobalEnv)
 
 }
+
+
 View(results)
