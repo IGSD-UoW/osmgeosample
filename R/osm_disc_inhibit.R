@@ -668,6 +668,3 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
   assign("results", results, envir = .GlobalEnv)
 
 }
-
-
-View(results)
