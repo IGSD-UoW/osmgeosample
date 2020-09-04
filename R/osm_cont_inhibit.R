@@ -101,8 +101,10 @@ osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0
                                                                                               1]))
       poly <- as.data.frame(poly)
       colnames(poly) <- c("lat", "lon")
-      poly <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-        summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
+      poly <- poly %>%
+        st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+        summarise(geometry = st_combine(geometry)) %>%
+        st_cast("POLYGON")
 
       warning("the bounding box is used when poly is of type 'character'")
 
@@ -120,8 +122,10 @@ osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0
                                                                                               1]))
       poly <- as.data.frame(poly)
       colnames(poly) <- c("lat", "lon")
-      poly <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-        summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
+      poly <- poly %>%
+        st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+        summarise(geometry = st_combine(geometry)) %>%
+        st_cast("POLYGON")
 
       warning("the bounding box is used when poly is of type 'character'")
 
@@ -141,9 +145,11 @@ osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0
                                                                  getbb(poly)[2, 1]))
         poly <- as.data.frame(poly)
         colnames(poly) <- c("lat", "lon")
-        bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-          summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
-        st_crs(bounding) = 4326
+        bounding <- poly %>%
+          st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+          summarise(geometry = st_combine(geometry)) %>%
+          st_cast("POLYGON")
+        st_crs(bounding) <- 4326
         poly <- bounding
         countries_for_buff <- st_as_sf(poly)
         st_transform(countries_buff, 27700)
@@ -161,9 +167,11 @@ osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0
                                                                  getbb(poly)[2, 1]))
         poly <- as.data.frame(poly)
         colnames(poly) <- c("lat", "lon")
-        bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-          summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
-        st_crs(bounding) = 4326
+        bounding <- poly %>%
+          st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+          summarise(geometry = st_combine(geometry)) %>%
+          st_cast("POLYGON")
+        st_crs(bounding) <- 4326
         poly <- bounding
         suppressWarnings({
           CRS.new <- CRS(paste0("+init=epsg:", buff_epsg))
@@ -240,7 +248,7 @@ osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0
       stop("\n Close pairs not allowed for completely
                   random sample (i.e. when 'delta' = 0)")
     if (delta == 0 && k == 0)
-      rho = NULL
+      rho <- NULL
   }
   if (length(k) > 0) {
     if (!is.numeric(k) | k < 0)
@@ -362,3 +370,5 @@ osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0
   xy.sample_coords <- (cbind(c(1:nrow(xy.sample_coords)), xy.sample_coords))
   colnames(xy.sample_coords) <- c("id", "lat", "long")
   assign("results", xy.sample_coords, envir = .GlobalEnv)
+}
+

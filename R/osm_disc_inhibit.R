@@ -1,29 +1,24 @@
 ##' @title Spatially discrete sampling
-##' @descri
-ion Draw a spatially discrete sample from a specified set of spatial locations within a polygonal sampling region according to an \bold{'inhibitory plus close pairs'} specification.
+##' @descriion Draw a spatially discrete sample from a specified set of spatial locations within a polygonal sampling region according to an \bold{'inhibitory plus close pairs'} specification.
 ##' @param delta minimum permissible distance between any two locations in preliminary sample. This can be allowed to vary with number of \code{'close pairs'} if a \bold{simple inhibitory} design is compared to one of the \bold{inhibitory plus close pairs} design.
 ##' @param delta.fix 'logical' specifies whether \code{'delta'} is fixed or allowed to vary with number of close pairs \eqn{k}. Default is \code{delta.fix = FALSE}.
 ##' @param k number of close-pair locations in the sample. Must be an integer between 0 and \code{size}/2.
 ##' @param cp.criterion criterion for choosing close pairs \eqn{k}. The \code{'cp.zeta'} criterion chooses locations not included in the initial sample, from the uniform distribution of a disk with radius \code{'zeta'} (NB: \code{zeta} argument must be provided for this criterion). The \code{'cp.neighb'} criterion chooses nearest neighbours amongst locations not included in the initial sample (\code{'zeta'} becomes trivial for \code{'cp.neighb'} criterion).
 ##' @param zeta maximum permissible distance (radius of a disk with center \eqn{x^{*}_{j}, j = 1, \ldots, k}) within which a close-pair point is placed. See \bold{Details}.
 ##' @param ntries number of rejected proposals after which the algorithm terminates.
-##' @param poly 'o
-ional', a \code{sf} or \code{sp} polygon object in which the design sits. The default is the bounding box of points given by \code{obj}.
+##' @param poly 'oional', a \code{sf} or \code{sp} polygon object in which the design sits. The default is the bounding box of points given by \code{obj}.
 ##' @param plotit 'logical' specifying if graphical output is required. Default is \code{plotit = TRUE}.
-##' @param bounding_geom a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, o
-ionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.
+##' @param bounding_geom a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, orionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.
 ##' @param sample_size a non-negative integer giving the total number of locations to be sampled.
 ##' @param plotit 'logical' specifying if graphical output is required. Default is \code{plotit = TRUE}.
 ##' @param plotit_leaflet 'logical' specifying if leaflet (html) graphical output is required. This is prioritised over plotit if both are selected. Default is \code{plotit_leaflet = TRUE}.
 ##' @param boundary categorical variable to determine whether the exact boundary provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a buffer around the boundary \code{boundary = 2}) is used for sampling. Default is \code{boundary = 0}.
 ##' @param buff_dist if \code{boundary = 2}) then this value determines the size of the buffer by distance. The default is \code{buff_dist is NULL}).
 ##' @param buff_epsg if \code{boundary = 2}) then this value determines the local geographic grid reference so that the buffer can be calculated in meters. The default is  \code{buff_epsg = 4326}) which will use decimal degrees instead of meters. As an example, 27700 relates to the British National Grid.
-##' @param join_type a text value to determine how to spatially join all features with the boundary. The o
-ions are 'within' or 'intersect'.
+##' @param join_type a text value to determine how to spatially join all features with the boundary. The options are 'within' or 'intersect'.
 ##' @param key A feature key as defined in OSM. An example is 'building'.
 ##' @param value a value for a feature key (\code{key}); can be negated with an initial exclamation mark, value = '!this', and can also be a vector, value = c ('this', 'that').
-##' @param data_return specifies what data types (as specified in OSM) you want returned. More than one can be selected. The o
-ions are 'osm_polygons', 'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.
+##' @param data_return specifies what data types (as specified in OSM) you want returned. More than one can be selected. The options are 'osm_polygons', 'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.
 ##'
 ##' @details To draw a sample of size \eqn{n} from a population of spatial locations \eqn{X_{i} : i  = 1,\ldots,N}, with the property that the distance between any two sampled locations is at least \eqn{\delta}, the function implements the following algorithm.
 ##' \itemize{
@@ -121,9 +116,12 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
     if (class(poly) == "character") {
 
       if (is.null(value)) {
-        dat <- opq(getbb(poly)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
+        dat <- opq(getbb(poly)) %>%
+          add_osm_feature(key = key) %>%
+          osmdata_sf()  ## Returns all within the bounding box
       } else {
-        dat <- opq(getbb(poly)) %>% add_osm_feature(key = key, value = value) %>%
+        dat <- opq(getbb(poly)) %>%
+          add_osm_feature(key = key, value = value) %>%
           osmdata_sf()  ## Returns all within the bounding box
       }
 
@@ -134,8 +132,10 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
 
       poly <- as.data.frame(poly)
       colnames(poly) <- c("lat", "lon")
-      bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-        summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
+      bounding <- poly %>%
+        st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+        summarise(geometry = st_combine(geometry)) %>%
+        st_cast("POLYGON")
       poly <- bounding
       dat_tr_ex <- trim_osmdata(dat, bounding, exclude = TRUE)  # Returns all buildings that are fully within the specified area
       dat_tr <- trim_osmdata(dat, bounding, exclude = FALSE)  # Returns all buildings that intersect with the specified area
@@ -145,9 +145,12 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
     } else if (class(poly) == "SpatialPolygonsDataFrame") {
 
       if (is.null(value)) {
-        dat <- opq(poly@bbox) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
+        dat <- opq(poly@bbox) %>%
+          add_osm_feature(key = key) %>%
+          osmdata_sf()  ## Returns all within the bounding box
       } else {
-        dat <- opq(poly@bbox) %>% add_osm_feature(key = key, value = value) %>%
+        dat <- opq(poly@bbox) %>%
+          add_osm_feature(key = key, value = value) %>%
           osmdata_sf()  ## Returns all within the bounding box
       }
 
@@ -163,9 +166,12 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
     if (class(poly) == "character") {
 
       if (is.null(value)) {
-        dat <- opq(getbb(poly)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
+        dat <- opq(getbb(poly)) %>%
+          add_osm_feature(key = key) %>%
+          osmdata_sf()  ## Returns all within the bounding box
       } else {
-        dat <- opq(getbb(poly)) %>% add_osm_feature(key = key, value = value) %>%
+        dat <- opq(getbb(poly)) %>%
+          add_osm_feature(key = key, value = value) %>%
           osmdata_sf()  ## Returns all within the bounding box
       }
 
@@ -176,8 +182,10 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
 
       poly <- as.data.frame(poly)
       colnames(poly) <- c("lat", "lon")
-      bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-        summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
+      bounding <- poly %>%
+        st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+        summarise(geometry = st_combine(geometry)) %>%
+        st_cast("POLYGON")
       poly <- bounding
       dat_tr_ex <- trim_osmdata(dat, bounding, exclude = TRUE)  # Returns all buildings that are fully within the specified area
       dat_tr <- trim_osmdata(dat, bounding, exclude = FALSE)  # Returns all buildings that intersect with the specified area
@@ -187,9 +195,12 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
     } else if (class(poly) == "SpatialPolygonsDataFrame") {
 
       if (is.null(value)) {
-        dat <- opq(poly@bbox) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
+        dat <- opq(poly@bbox) %>%
+          add_osm_feature(key = key) %>%
+          osmdata_sf()  ## Returns all within the bounding box
       } else {
-        dat <- opq(poly@bbox) %>% add_osm_feature(key = key, value = value) %>%
+        dat <- opq(poly@bbox) %>%
+          add_osm_feature(key = key, value = value) %>%
           osmdata_sf()  ## Returns all within the bounding box
       }
 
@@ -206,8 +217,10 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
       dat_tr <- trim_osmdata(dat, coords, exclude = FALSE)  # Returns all buildings that intersect with the specified area
       bounding <- as.data.frame(coords)
       colnames(bounding) <- c("lat", "lon")
-      bounding <- bounding %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-        summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
+      bounding <- bounding %>%
+        st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+        summarise(geometry = st_combine(geometry)) %>%
+        st_cast("POLYGON")
 
     } else {
       warning("poly must be of type 'character' or 'SpatialPolygonsDataFrame'")
@@ -225,8 +238,10 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
                                                                  getbb(poly)[2, 1]))
         poly <- as.data.frame(poly)
         colnames(poly) <- c("lat", "lon")
-        bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-          summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
+        bounding <- poly %>%
+          st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+          summarise(geometry = st_combine(geometry)) %>%
+          st_cast("POLYGON")
         st_crs(bounding) = 4326
         poly <- bounding
         countries_for_buff <- st_as_sf(poly)
@@ -238,11 +253,13 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
         bounding <- countries_buff
 
         if (is.null(value)) {
-          dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>%
+          dat <- opq(st_bbox(countries_buff)) %>%
+            add_osm_feature(key = key) %>%
             osmdata_sf()  ## Returns all within the bounding box
         } else {
-          dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key,
-                                                                  value = value) %>% osmdata_sf()  ## Returns all within the bounding box
+          dat <- opq(st_bbox(countries_buff)) %>%
+            add_osm_feature(key = key,value = value) %>%
+            osmdata_sf()  ## Returns all within the bounding box
         }
 
       } else {
@@ -253,8 +270,10 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
 
         poly <- as.data.frame(poly)
         colnames(poly) <- c("lat", "lon")
-        bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-          summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
+        bounding <- poly %>%
+          st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+          summarise(geometry = st_combine(geometry)) %>%
+          st_cast("POLYGON")
         st_crs(bounding) = 4326
         poly <- bounding
         suppressWarnings({
@@ -270,7 +289,8 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
         bounding <- countries_buff
 
         if (is.null(value)) {
-          dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>%
+          dat <- opq(st_bbox(countries_buff)) %>%
+            add_osm_feature(key = key) %>%
             osmdata_sf()  ## Returns all within the bounding box
         } else {
           dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key,
@@ -292,11 +312,13 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
         countries_buff <- st_buffer(countries_for_buff, buff_dist)
 
         if (is.null(value)) {
-          dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>%
+          dat <- opq(st_bbox(countries_buff)) %>%
+            add_osm_feature(key = key) %>%
             osmdata_sf()  ## Returns all within the bounding box
         } else {
-          dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key,
-                                                                  value = value) %>% osmdata_sf()  ## Returns all within the bounding box
+          dat <- opq(st_bbox(countries_buff)) %>%
+            add_osm_feature(key = key,value = value) %>%
+            osmdata_sf()  ## Returns all within the bounding box
         }
 
       } else {
@@ -493,7 +515,6 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
       stop("\n 'delta' must be a positive integer >= 0")
   }
 
-  ################################################################################################
   if (delta == 0) {
     if (k > 0) {
       stop("\n close pairs not allowed for completely random sample")
@@ -687,8 +708,8 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
   if (plotit_leaflet == TRUE) {
     par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
         las = 0)
-    st_crs(xy.sample) = 4326
-    st_crs(obj.origin) = 4326
+    st_crs(xy.sample) <- 4326
+    st_crs(obj.origin) <- 4326
 
     if (class(obj.origin)[1] == "sf") {
       print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"),
