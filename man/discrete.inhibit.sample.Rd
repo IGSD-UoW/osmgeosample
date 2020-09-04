@@ -103,14 +103,28 @@ Let \eqn{k} be the required number of close pairs.
 }
 \note{
 If \code{'delta'} is set to 0, a completely random sample is generated. In this case, \emph{'close pairs'} are not permitted and \code{'zeta'} becomes trivial.
+
+##' @examples
+library(sp)
+bounding_geom<-
+SpatialPolygonsDataFrame(
+SpatialPolygons(list(Polygons(list(Polygon(
+cbind(
+c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
+c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,7.379483)))), ID=1))),
+data.frame( ID=1))
+proj4string(bounding_geom) <- CRS("+proj=longlat +datum=WGS84")
+
+set.seed(15892)
+discrete.inhibit.sample(bounding_geom=bounding_geom, data_return=c("osm_polygons"),boundary=0, buff_dist=NULL,
+buff_epsg=NULL, join_type="within", sample_size=70, plotit=TRUE,
+plotit_leaflet = TRUE, delta = 5, key ="building", value=NULL,
+delta.fix = TRUE, k = 0, cp.criterion = "cp.neighb", zeta = 0.025, ntries = 5)
 }
 \references{
 Chipeta  M G, Terlouw D J, Phiri K S and Diggle P J. (2016). Inhibitory geostatistical designs for spatial prediction taking account of uncertain covariance structure, \emph{Enviromentrics}, pp. 1-11.
-
 Diggle P J. (2014). \emph{Statistical Analysis of Spatial and Spatio-Temporal Point Patterns.} 3rd ed., Boca Raton: CRC Press
-
 Diggle P J and Lophaven S. (2006). Bayesian geostatistical design, \emph{Scandinavian Journal of Statistics} \bold{33}(1) pp. 53 - 64.
-
 Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis code in S-Plus. Computers and Geosciences, 19, 627-655
 }
 \author{

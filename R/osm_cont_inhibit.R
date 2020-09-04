@@ -44,23 +44,28 @@
 ##' @seealso \code{\link[osmgeosample:osm.random.sample]{osm.random.sample}} and osm.discrete.inhibit.sample
 ##'
 ##' @examples
-##' set.seed(15892)
-##' xy.sample <-
+##' library(sp)
+##'bounding_geom<-
+##'SpatialPolygonsDataFrame(
+##'    SpatialPolygons(list(Polygons(list(Polygon(
+##'        cbind(
+##'            c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
+##'            c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,7.379483)))), ID=1))),
+##'    data.frame( ID=1))
+##'proj4string(bounding_geom) <- CRS("+proj=longlat +datum=WGS84")
 ##'
-##' set.seed(15892)
-##' xy.sample <-
-##'
-##' set.seed(15892)
-##' xy.sample
-##'
+##'set.seed(15892)
+##'osm.contin.inhibit(bounding_geom = bounding_geom, boundary = 0, buff_dist=NULL,
+##'buff_epsg = NULL, sample_size = 50, plotit = TRUE, plotit_leaflet = TRUE,
+##'                   delta=50, delta.fix = FALSE,k=7,rho=1, ntries = 10)
 ##'
 ##' @author Henry J. Crosby \email{henry.crosby@warwick.ac.uk}
 ##' @author Godwin Yeboah \email{godwin.yeboah@warwick.ac.uk}
 ##' @author J. Porto De Albuquerque \email{J.Porto@warwick.ac.uk}
 ##'
 ##' @references Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis code in S-Plus. Computers and Geosciences, 19, 627-655
-##' @references Chipeta  M G, Terlouw D J, Phiri K S and Diggle P J. (2016b). Inhibitory geostatistical designs for spatial prediction taking account of uncertain covariance structure, \emph{Enviromentrics}, pp. 1-11.
-##'
+##' Chipeta  M G, Terlouw D J, Phiri K S and Diggle P J. (2016b). Inhibitory geostatistical designs for spatial prediction taking account of uncertain covariance structure, \emph{Enviromentrics}, pp. 1-11.
+##' https://wiki.openstreetmap.org/wiki/Map_Features
 ##' @import sp
 ##' @import sf
 ##' @importFrom splancs csr
