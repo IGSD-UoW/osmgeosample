@@ -469,6 +469,8 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
     if(!is.numeric(delta) | delta < 0)
       stop("\n 'delta' must be a positive integer >= 0")
   }
+
+  ################################################################################################
   if(delta == 0){
     if(k>0){
       stop("\n close pairs not allowed for completely random sample")
@@ -529,7 +531,9 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
 
 
         #dvec<-(res1[take,1]-xy.sample[,1])^2+(res1[take,2]-xy.sample[,2])^2
-        dmin<-min(dvec)
+        dvec<-as.data.frame(as.numeric(dvec))
+        names(dvec)<-"v1"
+        dmin<-min(dvec[!is.na(dvec$v1),])
         if(iter == ntries)
           break
       }
@@ -543,7 +547,6 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
       }
     }
   }
-
   if (k>0) {
     k.origin <- k
     size <- dim(unique(xy.sample))[1]
@@ -574,7 +577,9 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
 
 
         #dvec<-(res1[,1]-xy1[1])^2+(res1[,2]-xy1[2])^2
-        neighbour<-order(dvec)[2]
+        neighbour<-order(dvec)
+        ##################################
+        res1<- sf::st_as_sf(res1, coords = c("X", "Y"))
         xy.sample[take2,]<-res1[neighbour,]
       }
     }
