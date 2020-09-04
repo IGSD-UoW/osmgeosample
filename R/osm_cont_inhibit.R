@@ -323,8 +323,8 @@ osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0
   if (k > 0) {
     k.origin <- k
     size <- dim(unique(xy.sample))[1]
-    reduction <- ((orig.size - size)/orig.size)
-    if (k > size/2) {
+    reduction <- ((orig.size - size) / orig.size)
+    if (k > size / 2) {
       k <- floor(k * (1 - reduction))
       warning("\n For the given parameters, only ", k, " close pairs could be placed out of ",
               k.origin)
@@ -343,7 +343,7 @@ osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0
   sample.locs <- sf::st_as_sf(xy.sample)
 
   xy.sample <- sample.locs
-  st_crs(xy.sample) = 4326
+  st_crs(xy.sample) <- 4326
   xy.sample <- st_intersection(st_geometry(poly), xy.sample$geometry)
 
   if (plotit == TRUE) {
@@ -359,7 +359,7 @@ osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0
   if (plotit_leaflet == TRUE) {
     par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
         las = 0)
-    st_crs(xy.sample) = 4326
+    st_crs(xy.sample) <- 4326
     print(mapview(st_geometry(poly), add = TRUE, layer.name = c("Boundary"),
                   color = c("black"), alpha = 0.3, label = "Boundary") + mapview(st_geometry(xy.sample),
                                                                                  add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"),
@@ -367,7 +367,7 @@ osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0
   }
   xy.sample_coords <- xy.sample %>% st_cast("MULTIPOINT") %>% st_cast("POINT")
   xy.sample_coords <- st_coordinates(xy.sample_coords)
-  xy.sample_coords <- (cbind(c(1:nrow(xy.sample_coords)), xy.sample_coords))
+  xy.sample_coords <- (cbind(c(seq_len(xy.sample_coords)), xy.sample_coords))
   colnames(xy.sample_coords) <- c("id", "lat", "long")
   assign("results", xy.sample_coords, envir = .GlobalEnv)
 }

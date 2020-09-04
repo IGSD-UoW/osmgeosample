@@ -210,8 +210,10 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
 
       bounding <- as.data.frame(coords)
       colnames(bounding) <- c("lat", "lon")
-      bounding <- bounding %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-        summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
+      bounding <- bounding %>%
+        st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+        summarise(geometry = st_combine(geometry)) %>%
+        st_cast("POLYGON")
 
       dat_tr_ex <- trim_osmdata(dat, coords, exclude = TRUE)  # Returns all buildings that are fully within the specified area
       dat_tr <- trim_osmdata(dat, coords, exclude = FALSE)  # Returns all buildings that intersect with the specified area
@@ -242,7 +244,7 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
           st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
           summarise(geometry = st_combine(geometry)) %>%
           st_cast("POLYGON")
-        st_crs(bounding) = 4326
+        st_crs(bounding) <- 4326
         poly <- bounding
         countries_for_buff <- st_as_sf(poly)
         countries_buff <- st_buffer(countries_for_buff, buff_dist)
@@ -274,7 +276,7 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
           st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
           summarise(geometry = st_combine(geometry)) %>%
           st_cast("POLYGON")
-        st_crs(bounding) = 4326
+        st_crs(bounding) <- 4326
         poly <- bounding
         suppressWarnings({
           CRS.new <- CRS(paste0("+init=epsg:", buff_epsg))
@@ -293,8 +295,9 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
             add_osm_feature(key = key) %>%
             osmdata_sf()  ## Returns all within the bounding box
         } else {
-          dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key,
-                                                                  value = value) %>% osmdata_sf()  ## Returns all within the bounding box
+          dat <- opq(st_bbox(countries_buff)) %>%
+            add_osm_feature(key = key,value = value) %>%
+            osmdata_sf()  ## Returns all within the bounding box
         }
 
       }
@@ -340,11 +343,13 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
         suppressWarnings({
 
           if (is.null(value)) {
-            dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>%
+            dat <- opq(st_bbox(countries_buff)) %>%
+              add_osm_feature(key = key) %>%
               osmdata_sf()  ## Returns all within the bounding box
           } else {
-            dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key,
-                                                                    value = value) %>% osmdata_sf()  ## Returns all within the bounding box
+            dat <- opq(st_bbox(countries_buff)) %>%
+              add_osm_feature(key = key,value = value) %>%
+              osmdata_sf()  ## Returns all within the bounding box
           }
 
         })
@@ -392,7 +397,7 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
       obj <- dat_tr_ex[data_return]
       obj3 <- data.frame(NA, NA)
       names(obj3) <- c("osm_id", "geometry")
-      for (i in 1:length(obj)) {
+      for (i in seq_len(obj)) {
         obj2 <- obj[[i]]
         obj3 <- rbind(obj3, obj2[c("osm_id", "geometry")])
       }
@@ -435,7 +440,7 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
       obj <- dat_tr[data_return]
       obj3 <- data.frame(NA, NA)
       names(obj3) <- c("osm_id", "geometry")
-      for (i in 1:length(obj)) {
+      for (i in seq_len(obj)) {
         obj2 <- obj[[i]]
         obj3 <- rbind(obj3, obj2[c("osm_id", "geometry")])
       }
@@ -502,7 +507,7 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
     if (k > 0) {
       if (!is.numeric(k) | k < 0)
         stop("\n 'k' must be a positive integer >= 0")
-      if (k > size/2)
+      if (k > size / 2)
         stop("\n 'k' must be between 0 and size/2")
       if (is.null(cp.criterion))
         stop("\n Close pairs selection criterion 'cp.criterion' must be provided")
@@ -531,7 +536,7 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
     if (delta.fix == TRUE) {
       delta = delta
     } else {
-      delta <- delta * sqrt(size/(size - k))
+      delta <- delta * sqrt(size / (size - k))
       delta
     }
     dsq <- delta * delta
@@ -541,7 +546,7 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
     } else {
       poly.shape <- poly
     }
-    if (!is.infinite(size) && (size * pi * dsq/4 > as.numeric(sf::st_area(poly.shape))))
+    if (!is.infinite(size) && (size * pi * dsq / 4 > as.numeric(sf::st_area(poly.shape))))
       stop("\n Polygon is too small to fit ", size, " points, with 'k' = ",
            k, " close pairs,", " at minimum separation ", round(delta, digits = 4))
 
@@ -567,10 +572,10 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
 
 
         xy.sample <- sf::st_as_sf(xy.sample, coords = c("X", "Y"))
-        st_crs(xy.sample) = 4326
+        st_crs(xy.sample) <- 4326
 
         res1take <- sf::st_as_sf(res1[take, ], coords = c("X", "Y"))
-        st_crs(res1take) = 4326
+        st_crs(res1take) <- 4326
         dvec <- st_distance(res1take, xy.sample, by_element = TRUE)
 
 
@@ -596,7 +601,7 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
     k.origin <- k
     size <- dim(unique(xy.sample))[1]
     reduction <- ((orig.size - size)/orig.size)
-    if (k > size/2) {
+    if (k > size / 2) {
       k <- floor(k * (1 - reduction))
       warning("\n For the given parameters, only ", k, " close pairs could be placed out of ",
               k.origin)
@@ -609,9 +614,6 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
         take2 <- take[j, 2]
         xy1 <- as.numeric(c(xy.sample[take1, ]))
 
-
-
-
         xy.sample <- sf::st_as_sf(xy.sample, coords = c("X", "Y"))
         st_crs(xy.sample) = 4326
 
@@ -619,10 +621,6 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
         st_crs(res1take) = 4326
         dvec <- st_distance(res1take, xy.sample, by_element = TRUE)
 
-
-
-
-        # dvec<-(res1[,1]-xy1[1])^2+(res1[,2]-xy1[2])^2
         neighbour <- order(dvec)
         ##################################
         res1 <- sf::st_as_sf(res1, coords = c("X", "Y"))
@@ -650,11 +648,6 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
         st_crs(res1take) = 4326
         dvec <- st_distance(res1take, xy.sample, by_element = TRUE)
 
-
-
-
-
-        # dvec<-(res1[,1]-xy1[1])^2+(res1[,2]-xy1[2])^2
         z.vec <- which(as.numeric(dvec) > 0 & as.numeric(dvec) <= zeta *
                          0.25)
         z.vec.
@@ -738,13 +731,14 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
   names(xy.sample_df) <- c("osm_id", "inSample")
   names(obj.origin_df) <- "osm_id"
   results <- merge(obj.origin_df, xy.sample_df, by = "osm_id", all.x = TRUE)
-  # results<-results[, -grep('.y', colnames(results))]
   results[is.na(results$inSample), "inSample"] <- 0
   suppressWarnings({
     results <- cbind(results, obj.origin %>% st_centroid() %>% st_geometry())
   })
-  results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>% matrix(ncol = 2,
-                                                                              byrow = TRUE) %>% as_tibble() %>% setNames(c("centroid_lon", "centroid_lat")))
+  results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>%
+                     matrix(ncol = 2,byrow = TRUE) %>%
+                     as_tibble() %>%
+                     setNames(c("centroid_lon", "centroid_lat")))
   results <- results[, !(names(results) %in% c("geometry"))]
   assign("results", results, envir = .GlobalEnv)
 

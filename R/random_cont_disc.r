@@ -92,8 +92,10 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, da
 
             poly <- as.data.frame(poly)
             colnames(poly) <- c("lat", "lon")
-            bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-                summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
+            bounding <- poly %>%
+                st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+                summarise(geometry = st_combine(geometry)) %>%
+                st_cast("POLYGON")
             poly <- bounding
             dat_tr_ex <- trim_osmdata(dat, bounding, exclude = TRUE)  # Returns all buildings that are fully within the specified area
             dat_tr <- trim_osmdata(dat, bounding, exclude = FALSE)  # Returns all buildings that intersect with the specified area
@@ -124,9 +126,12 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, da
         if (class(poly) == "character") {
 
             if (is.null(value)) {
-                dat <- opq(getbb(poly)) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
+                dat <- opq(getbb(poly)) %>%
+                    add_osm_feature(key = key) %>%
+                    osmdata_sf()  ## Returns all within the bounding box
             } else {
-                dat <- opq(getbb(poly)) %>% add_osm_feature(key = key, value = value) %>%
+                dat <- opq(getbb(poly)) %>%
+                    add_osm_feature(key = key, value = value) %>%
                     osmdata_sf()  ## Returns all within the bounding box
             }
 
@@ -150,9 +155,12 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, da
         } else if (class(poly) == "SpatialPolygonsDataFrame") {
 
             if (is.null(value)) {
-                dat <- opq(poly@bbox) %>% add_osm_feature(key = key) %>% osmdata_sf()  ## Returns all within the bounding box
+                dat <- opq(poly@bbox) %>%
+                    add_osm_feature(key = key) %>%
+                    osmdata_sf()  ## Returns all within the bounding box
             } else {
-                dat <- opq(poly@bbox) %>% add_osm_feature(key = key, value = value) %>%
+                dat <- opq(poly@bbox) %>%
+                    add_osm_feature(key = key, value = value) %>%
                     osmdata_sf()  ## Returns all within the bounding box
             }
 
@@ -164,14 +172,17 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, da
             colnames(bounding) <- c("lat", "lon")
             bounding <- bounding %>%
                 st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-                summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
+                summarise(geometry = st_combine(geometry)) %>%
+                st_cast("POLYGON")
 
             dat_tr_ex <- trim_osmdata(dat, coords, exclude = TRUE)  # Returns all buildings that are fully within the specified area
             dat_tr <- trim_osmdata(dat, coords, exclude = FALSE)  # Returns all buildings that intersect with the specified area
             bounding <- as.data.frame(coords)
             colnames(bounding) <- c("lat", "lon")
-            bounding <- bounding %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
-                summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
+            bounding <- bounding %>%
+                st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+                summarise(geometry = st_combine(geometry)) %>%
+                st_cast("POLYGON")
 
         } else {
             warning("poly must be of type 'character' or 'SpatialPolygonsDataFrame'")
@@ -222,7 +233,8 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, da
 
                 poly <- as.data.frame(poly)
                 colnames(poly) <- c("lat", "lon")
-                bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+                bounding <- poly %>%
+                    st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
                     summarise(geometry = st_combine(geometry)) %>%
                     st_cast("POLYGON")
                 st_crs(bounding) = 4326
@@ -240,7 +252,8 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, da
                 bounding <- countries_buff
 
                 if (is.null(value)) {
-                    dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>%
+                    dat <- opq(st_bbox(countries_buff)) %>%
+                        add_osm_feature(key = key) %>%
                         osmdata_sf()  ## Returns all within the bounding box
                 } else {
                     dat <- opq(st_bbox(countries_buff)) %>%
@@ -263,11 +276,13 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, da
                 countries_buff <- st_buffer(countries_for_buff, buff_dist)
 
                 if (is.null(value)) {
-                    dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key) %>%
+                    dat <- opq(st_bbox(countries_buff)) %>%
+                        add_osm_feature(key = key) %>%
                         osmdata_sf()  ## Returns all within the bounding box
                 } else {
-                    dat <- opq(st_bbox(countries_buff)) %>% add_osm_feature(key = key,
-                                                                            value = value) %>% osmdata_sf()  ## Returns all within the bounding box
+                    dat <- opq(st_bbox(countries_buff)) %>%
+                        add_osm_feature(key = key,value = value) %>%
+                        osmdata_sf()  ## Returns all within the bounding box
                 }
 
             } else {
@@ -483,8 +498,9 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, da
             xy.try <- c(csr(st.poly, 1))
             xy.sample <- rbind(xy.sample, xy.try)
         }
-        xy.sample <- xy.sample %>% as.data.frame %>% sf::st_as_sf(coords = c(1,
-                                                                             2))
+        xy.sample <- xy.sample %>%
+            as.data.frame %>%
+            sf::st_as_sf(coords = c(1,2))
         res <- xy.sample <- sf::st_as_sf(xy.sample)
         if (class(poly.origin)[1] == "SpatialPolygonsDataFrame") {
             poly.origin <- st_as_sf(poly.origin)
@@ -559,14 +575,20 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, da
         # results<-results[, -grep('.y', colnames(results))]
         results[is.na(results$inSample), "inSample"] <- 0
         suppressWarnings({
-            results <- cbind(results, obj.origin %>% st_centroid() %>% st_geometry())
+            results <- cbind(results, obj.origin %>%
+                                 st_centroid() %>%
+                                 st_geometry())
         })
-        results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>% matrix(ncol = 2,
-                                                                                    byrow = TRUE) %>% as_tibble() %>% setNames(c("centroid_lon", "centroid_lat")))
+        results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>%
+                             matrix(ncol = 2, byrow = TRUE) %>%
+                             as_tibble() %>%
+                             setNames(c("centroid_lon", "centroid_lat")))
         results <- results[, !(names(results) %in% c("geometry"))]
         assign("results", results, envir = .GlobalEnv)
     } else {
-        xy.sample_coords <- xy.sample %>% st_cast("MULTIPOINT") %>% st_cast("POINT")
+        xy.sample_coords <- xy.sample %>%
+            st_cast("MULTIPOINT") %>%
+            st_cast("POINT")
         xy.sample_coords <- st_coordinates(xy.sample_coords)
         xy.sample_coords <- (cbind(c(1:nrow(xy.sample_coords)), xy.sample_coords))
         colnames(xy.sample_coords) <- c("id", "lat", "long")
