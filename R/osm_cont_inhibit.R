@@ -263,7 +263,19 @@ osm.contin.inhibit <- function(bounding_geom = NULL,boundary = 0, buff_dist = 0,
            iter <- 1
            while (dmin<dsq) {
              xy.try<-c(csr(st.poly,1))
+
+
              dmin<-min((xy.sample[,1]-xy.try[1])^2+(xy.sample[,2]-xy.try[2])^2)
+
+             xy.sample<-sf::st_as_sf(as.data.frame(xy.sample), coords = c("xc", "yc"))
+             st_crs(xy.sample) = 4326
+
+             xy.try<- sf::st_as_sf(as.data.frame(t(as.data.frame(xy.try))), coords = c("xc", "yc"))
+             st_crs(xy.try) = 4326
+
+             dmin<-st_distance(xy.sample, xy.try, by_element = TRUE)
+
+
              iter <- iter + 1
              if(iter == ntries)
                break

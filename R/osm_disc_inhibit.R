@@ -387,31 +387,7 @@ discrete.inhibit.sample  <- function(bounding_geom = NULL, key = NULL, value = N
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  obj.origin <- obj
+    obj.origin <- obj
   if(!inherits(obj, 'SpatialPointsDataFrame')){
     if(!inherits(obj, 'SpatialPoints')){
       if(!inherits(obj,"sf") & !inherits(obj, "data.frame")){
