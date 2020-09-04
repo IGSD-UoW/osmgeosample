@@ -1,5 +1,5 @@
 ##' @title OSM Continuous Inhibitory sample
-##' @description Draws a spatially continous sample of locations within a polygonal sampling region according to an \bold{"inhibitory plus close pairs"} specification. The region can be defined using OSM data or a user defined polygon.
+##' @description Draws a spatially continous sample of locations within a polygonal sampling region according to an \bold{'inhibitory plus close pairs'} specification. The region can be defined using OSM data or a user defined polygon.
 ##' @param bounding_geom a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, optionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.
 ##' @param sample_size a non-negative integer giving the total number of locations to be sampled.
 ##' @param plotit 'logical' specifying if graphical output is required. Default is \code{plotit = TRUE}.
@@ -52,7 +52,7 @@
 ##'            c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
 ##'            c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,7.379483)))), ID=1))),
 ##'    data.frame( ID=1))
-##'proj4string(bounding_geom) <- CRS("+proj=longlat +datum=WGS84")
+##'proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 ##'
 ##'set.seed(15892)
 ##'osm.contin.inhibit(bounding_geom = bounding_geom, boundary = 0, buff_dist=NULL,
@@ -82,14 +82,12 @@
 
 ###########################################
 
-osm.contin.inhibit <- function(bounding_geom = NULL,boundary = 0, buff_dist = 0, buff_epsg = 4326, sample_size,
-                               plotit = TRUE, plotit_leaflet = TRUE, delta, delta.fix = FALSE,k=0,rho=NULL,
-                               ntries = 10000)
-
-  {
+osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0,
+                               buff_epsg = 4326, sample_size, plotit = TRUE, plotit_leaflet = TRUE, delta,
+                               delta.fix = FALSE, k = 0, rho = NULL, ntries = 10000) {
 
   poly <- bounding_geom
-  size <- sample_size+1
+  size <- sample_size + 1
 
   if (boundary < 2 && !is.null(buff_dist)) {
     warning("buff_dist is defined despite not requesting a buffered boundary ('boundary' = 2). buff_dist has been ignored")
@@ -97,32 +95,38 @@ osm.contin.inhibit <- function(bounding_geom = NULL,boundary = 0, buff_dist = 0,
   if (boundary == 0) {
     if (class(poly) == "character") {
 
-      poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1,2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
+      poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1,
+                                                                           2], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 2]),
+                    c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2,
+                                                                                              1]))
       poly <- as.data.frame(poly)
       colnames(poly) <- c("lat", "lon")
-      poly <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>%
-        st_cast("POLYGON")
+      poly <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+        summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
 
       warning("the bounding box is used when poly is of type 'character'")
 
-    } else if (class(poly) == "SpatialPolygonsDataFrame")
-      {} else {
+    } else if (class(poly) == "SpatialPolygonsDataFrame") {
+    } else {
       warning("poly must be of type 'character' or 'SpatialPolygonsDataFrame'")
     }
 
   } else if (boundary == 1) {
     if (class(poly) == "character") {
 
-      poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1,2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
+      poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1,
+                                                                           2], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 2]),
+                    c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2,
+                                                                                              1]))
       poly <- as.data.frame(poly)
       colnames(poly) <- c("lat", "lon")
-      poly <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>%
-        st_cast("POLYGON")
+      poly <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+        summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
 
       warning("the bounding box is used when poly is of type 'character'")
 
-    } else if (class(poly) == "SpatialPolygonsDataFrame")
-    {} else {
+    } else if (class(poly) == "SpatialPolygonsDataFrame") {
+    } else {
       warning("poly must be of type 'character' or 'SpatialPolygonsDataFrame'")
     }
 
@@ -131,12 +135,14 @@ osm.contin.inhibit <- function(bounding_geom = NULL,boundary = 0, buff_dist = 0,
     if (class(poly) == "character") {
 
       if (buff_epsg == 4326) {
-        poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1,
-                                                                                                                      2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
+        poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1,
+                                                                             2], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 2]),
+                      c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1],
+                                                                 getbb(poly)[2, 1]))
         poly <- as.data.frame(poly)
         colnames(poly) <- c("lat", "lon")
-        bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>%
-          st_cast("POLYGON")
+        bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+          summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
         st_crs(bounding) = 4326
         poly <- bounding
         countries_for_buff <- st_as_sf(poly)
@@ -149,24 +155,29 @@ osm.contin.inhibit <- function(bounding_geom = NULL,boundary = 0, buff_dist = 0,
         bounding <- countries_buff
 
       } else {
-        poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 1]), c(getbb(poly)[1,2], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1], getbb(poly)[2, 1]))
+        poly <- rbind(c(getbb(poly)[1, 1], getbb(poly)[2, 1]), c(getbb(poly)[1,
+                                                                             2], getbb(poly)[2, 1]), c(getbb(poly)[1, 2], getbb(poly)[2, 2]),
+                      c(getbb(poly)[1, 1], getbb(poly)[2, 2]), c(getbb(poly)[1, 1],
+                                                                 getbb(poly)[2, 1]))
         poly <- as.data.frame(poly)
         colnames(poly) <- c("lat", "lon")
-        bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>% summarise(geometry = st_combine(geometry)) %>%
-          st_cast("POLYGON")
+        bounding <- poly %>% st_as_sf(coords = c("lat", "lon"), crs = 4326) %>%
+          summarise(geometry = st_combine(geometry)) %>% st_cast("POLYGON")
         st_crs(bounding) = 4326
         poly <- bounding
-        suppressWarnings({CRS.new <- CRS(paste0("+init=epsg:", buff_epsg))})
+        suppressWarnings({
+          CRS.new <- CRS(paste0("+init=epsg:", buff_epsg))
+        })
         poly <- st_transform(poly, CRS.new)
         countries_for_buff <- st_as_sf(poly)
         countries_buff <- st_buffer(countries_for_buff, buff_dist)
-        suppressWarnings({CRS.new <- CRS("+init=epsg:4326")})
+        suppressWarnings({
+          CRS.new <- CRS("+init=epsg:4326")
+        })
         countries_buff <- st_transform(countries_buff, CRS.new)
         bounding <- countries_buff
       }
-    }
-
-    else if (class(poly) == "SpatialPolygonsDataFrame") {
+    } else if (class(poly) == "SpatialPolygonsDataFrame") {
       if (buff_epsg == 4326) {
         proj4string(poly) <- CRS("+init=epsg:4326")
         countries_for_buff <- st_as_sf(poly)
@@ -174,175 +185,180 @@ osm.contin.inhibit <- function(bounding_geom = NULL,boundary = 0, buff_dist = 0,
         countries_buff <- st_buffer(countries_for_buff, buff_dist)
 
       } else {
-        suppressWarnings({CRS.new <- CRS(paste0("+init=epsg:", buff_epsg))})
+        suppressWarnings({
+          CRS.new <- CRS(paste0("+init=epsg:", buff_epsg))
+        })
         poly <- spTransform(poly, CRS.new)
         countries_for_buff <- st_as_sf(poly)
         countries_buff <- st_buffer(countries_for_buff, buff_dist)
-        suppressWarnings({countries_buff <- as(countries_buff, "Spatial")})
-        suppressWarnings({proj4string(countries_buff) <- CRS(paste0("+init=epsg:", buff_epsg, ""))})
+        suppressWarnings({
+          countries_buff <- as(countries_buff, "Spatial")
+        })
+        suppressWarnings({
+          proj4string(countries_buff) <- CRS(paste0("+init=epsg:", buff_epsg,
+                                                    ""))
+        })
         CRS.new <- CRS("+init=epsg:4326")
         countries_buff <- spTransform(countries_buff, CRS.new)
-        suppressWarnings({bounding <- countries_buff})
+        suppressWarnings({
+          bounding <- countries_buff
+        })
       }
-        } else {
+    } else {
       warning("poly must be of type 'character' or 'SpatialPolygonsDataFrame'")
     }
 
-      } else {
+  } else {
     stop("boundary must be 0,1,2 which respectively refer to exact, bounding box and buffer.")
   }
 
 
-  if(!is.null(poly)){
-         poly.origin <- poly
-         if(!inherits(poly, 'SpatialPolygonsDataFrame'))
-         if(!inherits(poly, 'SpatialPolygons'))
-         if(!inherits(poly, 'Polygons'))
-         if(!inherits(poly, 'Polygon'))
-         if(!inherits(poly, 'sfc_POLYGON'))
-         if(!inherits(poly, 'sfc'))
-         if(!inherits(poly, 'sf'))
-           stop("\n 'poly' must be of class 'sp' or 'sf'")
-       }
-       if (inherits(poly, 'Spatial')){
-         poly <- sf::st_as_sf(poly)
-       } else {
-         poly <- poly
-       }
-       if (length(size) > 0){
-         if (!is.numeric(size) | size <= 0)
-           stop("\n 'size' must be a positive integer")
-         else
-           orig.size <- size
-       }
-       if(length(delta) > 0){
-         if(!is.numeric(delta) | delta < 0)
-           stop("\n 'delta' must be a positive integer >= 0")
-         if(delta == 0 && k > 0)
-             stop("\n Close pairs not allowed for completely
+  if (!is.null(poly)) {
+    poly.origin <- poly
+    if (!inherits(poly, "SpatialPolygonsDataFrame"))
+      if (!inherits(poly, "SpatialPolygons"))
+        if (!inherits(poly, "Polygons"))
+          if (!inherits(poly, "Polygon"))
+            if (!inherits(poly, "sfc_POLYGON"))
+              if (!inherits(poly, "sfc"))
+                if (!inherits(poly, "sf"))
+                  stop("\n 'poly' must be of class 'sp' or 'sf'")
+  }
+  if (inherits(poly, "Spatial")) {
+    poly <- sf::st_as_sf(poly)
+  } else {
+    poly <- poly
+  }
+  if (length(size) > 0) {
+    if (!is.numeric(size) | size <= 0)
+      stop("\n 'size' must be a positive integer") else orig.size <- size
+  }
+  if (length(delta) > 0) {
+    if (!is.numeric(delta) | delta < 0)
+      stop("\n 'delta' must be a positive integer >= 0")
+    if (delta == 0 && k > 0)
+      stop("\n Close pairs not allowed for completely
                   random sample (i.e. when 'delta' = 0)")
-         if(delta == 0 && k == 0)
-           rho = NULL
-       }
-       if(length(k) > 0){
-         if(!is.numeric(k) | k < 0)
-           stop("\n 'k' must be a positive integer >= 0")
-         if (k > size/2)
-           stop("\n 'k' must be between 0 and 'size'/2")
-         if(k>0 && is.null(rho)){
-             stop("\n 'rho' must be provided if 'k' > 0")
-         }
-         if(k>0 && rho <= 0){
-           stop("\n 'rho' must be positive,
+    if (delta == 0 && k == 0)
+      rho = NULL
+  }
+  if (length(k) > 0) {
+    if (!is.numeric(k) | k < 0)
+      stop("\n 'k' must be a positive integer >= 0")
+    if (k > size/2)
+      stop("\n 'k' must be between 0 and 'size'/2")
+    if (k > 0 && is.null(rho)) {
+      stop("\n 'rho' must be provided if 'k' > 0")
+    }
+    if (k > 0 && rho <= 0) {
+      stop("\n 'rho' must be positive,
                 between > 0 and 'delta'/2")
-         }
-       }
-       if(length(rho) > 0){
-         if(!is.numeric(rho) | rho < 0)
-           stop("\n 'rho' must be positive")
-         if(rho > delta/2)
-           stop("\n 'rho' must be between > 0
+    }
+  }
+  if (length(rho) > 0) {
+    if (!is.numeric(rho) | rho < 0)
+      stop("\n 'rho' must be positive")
+    if (rho > delta/2)
+      stop("\n 'rho' must be between > 0
                 and 'delta'/2")
-       }
+  }
 
-       st.poly <- sf::st_coordinates(poly)[,c(1:2)]
-       xy.sample <- as.matrix(csr(st.poly,size))
-       if(delta == 0){
-         for (i in 2:size) {
-             xy.try <- c(csr(st.poly,1))
-             xy.sample <- rbind(xy.sample, xy.try)
-           }
-       } else {
-           if (delta.fix == TRUE){
-             delta = delta
-           } else {
-             delta <- delta * sqrt(size/(size - k))
-           }
-         dsq  <- delta*delta
-         if (!is.infinite(size) && (size * pi * dsq/4 > as.numeric(st_area(poly))))
-           stop("\n Polygon is too small to fit ", size,
-                " points, with 'k' = ", k, " close pairs,",
-                " at minimum separation ", round(delta, digits = 4))
-         while (dim(xy.sample)[1] < size) {
-           dmin<-0
-           iter <- 1
-           while (as.numeric(dmin)<dsq) {
-             xy.try<-c(csr(st.poly,1))
-
-
-             #dmin<-min((xy.sample[,1]-xy.try[1])^2+(xy.sample[,2]-xy.try[2])^2)
-
-             xy.sample<-sf::st_as_sf(as.data.frame(xy.sample), coords = c("xc", "yc"))
-             st_crs(xy.sample) = 4326
-
-             xy.try<- sf::st_as_sf(as.data.frame(t(as.data.frame(xy.try))), coords = c("xc", "yc"))
-             st_crs(xy.try) = 4326
-
-             dmin<-st_distance(xy.sample, xy.try, by_element = TRUE)
+  st.poly <- sf::st_coordinates(poly)[, c(1:2)]
+  xy.sample <- as.matrix(csr(st.poly, size))
+  if (delta == 0) {
+    for (i in 2:size) {
+      xy.try <- c(csr(st.poly, 1))
+      xy.sample <- rbind(xy.sample, xy.try)
+    }
+  } else {
+    if (delta.fix == TRUE) {
+      delta = delta
+    } else {
+      delta <- delta * sqrt(size/(size - k))
+    }
+    dsq <- delta * delta
+    if (!is.infinite(size) && (size * pi * dsq/4 > as.numeric(st_area(poly))))
+      stop("\n Polygon is too small to fit ", size, " points, with 'k' = ",
+           k, " close pairs,", " at minimum separation ", round(delta, digits = 4))
+    while (dim(xy.sample)[1] < size) {
+      dmin <- 0
+      iter <- 1
+      while (as.numeric(dmin) < dsq) {
+        xy.try <- c(csr(st.poly, 1))
 
 
-             iter <- iter + 1
-             if(iter == ntries)
-               break
-           }
-           xy.sample<-rbind(xy.sample,xy.try)
-           if(iter == ntries && dim(xy.sample)[1] < size){
-             warning("\n For the given 'delta' and 'size', only ", dim(xy.sample)[1],
-                     " inhibitory sample locations placed out of ", size,
-                     ". Consider revising 'delta' and/or 'size'")
-             break
-           }
-         }
-       }
-       if (k>0) {
-         k.origin <- k
-         size <- dim(unique(xy.sample))[1]
-         reduction <- ((orig.size - size)/orig.size)
-         if (k > size/2){
-           k <- floor(k*(1-reduction))
-           warning("\n For the given parameters, only ", k,
-                   " close pairs could be placed out of ", k.origin)
-         }
-         take<-matrix(sample(1:size,2*k,replace=FALSE),k,2)
-         for (j in 1:k) {
-           take1<-take[j,1]; take2<-take[j,2]
-           xy1<-c(xy.sample[take1,])
-           angle<-2*pi*runif(1)
-           radius<-rho*sqrt(runif(1))
-           xy.sample[take2,]<-xy1+radius*c(cos(angle),sin(angle))
-         }
-       }
-       xy.sample <- xy.sample %>%
-         as.data.frame %>%
-         sf::st_as_sf(coords = c(1,2))
-       sample.locs <- sf::st_as_sf(xy.sample)
+        # dmin<-min((xy.sample[,1]-xy.try[1])^2+(xy.sample[,2]-xy.try[2])^2)
 
-       xy.sample <- sample.locs
-       st_crs(xy.sample) = 4326
-       xy.sample <- st_intersection(st_geometry(poly), xy.sample$geometry)
+        xy.sample <- sf::st_as_sf(as.data.frame(xy.sample), coords = c("xc",
+                                                                       "yc"))
+        st_crs(xy.sample) = 4326
 
-       if(plotit==TRUE){
-         par(oma=c(5, 5, 5, 5.5), mar=c(5.5, 5.1, 4.1, 2.1), mgp=c(3, 1, 0), las=0)
-         plot(st_geometry(xy.sample),pch=19,col=1,axes = TRUE,
-              xlab="longitude",ylab="lattitude", font.main = 3,
-              cex.main = 1.2, col.main = "blue",
-              main = paste("Continuous sampling design,", k,
-                           "close pairs", sep = " "),
-              xlim = c(range(st.poly[,1])),
-              ylim = c(range(st.poly[,2])))
-         plot(st_geometry(poly), add= TRUE)
-       }
+        xy.try <- sf::st_as_sf(as.data.frame(t(as.data.frame(xy.try))),
+                               coords = c("xc", "yc"))
+        st_crs(xy.try) = 4326
+
+        dmin <- st_distance(xy.sample, xy.try, by_element = TRUE)
+
+
+        iter <- iter + 1
+        if (iter == ntries)
+          break
+      }
+      xy.sample <- rbind(xy.sample, xy.try)
+      if (iter == ntries && dim(xy.sample)[1] < size) {
+        warning("\n For the given 'delta' and 'size', only ", dim(xy.sample)[1],
+                " inhibitory sample locations placed out of ", size, ". Consider revising 'delta' and/or 'size'")
+        break
+      }
+    }
+  }
+  if (k > 0) {
+    k.origin <- k
+    size <- dim(unique(xy.sample))[1]
+    reduction <- ((orig.size - size)/orig.size)
+    if (k > size/2) {
+      k <- floor(k * (1 - reduction))
+      warning("\n For the given parameters, only ", k, " close pairs could be placed out of ",
+              k.origin)
+    }
+    take <- matrix(sample(1:size, 2 * k, replace = FALSE), k, 2)
+    for (j in 1:k) {
+      take1 <- take[j, 1]
+      take2 <- take[j, 2]
+      xy1 <- c(xy.sample[take1, ])
+      angle <- 2 * pi * runif(1)
+      radius <- rho * sqrt(runif(1))
+      xy.sample[take2, ] <- xy1 + radius * c(cos(angle), sin(angle))
+    }
+  }
+  xy.sample <- xy.sample %>% as.data.frame %>% sf::st_as_sf(coords = c(1, 2))
+  sample.locs <- sf::st_as_sf(xy.sample)
+
+  xy.sample <- sample.locs
+  st_crs(xy.sample) = 4326
+  xy.sample <- st_intersection(st_geometry(poly), xy.sample$geometry)
+
+  if (plotit == TRUE) {
+    par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+        las = 0)
+    plot(st_geometry(xy.sample), pch = 19, col = 1, axes = TRUE, xlab = "longitude",
+         ylab = "lattitude", font.main = 3, cex.main = 1.2, col.main = "blue",
+         main = paste("Continuous sampling design,", k, "close pairs", sep = " "),
+         xlim = c(range(st.poly[, 1])), ylim = c(range(st.poly[, 2])))
+    plot(st_geometry(poly), add = TRUE)
+  }
 
   if (plotit_leaflet == TRUE) {
-    par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0), las = 0)
+    par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+        las = 0)
     st_crs(xy.sample) = 4326
-    print(mapview(st_geometry(poly), add = TRUE, layer.name = c("Boundary"), color = c("black"), alpha = 0.3, label = "Boundary") + mapview(st_geometry(xy.sample),
-                                                                                                                                       add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), label = xy.sample$geometry, lwd = 2))
-    }
-       xy.sample_coords <- xy.sample %>% st_cast("MULTIPOINT") %>% st_cast("POINT")
-       xy.sample_coords <- st_coordinates(xy.sample_coords)
-       xy.sample_coords <- (cbind(c(1:nrow(xy.sample_coords)), xy.sample_coords))
-       colnames(xy.sample_coords) <- c("id", "lat", "long")
-       assign("results", xy.sample_coords, envir = .GlobalEnv)
-}
-
+    print(mapview(st_geometry(poly), add = TRUE, layer.name = c("Boundary"),
+                  color = c("black"), alpha = 0.3, label = "Boundary") + mapview(st_geometry(xy.sample),
+                                                                                 add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"),
+                                                                                 label = xy.sample$geometry, lwd = 2))
+  }
+  xy.sample_coords <- xy.sample %>% st_cast("MULTIPOINT") %>% st_cast("POINT")
+  xy.sample_coords <- st_coordinates(xy.sample_coords)
+  xy.sample_coords <- (cbind(c(1:nrow(xy.sample_coords)), xy.sample_coords))
+  colnames(xy.sample_coords) <- c("id", "lat", "long")
+  assign("results", xy.sample_coords, envir = .GlobalEnv)

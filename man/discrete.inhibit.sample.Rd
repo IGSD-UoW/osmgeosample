@@ -29,11 +29,11 @@ discrete.inhibit.sample(
 \arguments{
 \item{bounding_geom}{a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, optionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.}
 
-\item{key}{aas}
+\item{key}{A feature key as defined in OSM. An example is "building".}
 
-\item{value}{aas}
+\item{value}{a value for a feature key (\code{key}); can be negated with an initial exclamation mark, value = "!this", and can also be a vector, value = c ("this", "that").}
 
-\item{data_return}{aas}
+\item{data_return}{specifies what data types (as specified in OSM) you want returned. More than one can be selected. The options are "osm_polygons", "osm_points", "osm_multipolygons","osm_multilines","osm_lines".}
 
 \item{boundary}{categorical variable to determine whether the exact boundary provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a buffer around the boundary \code{boundary = 2}) is used for sampling. Default is \code{boundary = 0}.}
 
@@ -41,7 +41,7 @@ discrete.inhibit.sample(
 
 \item{buff_epsg}{if \code{boundary = 2}) then this value determines the local geographic grid reference so that the buffer can be calculated in meters. The default is  \code{buff_epsg = 4326}) which will use decimal degrees instead of meters. As an example, 27700 relates to the British National Grid.}
 
-\item{join_type}{aas}
+\item{join_type}{a text value to determine how to spatially join all features with the boundary. The options are "within" or "intersect".}
 
 \item{sample_size}{a non-negative integer giving the total number of locations to be sampled.}
 
