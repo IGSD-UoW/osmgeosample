@@ -1,4 +1,4 @@
-##'@title Spatially random sample
+##'@title Spatially random sampling.
 ##'@description This function draws a spatially random sample from a either (1)
 ##'  a discrete set of OSM features defined in the function parameters or (2) a
 ##'  continuous surface defined by a user definted geographical region.

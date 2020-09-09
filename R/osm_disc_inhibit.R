@@ -1,4 +1,4 @@
-##'@title Spatially discrete sampling
+##'@title OSM discrete Inhibitory sampling.
 ##'@description Draw a spatially discrete sample from a specified set of spatial
 ##'  locations within a polygonal sampling region according to an
 ##'  \bold{'inhibitory plus close pairs'} specification.

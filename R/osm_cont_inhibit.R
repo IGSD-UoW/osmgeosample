@@ -1,4 +1,4 @@
-##'@title OSM Continuous Inhibitory sample
+##'@title OSM Continuous Inhibitory sampling.
 ##'@description Draws a spatially continous sample of locations within a
 ##'  polygonal sampling region according to an \bold{'inhibitory plus close
 ##'  pairs'} specification. The region can be defined using OSM data or a user
