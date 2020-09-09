@@ -27,13 +27,13 @@ discrete.inhibit.sample(
 )
 }
 \arguments{
-\item{bounding_geom}{a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, optionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.}
+\item{bounding_geom}{a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, orionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.}
 
-\item{key}{A feature key as defined in OSM. An example is "building".}
+\item{key}{A feature key as defined in OSM. An example is 'building'.}
 
-\item{value}{a value for a feature key (\code{key}); can be negated with an initial exclamation mark, value = "!this", and can also be a vector, value = c ("this", "that").}
+\item{value}{a value for a feature key (\code{key}); can be negated with an initial exclamation mark, value = '!this', and can also be a vector, value = c ('this', 'that').}
 
-\item{data_return}{specifies what data types (as specified in OSM) you want returned. More than one can be selected. The options are "osm_polygons", "osm_points", "osm_multipolygons","osm_multilines","osm_lines".}
+\item{data_return}{specifies what data types (as specified in OSM) you want returned. More than one can be selected. The options are 'osm_polygons', 'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.}
 
 \item{boundary}{categorical variable to determine whether the exact boundary provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a buffer around the boundary \code{boundary = 2}) is used for sampling. Default is \code{boundary = 0}.}
 
@@ -41,7 +41,7 @@ discrete.inhibit.sample(
 
 \item{buff_epsg}{if \code{boundary = 2}) then this value determines the local geographic grid reference so that the buffer can be calculated in meters. The default is  \code{buff_epsg = 4326}) which will use decimal degrees instead of meters. As an example, 27700 relates to the British National Grid.}
 
-\item{join_type}{a text value to determine how to spatially join all features with the boundary. The options are "within" or "intersect".}
+\item{join_type}{a text value to determine how to spatially join all features with the boundary. The options are 'within' or 'intersect'.}
 
 \item{sample_size}{a non-negative integer giving the total number of locations to be sampled.}
 
@@ -55,13 +55,13 @@ discrete.inhibit.sample(
 
 \item{k}{number of close-pair locations in the sample. Must be an integer between 0 and \code{size}/2.}
 
-\item{cp.criterion}{criterion for choosing close pairs \eqn{k}. The \code{"cp.zeta"} criterion chooses locations not included in the initial sample, from the uniform distribution of a disk with radius \code{'zeta'} (NB: \code{zeta} argument must be provided for this criterion). The \code{"cp.neighb"} criterion chooses nearest neighbours amongst locations not included in the initial sample (\code{'zeta'} becomes trivial for \code{'cp.neighb'} criterion).}
+\item{cp.criterion}{criterion for choosing close pairs \eqn{k}. The \code{'cp.zeta'} criterion chooses locations not included in the initial sample, from the uniform distribution of a disk with radius \code{'zeta'} (NB: \code{zeta} argument must be provided for this criterion). The \code{'cp.neighb'} criterion chooses nearest neighbours amongst locations not included in the initial sample (\code{'zeta'} becomes trivial for \code{'cp.neighb'} criterion).}
 
 \item{zeta}{maximum permissible distance (radius of a disk with center \eqn{x^{*}_{j}, j = 1, \ldots, k}) within which a close-pair point is placed. See \bold{Details}.}
 
 \item{ntries}{number of rejected proposals after which the algorithm terminates.}
 
-\item{poly}{'optional', a \code{sf} or \code{sp} polygon object in which the design sits. The default is the bounding box of points given by \code{obj}.}
+\item{poly}{'oional', a \code{sf} or \code{sp} polygon object in which the design sits. The default is the bounding box of points given by \code{obj}.}
 }
 \value{
 a list with the following four components:
@@ -75,7 +75,7 @@ a list with the following four components:
 \code{sample.locs:} a \code{sf} or \code{sp} object containing the final sampled locations and any associated values.
 }
 \description{
-Draw a spatially discrete sample from a specified set of spatial locations within a polygonal sampling region according to an \bold{"inhibitory plus close pairs"} specification.
+Spatially discrete sampling
 }
 \details{
 To draw a sample of size \eqn{n} from a population of spatial locations \eqn{X_{i} : i  = 1,\ldots,N}, with the property that the distance between any two sampled locations is at least \eqn{\delta}, the function implements the following algorithm.
@@ -113,13 +113,13 @@ cbind(
 c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
 c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,7.379483)))), ID=1))),
 data.frame( ID=1))
-proj4string(bounding_geom) <- CRS("+proj=longlat +datum=WGS84")
+proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 
 set.seed(15892)
-discrete.inhibit.sample(bounding_geom=bounding_geom, data_return=c("osm_polygons"),boundary=0, buff_dist=NULL,
-buff_epsg=NULL, join_type="within", sample_size=70, plotit=TRUE,
-plotit_leaflet = TRUE, delta = 5, key ="building", value=NULL,
-delta.fix = TRUE, k = 0, cp.criterion = "cp.neighb", zeta = 0.025, ntries = 5)
+discrete.inhibit.sample(bounding_geom=bounding_geom, data_return=c('osm_polygons'),boundary=0, buff_dist=NULL,
+buff_epsg=NULL, join_type='within', sample_size=70, plotit=TRUE,
+plotit_leaflet = TRUE, delta = 5, key ='building', value=NULL,
+delta.fix = TRUE, k = 0, cp.criterion = 'cp.neighb', zeta = 0.025, ntries = 5)
 }
 \references{
 Chipeta  M G, Terlouw D J, Phiri K S and Diggle P J. (2016). Inhibitory geostatistical designs for spatial prediction taking account of uncertain covariance structure, \emph{Enviromentrics}, pp. 1-11.

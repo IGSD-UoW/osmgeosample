@@ -23,11 +23,11 @@ osm.random.sample(
 \arguments{
 \item{bounding_geom}{a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, optionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.}
 
-\item{key}{A feature key as defined in OSM. An example is "building".}
+\item{key}{A feature key as defined in OSM. An example is 'building'.}
 
-\item{value}{a value for a feature key (\code{key}); can be negated with an initial exclamation mark, value = "!this", and can also be a vector, value = c ("this", "that").}
+\item{value}{a value for a feature key (\code{key}); can be negated with an initial exclamation mark, value = '!this', and can also be a vector, value = c ('this', 'that').}
 
-\item{data_return}{specifies what data types (as specified in OSM) you want returned. More than one can be selected. The options are "osm_polygons", "osm_points", "osm_multipolygons","osm_multilines","osm_lines".}
+\item{data_return}{specifies what data types (as specified in OSM) you want returned. More than one can be selected. The options are 'osm_polygons', 'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.}
 
 \item{boundary}{categorical variable to determine whether the exact boundary provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a buffer around the boundary \code{boundary = 2}) is used for sampling. Default is \code{boundary = 0}.}
 
@@ -35,7 +35,7 @@ osm.random.sample(
 
 \item{buff_epsg}{if \code{boundary = 2} then this value determines the local geographic grid reference so that the buffer can be calculated in meters. The default is  \code{buff_epsg = 4326}) which will use decimal degrees instead of meters. As an example, 27700 relates to the British National Grid.}
 
-\item{join_type}{a text value to determine how to spatially join all features with the boundary. The options are "within" or "intersect".}
+\item{join_type}{a text value to determine how to spatially join all features with the boundary. The options are 'within' or 'intersect'.}
 
 \item{dis_or_cont}{random sampling, a choice of either \code{'discrete'}, from a set of \eqn{N} potential sampling points or \code{'continuum'} from independent, compeletely random points.}
 
@@ -46,7 +46,7 @@ osm.random.sample(
 \item{plotit_leaflet}{'logical' specifying if leaflet (html) graphical output is required. This is prioritised over plotit if both are selected. Default is \code{plotit_leaflet = TRUE}.}
 }
 \value{
-a \code{df} object named "results" of dimension \eqn{n} by \code{4} containing the final sampled \code{osm_ids}, centroid locations (named \code{x,y}) and whether the instance is in the selected sample (named \code{inSample} with a value of \code{0/1}), if sampling from a \code{'discrete'} set of points. A \code{df} object of dimension \eqn{n} by \code{3} containing the serial id and centroid locations for all sample instances,if sampling from a \code{'continuum'}.
+a \code{df} object named 'results' of dimension \eqn{n} by \code{4} containing the final sampled \code{osm_ids}, centroid locations (named \code{x,y}) and whether the instance is in the selected sample (named \code{inSample} with a value of \code{0/1}), if sampling from a \code{'discrete'} set of points. A \code{df} object of dimension \eqn{n} by \code{3} containing the serial id and centroid locations for all sample instances,if sampling from a \code{'continuum'}.
 }
 \description{
 This function draws a spatially random sample from a either (1) a discrete set of OSM features defined in the function parameters or (2) a continuous surface defined by a user definted geographical region.
@@ -60,15 +60,15 @@ SpatialPolygonsDataFrame(
            c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
            c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,7.379483)))), ID=1))),
    data.frame( ID=1))
-proj4string(bounding_geom) <- CRS("+proj=longlat +datum=WGS84")
+proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 
 set.seed(15892)
 xy.sample <- osm.random.sample(buff_dist=NULL, bounding_geom = bounding_geom,
-                              key= "building", value = NULL, boundary = 0,
-                              buff_epsg = NULL, join_type = "intersect",
-                              dis_or_cont = "discrete", sample_size = 70,
+                              key= 'building', value = NULL, boundary = 0,
+                              buff_epsg = NULL, join_type = 'intersect',
+                              dis_or_cont = 'discrete', sample_size = 70,
                               plotit = TRUE, plotit_leaflet = TRUE,
-                              data_return= c("osm_polygons"))
+                              data_return= c('osm_polygons'))
 
 }
 \references{
