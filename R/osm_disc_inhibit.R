@@ -1,63 +1,56 @@
 ##'@title OSM discrete Inhibitory sampling.
-##'@description Draw a spatially discrete sample from a specified set of spatial
+##'@description Draw a spatially discrete sample from a specified set of OSM spatial
 ##'  locations within a polygonal sampling region according to an
 ##'  \bold{'inhibitory plus close pairs'} specification.
-##'@param delta minimum permissible distance between any two locations in
+##'@param delta The minimum permissible distance between any two locations in
 ##'  preliminary sample. This can be allowed to vary with number of \code{'close
 ##'  pairs'} if a \bold{simple inhibitory} design is compared to one of the
 ##'  \bold{inhibitory plus close pairs} design.
-##'@param delta.fix 'logical' specifies whether \code{'delta'} is fixed or
+##'@param delta.fix A 'logical' input which specifies whether \code{'delta'} is fixed or
 ##'  allowed to vary with number of close pairs \eqn{k}. Default is
 ##'  \code{delta.fix = FALSE}.
-##'@param k number of close-pair locations in the sample. Must be an integer
+##'@param k The number of close-pair locations in the sample. It must be an integer
 ##'  between 0 and \code{size}/2.
-##'@param cp.criterion criterion for choosing close pairs \eqn{k}. The
+##'@param cp.criterion The criterion for choosing close pairs \eqn{k}. The
 ##'  \code{'cp.zeta'} criterion chooses locations not included in the initial
 ##'  sample, from the uniform distribution of a disk with radius \code{'zeta'}
 ##'  (NB: \code{zeta} argument must be provided for this criterion). The
 ##'  \code{'cp.neighb'} criterion chooses nearest neighbours amongst locations
 ##'  not included in the initial sample (\code{'zeta'} becomes trivial for
 ##'  \code{'cp.neighb'} criterion).
-##'@param zeta maximum permissible distance (radius of a disk with center
+##'@param zeta The maximum permissible distance (radius of a disk with center
 ##'  \eqn{x^{*}_{j}, j = 1, \ldots, k}) within which a close-pair point is
 ##'  placed. See \bold{Details}.
-##'@param ntries number of rejected proposals after which the algorithm
+##'@param ntries The number of rejected proposals after which the algorithm
 ##'  terminates.
-##'@param poly 'oional', a \code{sf} or \code{sp} polygon object in which the
-##'  design sits. The default is the bounding box of points given by \code{obj}.
-##'@param plotit 'logical' specifying if graphical output is required. Default
+##'@param plotit A 'logical' input specifying if a graphical output is required. Default
 ##'  is \code{plotit = TRUE}.
-##'@param bounding_geom a \code{sf} or \code{sp} object (with \eqn{N \geq
-##'  \code{size}}) where each line corresponds to one spatial location. It
-##'  should contain values of 2D coordinates, data and, orionally, covariate(s)
-##'  value(s) at the locations. This argument must be provided when sampling
-##'  from a \code{'discrete'} set of points, see \code{'type'} below for
-##'  details.
-##'@param sample_size a non-negative integer giving the total number of
+##'@param bounding_geom A \code{sf} or \code{sp} with each line corresponding to one spatial location. It
+##'  should contain values of 2D coordinates. This argument must be provided when sampling
+##'  from a \code{'discrete'} set of locations defined in OSM.
+##'@param sample_size A non-negative integer giving the total number of
 ##'  locations to be sampled.
-##'@param plotit 'logical' specifying if graphical output is required. Default
-##'  is \code{plotit = TRUE}.
-##'@param plotit_leaflet 'logical' specifying if leaflet (html) graphical output
+##'@param plotit_leaflet A 'logical' input specifying if leaflet (html) graphical output
 ##'  is required. This is prioritised over plotit if both are selected. Default
 ##'  is \code{plotit_leaflet = TRUE}.
-##'@param boundary categorical variable to determine whether the exact boundary
-##'  provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a
+##'@param boundary A categorical variable to determine whether the exact boundary
+##'  (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a
 ##'  buffer around the boundary \code{boundary = 2}) is used for sampling.
-##'  Default is \code{boundary = 0}.
-##'@param buff_dist if \code{boundary = 2}) then this value determines the size
+##'  The default is \code{boundary = 0}.
+##'@param buff_dist If \code{boundary = 2}) then this value determines the size
 ##'  of the buffer by distance. The default is \code{buff_dist is NULL}).
-##'@param buff_epsg if \code{boundary = 2}) then this value determines the local
+##'@param buff_epsg If \code{boundary = 2}) then this value determines the local
 ##'  geographic grid reference so that the buffer can be calculated in meters.
-##'  The default is  \code{buff_epsg = 4326}) which will use decimal degrees
+##'  The default is \code{buff_epsg = 4326}) which will use decimal degrees
 ##'  instead of meters. As an example, 27700 relates to the British National
 ##'  Grid.
-##'@param join_type a text value to determine how to spatially join all features
+##'@param join_type A text value to determine how to spatially join all features
 ##'  with the boundary. The options are 'within' or 'intersect'.
 ##'@param key A feature key as defined in OSM. An example is 'building'.
-##'@param value a value for a feature key (\code{key}); can be negated with an
+##'@param value A value for a feature key (\code{key}); can be negated with an
 ##'  initial exclamation mark, value = '!this', and can also be a vector, value
-##'  = c ('this', 'that').
-##'@param data_return specifies what data types (as specified in OSM) you want
+##'  = c ('this', 'that'). More details at \url{https://wiki.openstreetmap.org/wiki/Map_Features}.
+##'@param data_return A list which specifies what data types (as specified in OSM) you want
 ##'  returned. More than one can be selected. The options are 'osm_polygons',
 ##'  'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.
 ##'
@@ -176,7 +169,7 @@ discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NU
                                     data_return = c("osm_polygons", "osm_points", "osm_multipolygons", "multilines",
                                                     "lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within",
                                     sample_size, plotit = TRUE, plotit_leaflet = TRUE, delta, delta.fix = FALSE,
-                                    k = 0, cp.criterion = NULL, zeta, ntries = 10000, poly = NULL) {
+                                    k = 0, cp.criterion = NULL, zeta, ntries = 10000) {
 
   poly <- bounding_geom
   size <- sample_size
