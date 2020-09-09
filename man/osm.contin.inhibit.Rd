@@ -2,7 +2,7 @@
 % Please edit documentation in R/osm_cont_inhibit.R
 \name{osm.contin.inhibit}
 \alias{osm.contin.inhibit}
-\title{OSM Continuous Inhibitory sample}
+\title{OSM Continuous Inhibitory sampling.}
 \usage{
 osm.contin.inhibit(
   bounding_geom = NULL,

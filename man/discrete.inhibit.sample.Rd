@@ -2,7 +2,7 @@
 % Please edit documentation in R/osm_disc_inhibit.R
 \name{discrete.inhibit.sample}
 \alias{discrete.inhibit.sample}
-\title{Spatially discrete sampling}
+\title{OSM discrete Inhibitory sampling.}
 \usage{
 discrete.inhibit.sample(
   bounding_geom = NULL,
@@ -22,68 +22,64 @@ discrete.inhibit.sample(
   k = 0,
   cp.criterion = NULL,
   zeta,
-  ntries = 10000,
-  poly = NULL
+  ntries = 10000
 )
 }
 \arguments{
-\item{bounding_geom}{a \code{sf} or \code{sp} object (with \eqn{N \geq
- \code{size}}) where each line corresponds to one spatial location. It
-should contain values of 2D coordinates, data and, orionally, covariate(s)
-value(s) at the locations. This argument must be provided when sampling
-from a \code{'discrete'} set of points, see \code{'type'} below for
-details.}
+\item{bounding_geom}{A \code{sf} or \code{sp} with each line corresponding to one spatial location. It
+should contain values of 2D coordinates. This argument must be provided when sampling
+from a \code{'discrete'} set of locations defined in OSM.}
 
 \item{key}{A feature key as defined in OSM. An example is 'building'.}
 
-\item{value}{a value for a feature key (\code{key}); can be negated with an
+\item{value}{A value for a feature key (\code{key}); can be negated with an
 initial exclamation mark, value = '!this', and can also be a vector, value
-= c ('this', 'that').}
+= c ('this', 'that'). More details at \url{https://wiki.openstreetmap.org/wiki/Map_Features}.}
 
-\item{data_return}{specifies what data types (as specified in OSM) you want
+\item{data_return}{A list which specifies what data types (as specified in OSM) you want
 returned. More than one can be selected. The options are 'osm_polygons',
 'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.}
 
-\item{boundary}{categorical variable to determine whether the exact boundary
-provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a
+\item{boundary}{A categorical variable to determine whether the exact boundary
+(\code{boundary = 0}), the bounding box \code{boundary = 1}) or a
 buffer around the boundary \code{boundary = 2}) is used for sampling.
-Default is \code{boundary = 0}.}
+The default is \code{boundary = 0}.}
 
-\item{buff_dist}{if \code{boundary = 2}) then this value determines the size
+\item{buff_dist}{If \code{boundary = 2}) then this value determines the size
 of the buffer by distance. The default is \code{buff_dist is NULL}).}
 
-\item{buff_epsg}{if \code{boundary = 2}) then this value determines the local
+\item{buff_epsg}{If \code{boundary = 2}) then this value determines the local
 geographic grid reference so that the buffer can be calculated in meters.
-The default is  \code{buff_epsg = 4326}) which will use decimal degrees
+The default is \code{buff_epsg = 4326}) which will use decimal degrees
 instead of meters. As an example, 27700 relates to the British National
 Grid.}
 
-\item{join_type}{a text value to determine how to spatially join all features
+\item{join_type}{A text value to determine how to spatially join all features
 with the boundary. The options are 'within' or 'intersect'.}
 
-\item{sample_size}{a non-negative integer giving the total number of
+\item{sample_size}{A non-negative integer giving the total number of
 locations to be sampled.}
 
-\item{plotit}{'logical' specifying if graphical output is required. Default
+\item{plotit}{A 'logical' input specifying if a graphical output is required. Default
 is \code{plotit = TRUE}.}
 
-\item{plotit_leaflet}{'logical' specifying if leaflet (html) graphical output
+\item{plotit_leaflet}{A 'logical' input specifying if leaflet (html) graphical output
 is required. This is prioritised over plotit if both are selected. Default
 is \code{plotit_leaflet = TRUE}.}
 
-\item{delta}{minimum permissible distance between any two locations in
+\item{delta}{The minimum permissible distance between any two locations in
 preliminary sample. This can be allowed to vary with number of \code{'close
  pairs'} if a \bold{simple inhibitory} design is compared to one of the
 \bold{inhibitory plus close pairs} design.}
 
-\item{delta.fix}{'logical' specifies whether \code{'delta'} is fixed or
+\item{delta.fix}{A 'logical' input which specifies whether \code{'delta'} is fixed or
 allowed to vary with number of close pairs \eqn{k}. Default is
 \code{delta.fix = FALSE}.}
 
-\item{k}{number of close-pair locations in the sample. Must be an integer
+\item{k}{The number of close-pair locations in the sample. It must be an integer
 between 0 and \code{size}/2.}
 
-\item{cp.criterion}{criterion for choosing close pairs \eqn{k}. The
+\item{cp.criterion}{The criterion for choosing close pairs \eqn{k}. The
 \code{'cp.zeta'} criterion chooses locations not included in the initial
 sample, from the uniform distribution of a disk with radius \code{'zeta'}
 (NB: \code{zeta} argument must be provided for this criterion). The
@@ -91,15 +87,12 @@ sample, from the uniform distribution of a disk with radius \code{'zeta'}
 not included in the initial sample (\code{'zeta'} becomes trivial for
 \code{'cp.neighb'} criterion).}
 
-\item{zeta}{maximum permissible distance (radius of a disk with center
+\item{zeta}{The maximum permissible distance (radius of a disk with center
 \eqn{x^{*}_{j}, j = 1, \ldots, k}) within which a close-pair point is
 placed. See \bold{Details}.}
 
-\item{ntries}{number of rejected proposals after which the algorithm
+\item{ntries}{The number of rejected proposals after which the algorithm
 terminates.}
-
-\item{poly}{'oional', a \code{sf} or \code{sp} polygon object in which the
-design sits. The default is the bounding box of points given by \code{obj}.}
 }
 \value{
 a list with the following four components:
@@ -117,7 +110,7 @@ number of close pairs \eqn{k}. If \code{delta.fix = TRUE}, this will be
 final sampled locations and any associated values.
 }
 \description{
-Draw a spatially discrete sample from a specified set of spatial
+Draw a spatially discrete sample from a specified set of OSM spatial
 locations within a polygonal sampling region according to an
 \bold{'inhibitory plus close pairs'} specification.
 }
@@ -175,7 +168,9 @@ If \code{'delta'} is set to 0, a completely random sample is generated.
 In this case, \emph{'close pairs'} are not permitted and \code{'zeta'}
 becomes trivial.
 
-##' @examples library(sp) bounding_geom<- SpatialPolygonsDataFrame(
+@examples
+library(sp)
+bounding_geom<- SpatialPolygonsDataFrame(
 SpatialPolygons(list(Polygons(list(Polygon( cbind(
 c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
 
