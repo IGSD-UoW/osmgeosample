@@ -1,16 +1,16 @@
 ##'@title OSM discrete Inhibitory sampling.
-##'@description Draw a spatially discrete sample from a specified set of OSM spatial
-##'  locations within a polygonal sampling region according to an
+##'@description Draw a spatially discrete sample from a specified set of OSM
+##'  spatial locations within a polygonal sampling region according to an
 ##'  \bold{'inhibitory plus close pairs'} specification.
 ##'@param delta The minimum permissible distance between any two locations in
 ##'  preliminary sample. This can be allowed to vary with number of \code{'close
 ##'  pairs'} if a \bold{simple inhibitory} design is compared to one of the
 ##'  \bold{inhibitory plus close pairs} design.
-##'@param delta.fix A 'logical' input which specifies whether \code{'delta'} is fixed or
-##'  allowed to vary with number of close pairs \eqn{k}. Default is
+##'@param delta.fix A 'logical' input which specifies whether \code{'delta'} is
+##'  fixed or allowed to vary with number of close pairs \eqn{k}. Default is
 ##'  \code{delta.fix = FALSE}.
-##'@param k The number of close-pair locations in the sample. It must be an integer
-##'  between 0 and \code{size}/2.
+##'@param k The number of close-pair locations in the sample. It must be an
+##'  integer between 0 and \code{size}/2.
 ##'@param cp.criterion The criterion for choosing close pairs \eqn{k}. The
 ##'  \code{'cp.zeta'} criterion chooses locations not included in the initial
 ##'  sample, from the uniform distribution of a disk with radius \code{'zeta'}
@@ -23,20 +23,21 @@
 ##'  placed. See \bold{Details}.
 ##'@param ntries The number of rejected proposals after which the algorithm
 ##'  terminates.
-##'@param plotit A 'logical' input specifying if a graphical output is required. Default
-##'  is \code{plotit = TRUE}.
-##'@param bounding_geom A \code{sf} or \code{sp} with each line corresponding to one spatial location. It
-##'  should contain values of 2D coordinates. This argument must be provided when sampling
-##'  from a \code{'discrete'} set of locations defined in OSM.
+##'@param plotit A 'logical' input specifying if a graphical output is required.
+##'  Default is \code{plotit = TRUE}.
+##'@param bounding_geom A \code{sf} or \code{sp} with each line corresponding to
+##'  one spatial location. It should contain values of 2D coordinates. This
+##'  argument must be provided when sampling from a \code{'discrete'} set of
+##'  locations defined in OSM.
 ##'@param sample_size A non-negative integer giving the total number of
 ##'  locations to be sampled.
-##'@param plotit_leaflet A 'logical' input specifying if leaflet (html) graphical output
-##'  is required. This is prioritised over plotit if both are selected. Default
-##'  is \code{plotit_leaflet = TRUE}.
-##'@param boundary A categorical variable to determine whether the exact boundary
-##'  (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a
-##'  buffer around the boundary \code{boundary = 2}) is used for sampling.
-##'  The default is \code{boundary = 0}.
+##'@param plotit_leaflet A 'logical' input specifying if leaflet (html)
+##'  graphical output is required. This is prioritised over plotit if both are
+##'  selected. Default is \code{plotit_leaflet = TRUE}.
+##'@param boundary A categorical variable to determine whether the exact
+##'  boundary (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a
+##'  buffer around the boundary \code{boundary = 2}) is used for sampling. The
+##'  default is \code{boundary = 0}.
 ##'@param buff_dist If \code{boundary = 2}) then this value determines the size
 ##'  of the buffer by distance. The default is \code{buff_dist is NULL}).
 ##'@param buff_epsg If \code{boundary = 2}) then this value determines the local
@@ -49,10 +50,12 @@
 ##'@param key A feature key as defined in OSM. An example is 'building'.
 ##'@param value A value for a feature key (\code{key}); can be negated with an
 ##'  initial exclamation mark, value = '!this', and can also be a vector, value
-##'  = c ('this', 'that'). More details at \url{https://wiki.openstreetmap.org/wiki/Map_Features}.
-##'@param data_return A list which specifies what data types (as specified in OSM) you want
-##'  returned. More than one can be selected. The options are 'osm_polygons',
-##'  'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.
+##'  = c ('this', 'that'). More details at
+##'  \url{https://wiki.openstreetmap.org/wiki/Map_Features}.
+##'@param data_return A list which specifies what data types (as specified in
+##'  OSM) you want returned. More than one can be selected. The options are
+##'  'osm_polygons', 'osm_points',
+##'  'osm_multipolygons','osm_multilines','osm_lines'.
 ##'
 ##'@details To draw a sample of size \eqn{n} from a population of spatial
 ##'  locations \eqn{X_{i} : i  = 1,\ldots,N}, with the property that the
@@ -122,7 +125,6 @@
 ##'  bounding_geom<- SpatialPolygonsDataFrame(
 ##'  SpatialPolygons(list(Polygons(list(Polygon( cbind(
 ##'  c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
-##'
 ##'  c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,7.379483)))),
 ##'  ID=1))), data.frame( ID=1)) proj4string(bounding_geom) <-
 ##'  CRS('+proj=longlat +datum=WGS84')
