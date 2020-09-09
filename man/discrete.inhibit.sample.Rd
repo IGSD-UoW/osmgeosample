@@ -27,105 +27,176 @@ discrete.inhibit.sample(
 )
 }
 \arguments{
-\item{bounding_geom}{a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, orionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.}
+\item{bounding_geom}{a \code{sf} or \code{sp} object (with \eqn{N \geq
+ \code{size}}) where each line corresponds to one spatial location. It
+should contain values of 2D coordinates, data and, orionally, covariate(s)
+value(s) at the locations. This argument must be provided when sampling
+from a \code{'discrete'} set of points, see \code{'type'} below for
+details.}
 
 \item{key}{A feature key as defined in OSM. An example is 'building'.}
 
-\item{value}{a value for a feature key (\code{key}); can be negated with an initial exclamation mark, value = '!this', and can also be a vector, value = c ('this', 'that').}
+\item{value}{a value for a feature key (\code{key}); can be negated with an
+initial exclamation mark, value = '!this', and can also be a vector, value
+= c ('this', 'that').}
 
-\item{data_return}{specifies what data types (as specified in OSM) you want returned. More than one can be selected. The options are 'osm_polygons', 'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.}
+\item{data_return}{specifies what data types (as specified in OSM) you want
+returned. More than one can be selected. The options are 'osm_polygons',
+'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.}
 
-\item{boundary}{categorical variable to determine whether the exact boundary provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a buffer around the boundary \code{boundary = 2}) is used for sampling. Default is \code{boundary = 0}.}
+\item{boundary}{categorical variable to determine whether the exact boundary
+provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a
+buffer around the boundary \code{boundary = 2}) is used for sampling.
+Default is \code{boundary = 0}.}
 
-\item{buff_dist}{if \code{boundary = 2}) then this value determines the size of the buffer by distance. The default is \code{buff_dist is NULL}).}
+\item{buff_dist}{if \code{boundary = 2}) then this value determines the size
+of the buffer by distance. The default is \code{buff_dist is NULL}).}
 
-\item{buff_epsg}{if \code{boundary = 2}) then this value determines the local geographic grid reference so that the buffer can be calculated in meters. The default is  \code{buff_epsg = 4326}) which will use decimal degrees instead of meters. As an example, 27700 relates to the British National Grid.}
+\item{buff_epsg}{if \code{boundary = 2}) then this value determines the local
+geographic grid reference so that the buffer can be calculated in meters.
+The default is  \code{buff_epsg = 4326}) which will use decimal degrees
+instead of meters. As an example, 27700 relates to the British National
+Grid.}
 
-\item{join_type}{a text value to determine how to spatially join all features with the boundary. The options are 'within' or 'intersect'.}
+\item{join_type}{a text value to determine how to spatially join all features
+with the boundary. The options are 'within' or 'intersect'.}
 
-\item{sample_size}{a non-negative integer giving the total number of locations to be sampled.}
+\item{sample_size}{a non-negative integer giving the total number of
+locations to be sampled.}
 
-\item{plotit}{'logical' specifying if graphical output is required. Default is \code{plotit = TRUE}.}
+\item{plotit}{'logical' specifying if graphical output is required. Default
+is \code{plotit = TRUE}.}
 
-\item{plotit_leaflet}{'logical' specifying if leaflet (html) graphical output is required. This is prioritised over plotit if both are selected. Default is \code{plotit_leaflet = TRUE}.}
+\item{plotit_leaflet}{'logical' specifying if leaflet (html) graphical output
+is required. This is prioritised over plotit if both are selected. Default
+is \code{plotit_leaflet = TRUE}.}
 
-\item{delta}{minimum permissible distance between any two locations in preliminary sample. This can be allowed to vary with number of \code{'close pairs'} if a \bold{simple inhibitory} design is compared to one of the \bold{inhibitory plus close pairs} design.}
+\item{delta}{minimum permissible distance between any two locations in
+preliminary sample. This can be allowed to vary with number of \code{'close
+ pairs'} if a \bold{simple inhibitory} design is compared to one of the
+\bold{inhibitory plus close pairs} design.}
 
-\item{delta.fix}{'logical' specifies whether \code{'delta'} is fixed or allowed to vary with number of close pairs \eqn{k}. Default is \code{delta.fix = FALSE}.}
+\item{delta.fix}{'logical' specifies whether \code{'delta'} is fixed or
+allowed to vary with number of close pairs \eqn{k}. Default is
+\code{delta.fix = FALSE}.}
 
-\item{k}{number of close-pair locations in the sample. Must be an integer between 0 and \code{size}/2.}
+\item{k}{number of close-pair locations in the sample. Must be an integer
+between 0 and \code{size}/2.}
 
-\item{cp.criterion}{criterion for choosing close pairs \eqn{k}. The \code{'cp.zeta'} criterion chooses locations not included in the initial sample, from the uniform distribution of a disk with radius \code{'zeta'} (NB: \code{zeta} argument must be provided for this criterion). The \code{'cp.neighb'} criterion chooses nearest neighbours amongst locations not included in the initial sample (\code{'zeta'} becomes trivial for \code{'cp.neighb'} criterion).}
+\item{cp.criterion}{criterion for choosing close pairs \eqn{k}. The
+\code{'cp.zeta'} criterion chooses locations not included in the initial
+sample, from the uniform distribution of a disk with radius \code{'zeta'}
+(NB: \code{zeta} argument must be provided for this criterion). The
+\code{'cp.neighb'} criterion chooses nearest neighbours amongst locations
+not included in the initial sample (\code{'zeta'} becomes trivial for
+\code{'cp.neighb'} criterion).}
 
-\item{zeta}{maximum permissible distance (radius of a disk with center \eqn{x^{*}_{j}, j = 1, \ldots, k}) within which a close-pair point is placed. See \bold{Details}.}
+\item{zeta}{maximum permissible distance (radius of a disk with center
+\eqn{x^{*}_{j}, j = 1, \ldots, k}) within which a close-pair point is
+placed. See \bold{Details}.}
 
-\item{ntries}{number of rejected proposals after which the algorithm terminates.}
+\item{ntries}{number of rejected proposals after which the algorithm
+terminates.}
 
-\item{poly}{'oional', a \code{sf} or \code{sp} polygon object in which the design sits. The default is the bounding box of points given by \code{obj}.}
+\item{poly}{'oional', a \code{sf} or \code{sp} polygon object in which the
+design sits. The default is the bounding box of points given by \code{obj}.}
 }
 \value{
 a list with the following four components:
 
 \code{unique.locs:} the number of unique sampled locations.
 
-\code{delta:} the value of \eqn{\delta} after taking into account the number of close pairs \eqn{k}. If \code{delta.fix = TRUE}, this will be \eqn{\delta} input by the user.
+\code{delta:} the value of \eqn{\delta} after taking into account the
+number of close pairs \eqn{k}. If \code{delta.fix = TRUE}, this will be
+\eqn{\delta} input by the user.
 
-\eqn{k:} the number of close pairs included in the sample (for \bold{inhibitory plus close pairs} design).
+\eqn{k:} the number of close pairs included in the sample (for
+\bold{inhibitory plus close pairs} design).
 
-\code{sample.locs:} a \code{sf} or \code{sp} object containing the final sampled locations and any associated values.
+\code{sample.locs:} a \code{sf} or \code{sp} object containing the
+final sampled locations and any associated values.
 }
 \description{
 Spatially discrete sampling
 }
 \details{
-To draw a sample of size \eqn{n} from a population of spatial locations \eqn{X_{i} : i  = 1,\ldots,N}, with the property that the distance between any two sampled locations is at least \eqn{\delta}, the function implements the following algorithm.
-\itemize{
-\item{Step 1.} Draw an initial sample of size \eqn{n}  completely at random and call this \eqn{x_{i}  : i  = 1,\dots, n}.
-\item{Step 2.} Set \eqn{i  = 1}.
-\item{Step 3.} Calculate the smallest distance, \eqn{d_{\min}}, from \eqn{x_{i}}  to all other \eqn{x_{j}}  in the initial sample.
-\item{Step 4.} If \eqn{d_{\min} \ge \delta}, increase \eqn{i}  by 1 and return to step 2 if \eqn{i \le n}, otherwise stop.
-\item{Step 5.} If \eqn{d_{\min} < \delta}, draw an integer \eqn{j}  at random from \eqn{1,  2,\ldots,N}, set \eqn{x_{i}  = X_{j}}  and return to step 3.}
+To draw a sample of size \eqn{n} from a population of spatial
+locations \eqn{X_{i} : i  = 1,\ldots,N}, with the property that the
+distance between any two sampled locations is at least \eqn{\delta}, the
+function implements the following algorithm. \itemize{ \item{Step 1.} Draw
+an initial sample of size \eqn{n}  completely at random and call this
+\eqn{x_{i}  : i  = 1,\dots, n}. \item{Step 2.} Set \eqn{i  = 1}. \item{Step
+3.} Calculate the smallest distance, \eqn{d_{\min}}, from \eqn{x_{i}}  to
+all other \eqn{x_{j}}  in the initial sample. \item{Step 4.} If
+\eqn{d_{\min} \ge \delta}, increase \eqn{i}  by 1 and return to step 2 if
+\eqn{i \le n}, otherwise stop. \item{Step 5.} If \eqn{d_{\min} < \delta},
+draw an integer \eqn{j}  at random from \eqn{1,  2,\ldots,N}, set
+\eqn{x_{i}  = X_{j}}  and return to step 3.}
 
-Samples generated in this way exhibit  more regular spatial arrangements than would random samples of the same size. The degree of regularity achievable will be influenced by the spatial arrangement of the population \eqn{X_{i}  : i  = 1,\ldots,N}, the specified value of \eqn{\delta}  and the sample size \eqn{n}. For any given population, if \eqn{n}  and/or \eqn{\delta} is too large, a sample of the required size with the distance between any two sampled locations at least \eqn{\delta} will not be achievable; the algorithm will then find \eqn{n_{s} < n} points that can be placed for the given parameters.
+Samples generated in this way exhibit  more regular spatial arrangements
+than would random samples of the same size. The degree of regularity
+achievable will be influenced by the spatial arrangement of the population
+\eqn{X_{i}  : i  = 1,\ldots,N}, the specified value of \eqn{\delta}  and
+the sample size \eqn{n}. For any given population, if \eqn{n}  and/or
+\eqn{\delta} is too large, a sample of the required size with the distance
+between any two sampled locations at least \eqn{\delta} will not be
+achievable; the algorithm will then find \eqn{n_{s} < n} points that can be
+placed for the given parameters.
 
 \bold{Sampling close pairs of points.}
 
-For some purposes, typically when using the same sample for parameter estimation and spatial prediction, it is desirable that a spatial sampling scheme include pairs of closely spaced points \eqn{x}. The function offers two ways of specifying close pairs, either as the closest available unsampled point to an existing sampled point \code{(cp.critetrion = cp.neighb)}, or as a random choice from amongst all available unsampled points within distance \eqn{zeta} of an existing sampled point \code{(cp.criterion = cp.zeta)}.
-The algorithm proceeds as follows.
+For some purposes, typically when using the same sample for parameter
+estimation and spatial prediction, it is desirable that a spatial sampling
+scheme include pairs of closely spaced points \eqn{x}. The function offers
+two ways of specifying close pairs, either as the closest available
+unsampled point to an existing sampled point \code{(cp.critetrion =
+ cp.neighb)}, or as a random choice from amongst all available unsampled
+points within distance \eqn{zeta} of an existing sampled point
+\code{(cp.criterion = cp.zeta)}. The algorithm proceeds as follows.
 
-Let \eqn{k} be the required number of close pairs.
-\itemize{
-\item{Step 1.} Construct a simple inhibitory design \bold{SI}\eqn{(n - k, \delta)}.
-\item{Step 2.} Sample \eqn{k} from \eqn{x_{1}, \ldots, x_{n - k}} without replacement and call this set \eqn{x_{j} : j = 1, \ldots, k}.
-\item{Step 3.} For each \eqn{x_{j}: j = 1, \ldots, k}, select a close pair \eqn{x_{n-k+j}} according to the specified criterion.}
+Let \eqn{k} be the required number of close pairs. \itemize{ \item{Step 1.}
+Construct a simple inhibitory design \bold{SI}\eqn{(n - k, \delta)}.
+\item{Step 2.} Sample \eqn{k} from \eqn{x_{1}, \ldots, x_{n - k}} without
+replacement and call this set \eqn{x_{j} : j = 1, \ldots, k}. \item{Step
+3.} For each \eqn{x_{j}: j = 1, \ldots, k}, select a close pair
+\eqn{x_{n-k+j}} according to the specified criterion.}
 
-\bold{Note:} Depending on the spatial configuration of potential sampling locations and, when the selection criterion \code{cp.criterion = cp.zeta}, the specified value of \eqn{zeta}, it is possible that one or more of the selected points  \eqn{x_{j}} in Step 2 will not have an eligible ``close pair''. In this case, the algorithm will try  find an alternative \eqn{x_{j}} and report a warning if it fails to do so.
+\bold{Note:} Depending on the spatial configuration of potential sampling
+locations and, when the selection criterion \code{cp.criterion = cp.zeta},
+the specified value of \eqn{zeta}, it is possible that one or more of the
+selected points  \eqn{x_{j}} in Step 2 will not have an eligible ``close
+pair''. In this case, the algorithm will try  find an alternative
+\eqn{x_{j}} and report a warning if it fails to do so.
 }
 \note{
-If \code{'delta'} is set to 0, a completely random sample is generated. In this case, \emph{'close pairs'} are not permitted and \code{'zeta'} becomes trivial.
+If \code{'delta'} is set to 0, a completely random sample is generated.
+In this case, \emph{'close pairs'} are not permitted and \code{'zeta'}
+becomes trivial.
 
-##' @examples
-library(sp)
-bounding_geom<-
-SpatialPolygonsDataFrame(
-SpatialPolygons(list(Polygons(list(Polygon(
-cbind(
+##' @examples library(sp) bounding_geom<- SpatialPolygonsDataFrame(
+SpatialPolygons(list(Polygons(list(Polygon( cbind(
 c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
-c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,7.379483)))), ID=1))),
-data.frame( ID=1))
-proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 
-set.seed(15892)
-discrete.inhibit.sample(bounding_geom=bounding_geom, data_return=c('osm_polygons'),boundary=0, buff_dist=NULL,
-buff_epsg=NULL, join_type='within', sample_size=70, plotit=TRUE,
-plotit_leaflet = TRUE, delta = 5, key ='building', value=NULL,
-delta.fix = TRUE, k = 0, cp.criterion = 'cp.neighb', zeta = 0.025, ntries = 5)
+c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,7.379483)))),
+ID=1))), data.frame( ID=1)) proj4string(bounding_geom) <-
+CRS('+proj=longlat +datum=WGS84')
+
+set.seed(15892) discrete.inhibit.sample(bounding_geom=bounding_geom,
+data_return=c('osm_polygons'),boundary=0, buff_dist=NULL, buff_epsg=NULL,
+join_type='within', sample_size=70, plotit=TRUE, plotit_leaflet = TRUE,
+delta = 5, key ='building', value=NULL, delta.fix = TRUE, k = 0,
+cp.criterion = 'cp.neighb', zeta = 0.025, ntries = 5)
 }
 \references{
-Chipeta  M G, Terlouw D J, Phiri K S and Diggle P J. (2016). Inhibitory geostatistical designs for spatial prediction taking account of uncertain covariance structure, \emph{Enviromentrics}, pp. 1-11.
-Diggle P J. (2014). \emph{Statistical Analysis of Spatial and Spatio-Temporal Point Patterns.} 3rd ed., Boca Raton: CRC Press
-Diggle P J and Lophaven S. (2006). Bayesian geostatistical design, \emph{Scandinavian Journal of Statistics} \bold{33}(1) pp. 53 - 64.
-Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis code in S-Plus. Computers and Geosciences, 19, 627-655
+Chipeta  M G, Terlouw D J, Phiri K S and Diggle P J. (2016).
+Inhibitory geostatistical designs for spatial prediction taking account of
+uncertain covariance structure, \emph{Enviromentrics}, pp. 1-11. Diggle P
+J. (2014). \emph{Statistical Analysis of Spatial and Spatio-Temporal Point
+Patterns.} 3rd ed., Boca Raton: CRC Press Diggle P J and Lophaven S.
+(2006). Bayesian geostatistical design, \emph{Scandinavian Journal of
+Statistics} \bold{33}(1) pp. 53 - 64. Rowlingson, B. and Diggle, P. 1993
+Splancs: spatial point pattern analysis code in S-Plus. Computers and
+Geosciences, 19, 627-655
 }
 \author{
 Henry J. Crosby \email{henry.crosby@warwick.ac.uk}

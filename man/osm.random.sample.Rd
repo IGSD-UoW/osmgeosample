@@ -21,35 +21,67 @@ osm.random.sample(
 )
 }
 \arguments{
-\item{bounding_geom}{a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, optionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.}
+\item{bounding_geom}{a \code{sf} or \code{sp} object (with \eqn{N \geq
+ \code{size}}) where each line corresponds to one spatial location. It
+should contain values of 2D coordinates, data and, optionally, covariate(s)
+value(s) at the locations. This argument must be provided when sampling
+from a \code{'discrete'} set of points, see \code{'type'} below for
+details.}
 
 \item{key}{A feature key as defined in OSM. An example is 'building'.}
 
-\item{value}{a value for a feature key (\code{key}); can be negated with an initial exclamation mark, value = '!this', and can also be a vector, value = c ('this', 'that').}
+\item{value}{a value for a feature key (\code{key}); can be negated with an
+initial exclamation mark, value = '!this', and can also be a vector, value
+= c ('this', 'that').}
 
-\item{data_return}{specifies what data types (as specified in OSM) you want returned. More than one can be selected. The options are 'osm_polygons', 'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.}
+\item{data_return}{specifies what data types (as specified in OSM) you want
+returned. More than one can be selected. The options are 'osm_polygons',
+'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.}
 
-\item{boundary}{categorical variable to determine whether the exact boundary provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a buffer around the boundary \code{boundary = 2}) is used for sampling. Default is \code{boundary = 0}.}
+\item{boundary}{categorical variable to determine whether the exact boundary
+provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a
+buffer around the boundary \code{boundary = 2}) is used for sampling.
+Default is \code{boundary = 0}.}
 
-\item{buff_dist}{if \code{boundary = 2} then this value determines the size of the buffer by distance. The default is \code{buff_dist is NULL}).}
+\item{buff_dist}{if \code{boundary = 2} then this value determines the size
+of the buffer by distance. The default is \code{buff_dist is NULL}).}
 
-\item{buff_epsg}{if \code{boundary = 2} then this value determines the local geographic grid reference so that the buffer can be calculated in meters. The default is  \code{buff_epsg = 4326}) which will use decimal degrees instead of meters. As an example, 27700 relates to the British National Grid.}
+\item{buff_epsg}{if \code{boundary = 2} then this value determines the local
+geographic grid reference so that the buffer can be calculated in meters.
+The default is  \code{buff_epsg = 4326}) which will use decimal degrees
+instead of meters. As an example, 27700 relates to the British National
+Grid.}
 
-\item{join_type}{a text value to determine how to spatially join all features with the boundary. The options are 'within' or 'intersect'.}
+\item{join_type}{a text value to determine how to spatially join all features
+with the boundary. The options are 'within' or 'intersect'.}
 
-\item{dis_or_cont}{random sampling, a choice of either \code{'discrete'}, from a set of \eqn{N} potential sampling points or \code{'continuum'} from independent, compeletely random points.}
+\item{dis_or_cont}{random sampling, a choice of either \code{'discrete'},
+from a set of \eqn{N} potential sampling points or \code{'continuum'} from
+independent, compeletely random points.}
 
-\item{sample_size}{a non-negative integer giving the total number of locations to be sampled.}
+\item{sample_size}{a non-negative integer giving the total number of
+locations to be sampled.}
 
-\item{plotit}{'logical' specifying if graphical output is required. Default is \code{plotit = TRUE}.}
+\item{plotit}{'logical' specifying if graphical output is required. Default
+is \code{plotit = TRUE}.}
 
-\item{plotit_leaflet}{'logical' specifying if leaflet (html) graphical output is required. This is prioritised over plotit if both are selected. Default is \code{plotit_leaflet = TRUE}.}
+\item{plotit_leaflet}{'logical' specifying if leaflet (html) graphical output
+is required. This is prioritised over plotit if both are selected. Default
+is \code{plotit_leaflet = TRUE}.}
 }
 \value{
-a \code{df} object named 'results' of dimension \eqn{n} by \code{4} containing the final sampled \code{osm_ids}, centroid locations (named \code{x,y}) and whether the instance is in the selected sample (named \code{inSample} with a value of \code{0/1}), if sampling from a \code{'discrete'} set of points. A \code{df} object of dimension \eqn{n} by \code{3} containing the serial id and centroid locations for all sample instances,if sampling from a \code{'continuum'}.
+a \code{df} object named 'results' of dimension \eqn{n} by \code{4}
+containing the final sampled \code{osm_ids}, centroid locations (named
+\code{x,y}) and whether the instance is in the selected sample (named
+\code{inSample} with a value of \code{0/1}), if sampling from a
+\code{'discrete'} set of points. A \code{df} object of dimension \eqn{n} by
+\code{3} containing the serial id and centroid locations for all sample
+instances,if sampling from a \code{'continuum'}.
 }
 \description{
-This function draws a spatially random sample from a either (1) a discrete set of OSM features defined in the function parameters or (2) a continuous surface defined by a user definted geographical region.
+This function draws a spatially random sample from a either (1)
+a discrete set of OSM features defined in the function parameters or (2) a
+continuous surface defined by a user definted geographical region.
 }
 \examples{
 library(sp)
@@ -72,7 +104,8 @@ xy.sample <- osm.random.sample(buff_dist=NULL, bounding_geom = bounding_geom,
 
 }
 \references{
-Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis code in S-Plus. Computers and Geosciences, 19, 627-655
+Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern
+analysis code in S-Plus. Computers and Geosciences, 19, 627-655
 https://wiki.openstreetmap.org/wiki/Map_Features
 }
 \author{

@@ -1,47 +1,97 @@
-##' @title OSM Continuous Inhibitory sample
-##' @description Draws a spatially continous sample of locations within a polygonal sampling region according to an \bold{'inhibitory plus close pairs'} specification. The region can be defined using OSM data or a user defined polygon.
-##' @param bounding_geom a \code{sf} or \code{sp} object (with \eqn{N \geq \code{size}}) where each line corresponds to one spatial location. It should contain values of 2D coordinates, data and, optionally, covariate(s) value(s) at the locations. This argument must be provided when sampling from a \code{'discrete'} set of points, see \code{'type'} below for details.
-##' @param sample_size a non-negative integer giving the total number of locations to be sampled.
-##' @param plotit 'logical' specifying if graphical output is required. Default is \code{plotit = TRUE}.
-##' @param plotit_leaflet 'logical' specifying if leaflet (html) graphical output is required. This is prioritised over plotit if both are selected. Default is \code{plotit_leaflet = TRUE}.
-##' @param boundary categorical variable to determine whether the exact boundary provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a buffer around the boundary \code{boundary = 2}) is used for sampling. Default is \code{boundary = 0}.
-##' @param buff_dist if \code{boundary = 2}) then this value determines the size of the buffer by distance. The default is \code{buff_dist is NULL}).
-##' @param buff_epsg if \code{boundary = 2}) then this value determines the local geographic grid reference so that the buffer can be calculated in meters. The default is  \code{buff_epsg = 4326}) which will use decimal degrees instead of meters. As an example, 27700 relates to the British National Grid.
-##' @param delta minimum permissible distance between any two locations in preliminary sample. This can be allowed to vary with the number of \code{'close pairs'} if a \bold{simple inhibitory} design is compared to one of the \bold{inhibitory plus close pairs} design.
-##' @param delta.fix 'logical' specifies whether \code{delta} is fixed or allowed to vary with number of close pairs \eqn{k}. Default is \code{delta.fix = FALSE}.
-##' @param k number of locations in preliminary sample to be replaced by near neighbours of other preliminary sample locations to form \code{close pairs} (integer between 0 and \code{size/2}). A \bold{simple inhibitory} deisgn is generated when \eqn{k = 0}.
-##' @param rho maximum distance between the two locations in a \code{'close-pair'}.
-##' @param ntries number of rejected proposals after which the algorithm will terminate.
+##'@title OSM Continuous Inhibitory sample
+##'@description Draws a spatially continous sample of locations within a
+##'  polygonal sampling region according to an \bold{'inhibitory plus close
+##'  pairs'} specification. The region can be defined using OSM data or a user
+##'  defined polygon.
+##'@param bounding_geom a \code{sf} or \code{sp} object (with \eqn{N \geq
+##'  \code{size}}) where each line corresponds to one spatial location. It
+##'  should contain values of 2D coordinates, data and, optionally, covariate(s)
+##'  value(s) at the locations. This argument must be provided when sampling
+##'  from a \code{'discrete'} set of points, see \code{'type'} below for
+##'  details.
+##'@param sample_size a non-negative integer giving the total number of
+##'  locations to be sampled.
+##'@param plotit 'logical' specifying if graphical output is required. Default
+##'  is \code{plotit = TRUE}.
+##'@param plotit_leaflet 'logical' specifying if leaflet (html) graphical output
+##'  is required. This is prioritised over plotit if both are selected. Default
+##'  is \code{plotit_leaflet = TRUE}.
+##'@param boundary categorical variable to determine whether the exact boundary
+##'  provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a
+##'  buffer around the boundary \code{boundary = 2}) is used for sampling.
+##'  Default is \code{boundary = 0}.
+##'@param buff_dist if \code{boundary = 2}) then this value determines the size
+##'  of the buffer by distance. The default is \code{buff_dist is NULL}).
+##'@param buff_epsg if \code{boundary = 2}) then this value determines the local
+##'  geographic grid reference so that the buffer can be calculated in meters.
+##'  The default is  \code{buff_epsg = 4326}) which will use decimal degrees
+##'  instead of meters. As an example, 27700 relates to the British National
+##'  Grid.
+##'@param delta minimum permissible distance between any two locations in
+##'  preliminary sample. This can be allowed to vary with the number of
+##'  \code{'close pairs'} if a \bold{simple inhibitory} design is compared to
+##'  one of the \bold{inhibitory plus close pairs} design.
+##'@param delta.fix 'logical' specifies whether \code{delta} is fixed or allowed
+##'  to vary with number of close pairs \eqn{k}. Default is \code{delta.fix =
+##'  FALSE}.
+##'@param k number of locations in preliminary sample to be replaced by near
+##'  neighbours of other preliminary sample locations to form \code{close pairs}
+##'  (integer between 0 and \code{size/2}). A \bold{simple inhibitory} deisgn is
+##'  generated when \eqn{k = 0}.
+##'@param rho maximum distance between the two locations in a
+##'  \code{'close-pair'}.
+##'@param ntries number of rejected proposals after which the algorithm will
+##'  terminate.
 ##'
-##' @details  To draw a simple inhibitory (\bold{SI}) sample of size \code{n}  from a spatially continuous region \eqn{A}, with the property that the distance between any two sampled locations is at least \code{delta}, the following algorithm is used.
-##' \itemize{
-##' \item{Step 1.} Set \eqn{i  = 1} and generate a point \eqn{x_{1}}  uniformly distributed on \eqn{{\cal D}}.
-##' \item{Step 2.} Generate a point \eqn{x}  uniformly distributed on \eqn{{\cal D}} and calculate the minimum, \eqn{d_{\min}}, of the distances from \eqn{x_{i}} to all \eqn{x_{j}: j \leq i }.
-##' \item{Step 3.} If \eqn{d_{\min} \ge \delta}, increase \eqn{i}  by 1, set \eqn{x_{i} = x} and return to step 2 if \eqn{i \le n}, otherwise stop;
-##' \item{Step 4.} If \eqn{d_{\min} < \delta}, return to step 2 without increasing \eqn{i}.
-##' }
+##'@details  To draw a simple inhibitory (\bold{SI}) sample of size \code{n}
+##'  from a spatially continuous region \eqn{A}, with the property that the
+##'  distance between any two sampled locations is at least \code{delta}, the
+##'  following algorithm is used. \itemize{ \item{Step 1.} Set \eqn{i  = 1} and
+##'  generate a point \eqn{x_{1}}  uniformly distributed on \eqn{{\cal D}}.
+##'  \item{Step 2.} Generate a point \eqn{x}  uniformly distributed on
+##'  \eqn{{\cal D}} and calculate the minimum, \eqn{d_{\min}}, of the distances
+##'  from \eqn{x_{i}} to all \eqn{x_{j}: j \leq i }. \item{Step 3.} If
+##'  \eqn{d_{\min} \ge \delta}, increase \eqn{i}  by 1, set \eqn{x_{i} = x} and
+##'  return to step 2 if \eqn{i \le n}, otherwise stop; \item{Step 4.} If
+##'  \eqn{d_{\min} < \delta}, return to step 2 without increasing \eqn{i}. }
 ##'
-##' \bold{Sampling close pairs of points.}
+##'  \bold{Sampling close pairs of points.}
 ##'
-##' For some purposes, it is desirable that a spatial sampling scheme include pairs of closely spaced points, resulting in an inhibitory plus close pairs (\bold{ICP}) design. In this case, the above algorithm requires the following additional steps to be taken.
-##' Let \eqn{k}  be the required number of close pairs. Choose a value \code{rho}  such that a close pair  of points will be a pair of points separated by a distance of at most \code{rho}.
-##' \itemize{
-##' \item{Step 5.} Set \eqn{j  = 1} and draw a random sample of size 2 from integers \eqn{1, 2, \ldots, n}, say \eqn{(i_1, i_2)};
-##' \item{Step 6.} Replace \eqn{x_{i_{1}}} by \eqn{x_{i_{2}} + u} , where \eqn{u}  is uniformly distributed on the disc with centre \eqn{x_{i_{2}}} and radius \code{rho}, increase \eqn{i} by 1 and return to step 5 if \eqn{i \le k}, otherwise stop.
-##' }
+##'  For some purposes, it is desirable that a spatial sampling scheme include
+##'  pairs of closely spaced points, resulting in an inhibitory plus close pairs
+##'  (\bold{ICP}) design. In this case, the above algorithm requires the
+##'  following additional steps to be taken. Let \eqn{k}  be the required number
+##'  of close pairs. Choose a value \code{rho}  such that a close pair  of
+##'  points will be a pair of points separated by a distance of at most
+##'  \code{rho}. \itemize{ \item{Step 5.} Set \eqn{j  = 1} and draw a random
+##'  sample of size 2 from integers \eqn{1, 2, \ldots, n}, say \eqn{(i_1, i_2)};
+##'  \item{Step 6.} Replace \eqn{x_{i_{1}}} by \eqn{x_{i_{2}} + u} , where
+##'  \eqn{u}  is uniformly distributed on the disc with centre \eqn{x_{i_{2}}}
+##'  and radius \code{rho}, increase \eqn{i} by 1 and return to step 5 if \eqn{i
+##'  \le k}, otherwise stop. }
 ##'
-##' When comparing a \bold{SI} design to one of the \bold{ICP} designs, the inhibitory components should have the same degree of spatial regularity.
-##' This requires \eqn{\delta} to become a function of \eqn{k} namely \deqn{\delta_{k} = \delta_{0}\sqrt{n/(n - k)}} with \eqn{\delta_{0}} held fixed.
+##'  When comparing a \bold{SI} design to one of the \bold{ICP} designs, the
+##'  inhibitory components should have the same degree of spatial regularity.
+##'  This requires \eqn{\delta} to become a function of \eqn{k} namely
+##'  \deqn{\delta_{k} = \delta_{0}\sqrt{n/(n - k)}} with \eqn{\delta_{0}} held
+##'  fixed.
 ##'
-##' @return a list with the following four components:
-##' @return \code{size:} the total number of sampled locations.
-##' @return \code{delta:} the value of \eqn{\delta} after taking into account the number of close pairs \eqn{k}. If \code{delta.fix = TRUE}, this will be \eqn{\delta} input by the user.
-##' @return \eqn{k:} the number of close pairs included in the sample (for \bold{inhibitory plus close pairs} design).
-##' @return \code{sample.locs:} a \code{sf} or \code{sp} object containing coordinates of dimension \code{n} by 2 containing the sampled locations.
+##'@return a list with the following four components:
+##'@return \code{size:} the total number of sampled locations.
+##'@return \code{delta:} the value of \eqn{\delta} after taking into account the
+##'  number of close pairs \eqn{k}. If \code{delta.fix = TRUE}, this will be
+##'  \eqn{\delta} input by the user.
+##'@return \eqn{k:} the number of close pairs included in the sample (for
+##'  \bold{inhibitory plus close pairs} design).
+##'@return \code{sample.locs:} a \code{sf} or \code{sp} object containing
+##'  coordinates of dimension \code{n} by 2 containing the sampled locations.
 ##'
-##' @note If \code{'delta'} is set to 0, a completely random sample is generated. In this case, \code{'close pairs'} are not permitted and \code{rho} is irrelevant.
+##'@note If \code{'delta'} is set to 0, a completely random sample is generated.
+##'  In this case, \code{'close pairs'} are not permitted and \code{rho} is
+##'  irrelevant.
 ##'
-##' @seealso \code{\link[osmgeosample:osm.random.sample]{osm.random.sample}} and osm.discrete.inhibit.sample
+##'@seealso \code{\link[osmgeosample:osm.random.sample]{osm.random.sample}} and
+##'  osm.discrete.inhibit.sample
 ##'
 ##' @examples
 ##' library(sp)
@@ -59,23 +109,26 @@
 ##'buff_epsg = NULL, sample_size = 50, plotit = TRUE, plotit_leaflet = TRUE,
 ##'                   delta=50, delta.fix = FALSE,k=7,rho=1, ntries = 10)
 ##'
-##' @author Henry J. Crosby \email{henry.crosby@warwick.ac.uk}
-##' @author Godwin Yeboah \email{godwin.yeboah@warwick.ac.uk}
-##' @author J. Porto De Albuquerque \email{J.Porto@warwick.ac.uk}
+##'@author Henry J. Crosby \email{henry.crosby@warwick.ac.uk}
+##'@author Godwin Yeboah \email{godwin.yeboah@warwick.ac.uk}
+##'@author J. Porto De Albuquerque \email{J.Porto@warwick.ac.uk}
 ##'
-##' @references Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis code in S-Plus. Computers and Geosciences, 19, 627-655
-##' Chipeta  M G, Terlouw D J, Phiri K S and Diggle P J. (2016b). Inhibitory geostatistical designs for spatial prediction taking account of uncertain covariance structure, \emph{Enviromentrics}, pp. 1-11.
-##' https://wiki.openstreetmap.org/wiki/Map_Features
-##' @import sp
-##' @import sf
-##' @importFrom splancs csr
-##' @import nngeo
-##' @import rgdal
-##' @import osmdata
-##' @import processx
-##' @import mapview
-##' @import dplyr
-##' @export
+##'@references Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern
+##'  analysis code in S-Plus. Computers and Geosciences, 19, 627-655 Chipeta  M
+##'  G, Terlouw D J, Phiri K S and Diggle P J. (2016b). Inhibitory
+##'  geostatistical designs for spatial prediction taking account of uncertain
+##'  covariance structure, \emph{Enviromentrics}, pp. 1-11.
+##'  https://wiki.openstreetmap.org/wiki/Map_Features
+##'@import sp
+##'@import sf
+##'@importFrom splancs csr
+##'@import nngeo
+##'@import rgdal
+##'@import osmdata
+##'@import processx
+##'@import mapview
+##'@import dplyr
+##'@export
 
 
 
