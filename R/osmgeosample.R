@@ -6,7 +6,8 @@
 #three categories of important functions: foo, bar ' and baz. ' ' @section
 #osm.random.sample:  This function draws a spatially random sample from a either
 #(1) #'  a discrete set of OSM features defined in the function parameters or
-#(2) a #'  continuous surface defined by a user definted geographical region. '
-#' @docType package ' @name osm.random.sample
+#(2) a #'  continuous surface defined by a user defined geographical region. '
+#'@docType package '
+#' @name osm.random.sample
 NULL
 #> NULL

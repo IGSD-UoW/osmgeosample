@@ -1,5 +1,5 @@
 ##'@title Spatially discrete sampling
-##'@descriion Draw a spatially discrete sample from a specified set of spatial
+##'@description Draw a spatially discrete sample from a specified set of spatial
 ##'  locations within a polygonal sampling region according to an
 ##'  \bold{'inhibitory plus close pairs'} specification.
 ##'@param delta minimum permissible distance between any two locations in

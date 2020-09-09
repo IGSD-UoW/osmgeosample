@@ -117,7 +117,9 @@ number of close pairs \eqn{k}. If \code{delta.fix = TRUE}, this will be
 final sampled locations and any associated values.
 }
 \description{
-Spatially discrete sampling
+Draw a spatially discrete sample from a specified set of spatial
+locations within a polygonal sampling region according to an
+\bold{'inhibitory plus close pairs'} specification.
 }
 \details{
 To draw a sample of size \eqn{n} from a population of spatial
