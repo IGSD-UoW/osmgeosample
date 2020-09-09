@@ -2,9 +2,13 @@
 title: "OSMGeosample"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{OSMGeosample}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{OSMGeosample - An R package for Geostatistical Sampling Designs with OSM Data.}
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteKeyword{geosample}
+  %\VignetteKeyword{package}
+  %\VignetteKeyword{vignette}
+  %\VignetteKeyword{LaTeX}
+  %\VignettePackage{geosample}
 ---
 
 ```{r, include = FALSE}
@@ -17,3 +21,27 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(osmgeosample)
 ```
+\author{Michael G Chipeta\\University of Oxford\And
+        Barry Rowlingson\\Lancaster University \And
+				Peter J Diggle\\Lancaster University}
+\title{\pkg{geosample}: an \proglang{R} Package for Geostatistical Sampling Designs}
+
+\Plainauthor{Michael G Chipeta, Barry Rowlingson, Peter J Diggle} %% comma-separated
+\Plaintitle{geosample: an R Package for Geostatistical Sampling Designs} %% without formatting
+\Shorttitle{\pkg{geosample}: an \proglang{R} Package for Geostatistical Sampling Designs} %% a short title (if necessary)
+
+\Abstract{We introduce a new \proglang{R} package, \pkg{OSMGeosample}, for constructing geostatistical sampling designs with OSM data. The new package implements classes of \textit{adaptive} and \textit{non-adaptive} probability-based sampling designs. We illustrate the use of the package through the construction of several sampling designs, using a boundary dataset and OSM building data for a slum in Idikan.}
+
+\Keywords{inhibitory sampling designs, geostatistics, \proglang{R}}
+\Plainkeywords{inhibitory sampling designs, geostatistics, R} %% without formatting
+
+%% The address of (at least) one author should be given
+%% in the following format:
+\Address{
+  Michael G Chipeta, Big Data Institute, University of Oxford, Oxford, OX3 7LF, UK\\
+  E-mail: \email{mchipeta@mlw.mw}%\\
+  %URL: \url{http://www.lancs.ac.uk}\\[1em]
+  %Peter J Diggle\\
+  %E-mail: \email{p.diggle@lancaster.ac.uk}\\
+  %URL: \url{http://www.lancaster.ac.uk/staff/diggle/}\\[1em]
+  }
