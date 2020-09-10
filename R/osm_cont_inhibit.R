@@ -415,7 +415,7 @@ osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0
     st_crs(xy.sample) <- 4326
     print(mapview(st_geometry(poly), add = TRUE, layer.name = c("Boundary"),
                   color = c("black"), alpha = 0.3, label = "Boundary") + mapview(st_geometry(xy.sample),
-                                                                                 add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), vector.pallette = c("yellow"),
+                                                                                 add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), col.regions = "yellow",
                                                                                  label = xy.sample$geometry, lwd = 2))
   }
   xy.sample_coords <- xy.sample %>% st_cast("MULTIPOINT") %>% st_cast("POINT")
