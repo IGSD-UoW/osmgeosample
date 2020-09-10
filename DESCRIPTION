@@ -10,7 +10,7 @@ Maintainer: Henry Crosby <henry.crosby@warwick.ac.uk>
 Imports: dplyr, geoR, graphics, mapview, nngeo, osmdata, pdist, processx, rgdal,
         sp, sf, splancs, stats,qpdf
 Depends: R (>= 3.0.0), sf, sp
-Suggests: geoR, dplyr, PrevMap, rmarkdown, testthat, viridisLite,raster, knitr
+Suggests: geoR, dplyr, PrevMap, rmarkdown, testthat, viridisLite,raster, knitr,testthat
 Description: This package utilises the functoinality provided by the OSMData and 
     geosample to allow users to create spatially continuous or discrete
     random samples from a pre-defined spatial border using OSM data. 

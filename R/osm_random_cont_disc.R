@@ -624,6 +624,9 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, da
         xy.sample_coords <- st_coordinates(xy.sample_coords)
         xy.sample_coords <- (cbind(c(1:nrow(xy.sample_coords)), xy.sample_coords))
         colnames(xy.sample_coords) <- c("id", "lat", "long")
-        assign("results", xy.sample_coords, envir = .GlobalEnv)
+        #assign("results", xy.sample_coords, envir = .GlobalEnv)
+        results<-xy.sample_coords
+        return(results)
+
     }
 }
