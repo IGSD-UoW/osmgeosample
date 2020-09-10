@@ -120,7 +120,6 @@
 ##'  becomes trivial.
 ##'
 ##'
-##'  @examples
 ##' @examples
 ##' library(sp)
 ##'bounding_geom<-
