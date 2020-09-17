@@ -105,7 +105,7 @@
 ##'proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 ##'
 ##'set.seed(15892)
-##'osm.contin.inhibit(bounding_geom = bounding_geom, boundary = 0, buff_dist=NULL,
+##'osm.contin.inhibit.sample(bounding_geom = bounding_geom, boundary = 0, buff_dist=NULL,
 ##'buff_epsg = NULL, sample_size = 50, plotit = TRUE, plotit_leaflet = TRUE,
 ##'                   delta=50, delta.fix = FALSE,k=7,rho=1, ntries = 10)
 ##'
@@ -135,7 +135,7 @@
 
 ###########################################
 
-osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0,
+osm.contin.inhibit.sample <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0,
                                buff_epsg = 4326, sample_size, plotit = TRUE, plotit_leaflet = TRUE, delta,
                                delta.fix = FALSE, k = 0, rho = NULL, ntries = 10000) {
 
