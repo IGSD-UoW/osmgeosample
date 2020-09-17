@@ -422,6 +422,6 @@ osm.contin.inhibit <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0
   xy.sample_coords <- st_coordinates(xy.sample_coords)
   xy.sample_coords <- (cbind(c(seq_len(xy.sample_coords)), xy.sample_coords))
   colnames(xy.sample_coords) <- c("id", "lat", "long")
-  assign("results", xy.sample_coords, envir = .GlobalEnv)
+  assign("results", as.data.frame(xy.sample_coords), envir = .GlobalEnv)
 }
 

@@ -570,8 +570,8 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, da
         par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
             las = 0)
         st_crs(xy.sample) <- 4326
-        st_crs(obj.origin) <- 4326
         if (type == "discrete") {
+            st_crs(obj.origin) <- 4326
             if (class(obj.origin)[1] == "sf") {
                 print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"),
                               color = c("black"), alpha = 0.3, label = "Boundary") + mapview(st_geometry(obj.origin),
