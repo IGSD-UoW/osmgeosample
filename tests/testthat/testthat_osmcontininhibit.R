@@ -1,5 +1,7 @@
 ################################# osm.random.sample ####################################################
+library(testthat)
 library(osmgeosample)
+
 bounding_geom <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
 
 test_that("osm.contin.inhibit working with shapefile", {
