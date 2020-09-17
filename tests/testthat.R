@@ -1,5 +1,16 @@
 library(testthat)
 library(osmgeosample)
+library(nngeo)
+library('geoR')
+library(sp)
+library(sf)
+library(splancs)
+library(rgdal)
+library(osmdata)
+library(processx)
+library(mapview)
+library('dplyr')
+library(rgdal)
 
 
 bounding_geom <- readOGR(dsn="C:/Users/Henry/Documents/University of Warwick/Boundaries", layer="Boundary_Idikan",verbose=FALSE) ## here you can read in any shapefile
@@ -22,20 +33,11 @@ data_return <- c("osm_polygons", "osm_points", "osm_multipolygons","osm_multilin
 test_check("osmgeosample")
 
 test_that("osm.random.sample working with shapefile", {
-  expect_output(
-    osm.random.sample(bounding_geom = bounding_geom, key= "building", value = "yes", boundary = 0, buff_epsg = 27700, join_type = "within", dis_or_cont = "discrete", sample_size = 70, plotit = TRUE, plotit_leaflet = TRUE, data_return=c("osm_polygons"), 'data.frame'))
-
-  #> Test passed 😸
-
-test_that("str_length of factor is length of level", {
-  expect_equal(str_length(factor("a")), 1)
-  expect_equal(str_length(factor("ab")), 2)
-  expect_equal(str_length(factor("abc")), 3)
+  model<-osm.random.sample(bounding_geom = bounding_geom, dis_or_cont = "discrete", sample_size = 70, key = "building", data_return = c("osm_polygons"))
+expect_output(str(results), 'data.frame')
 })
-#> Test passed 🌈
 
-test_that("str_length of missing is missing", {
-  expect_equal(str_length(NA), NA_integer_)
-  expect_equal(str_length(c(NA, 1)), c(NA, 1))
-  expect_equal(str_length("NA"), 2)
+test_that("osm.random.sample working with text", {
+  model<-osm.random.sample(bounding_geom = "Failand, UK", dis_or_cont = "discrete", sample_size = 70, key = "building", data_return = c("osm_polygons"))
+  expect_output(str(results), 'data.frame')
 })
