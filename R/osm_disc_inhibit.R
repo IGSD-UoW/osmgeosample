@@ -166,22 +166,6 @@
 ##'@export
 
 
-bounding_geom="Failand, UK"
-buff_dist = 1000
-buff_epsg = 27700
-boundary=2
-sample_size=70
-delta = 5
-key ='building'
-value=NULL
-delta.fix = TRUE
-k = 0
-cp.criterion = 'cp.neighb'
-zeta = 0.025
-ntries = 3
-data_return = "osm_polygons"
-
-
 ###########################################
 
 
