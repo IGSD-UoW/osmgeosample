@@ -6,8 +6,8 @@ Authors@R: as.person(c(
     "Godwin Yeobah <Godwin.Yeobah@warwick.ac.uk> [aut]",
     "J. Porto De Albuquerque <J.Porto@warwick.ac.uk> [aut]",
     "Michael G Chipeta <mgchipeta@mlw.mw> [cph] (Author of included geosample code)",
-    "Peter J Diggle [cph] (Author of included geosample code)",
-  ))
+    "Peter J Diggle [cph] (Author of included geosample code)")
+  )
 Maintainer: Henry Crosby <henry.crosby@warwick.ac.uk>
 Imports: 
     dplyr,
