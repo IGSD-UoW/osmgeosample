@@ -131,7 +131,22 @@
 ##'@export
 
 
+
 ###########################################
+
+bounding_geom = bounding_geom
+boundary = 0
+buff_dist=NULL
+buff_epsg = NULL
+sample_size = 50
+plotit = TRUE
+plotit_leaflet = TRUE
+delta=50
+delta.fix = FALSE
+k=7
+rho=1
+ntries = 10
+
 
 osm.contin.inhibit.sample <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0,
                                buff_epsg = 4326, sample_size, plotit = TRUE, plotit_leaflet = TRUE, delta,
@@ -394,8 +409,9 @@ osm.contin.inhibit.sample <- function(bounding_geom = NULL, boundary = 0, buff_d
   sample.locs <- sf::st_as_sf(xy.sample)
 
   xy.sample <- sample.locs
-  st_crs(xy.sample) <- buff_epsg
-  st_crs(poly) <- buff_epsg
+
+  if(!is.null(buff_epsg)){st_crs(xy.sample) <- buff_epsg} else {st_crs(xy.sample)<-4326}
+  if(!is.null(buff_epsg)){st_crs(poly) <- buff_epsg} else {st_crs(xy.sample)<-4326}
   xy.sample <- st_intersection(st_geometry(poly), xy.sample$geometry)
 
     if (plotit == TRUE) {
@@ -411,8 +427,8 @@ osm.contin.inhibit.sample <- function(bounding_geom = NULL, boundary = 0, buff_d
   if (plotit_leaflet == TRUE) {
     par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
         las = 0)
-    st_crs(xy.sample) <- buff_epsg
-    st_crs(poly) <- buff_epsg
+    if(!is.null(buff_epsg)){st_crs(xy.sample) <- buff_epsg} else {st_crs(xy.sample)<-4326}
+    if(!is.null(buff_epsg)){st_crs(poly) <- buff_epsg} else {st_crs(xy.sample)<-4326}
     print(mapview(st_geometry(poly), add = TRUE, layer.name = c("Boundary"),
                   color = c("black"), alpha = 0.3, label = "Boundary") + mapview(st_geometry(xy.sample),
                                                                                  add = TRUE, layer.name = c("Sample Locations"), color = c("yellow"), col.regions = "yellow",
@@ -420,7 +436,7 @@ osm.contin.inhibit.sample <- function(bounding_geom = NULL, boundary = 0, buff_d
   }
   xy.sample_coords <- xy.sample %>% st_cast("MULTIPOINT") %>% st_cast("POINT")
   xy.sample_coords <- st_coordinates(xy.sample_coords)
-  xy.sample_coords <- (cbind(c(seq_len(xy.sample_coords)), xy.sample_coords))
+  xy.sample_coords <- (cbind(c(seq_len(nrow(xy.sample_coords))), xy.sample_coords))
   colnames(xy.sample_coords) <- c("id", "lat", "long")
   assign("results", as.data.frame(xy.sample_coords), envir = .GlobalEnv)
 }
