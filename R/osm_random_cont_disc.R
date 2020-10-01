@@ -74,7 +74,6 @@
 ##'@references Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern
 ##'  analysis code in S-Plus. Computers and Geosciences, 19, 627-655
 ##'  https://wiki.openstreetmap.org/wiki/Map_Features
-##'
 ##'@import sp
 ##'@import sf
 ##'@importFrom splancs csr
