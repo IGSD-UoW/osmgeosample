@@ -397,6 +397,7 @@ osm.contin.inhibit.sample <- function(bounding_geom = NULL, boundary = 0, buff_d
 
   xy.sample <- sample.locs
   st_crs(xy.sample) <- 4326
+  st_crs(xy.sample) <- 4326
   xy.sample <- st_intersection(st_geometry(poly), xy.sample$geometry)
 
   if (plotit == TRUE) {
