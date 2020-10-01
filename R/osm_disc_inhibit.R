@@ -166,6 +166,21 @@
 ##'@export
 
 
+bounding_geom="Failand, UK"
+buff_dist = 1000
+buff_epsg = 27700
+boundary=2
+sample_size=70
+delta = 5
+key ='building'
+value=NULL
+delta.fix = TRUE
+k = 0
+cp.criterion = 'cp.neighb'
+zeta = 0.025
+ntries = 3
+data_return = "osm_polygons"
+
 
 ###########################################
 
@@ -532,11 +547,6 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
   }
 
 
-
-
-
-
-
   obj.origin <- obj
   if (!inherits(obj, "SpatialPointsDataFrame")) {
     if (!inherits(obj, "SpatialPoints")) {
@@ -570,9 +580,6 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
     poly <- st_as_sf(poly)
   } else {
     poly <- poly
-    if (!identical(st_crs(obj), st_crs(poly)))
-      stop("\n 'obj' and 'poly' are not in the same coordinate system")
-  }
   if (length(size) > 0) {
     if (!is.numeric(size) | size <= 0)
       stop("\n 'size' must be a positive integer") else orig.size <- size
@@ -742,15 +749,6 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
   xy.sample <- sf::st_as_sf(xy.sample, coords = c("X", "Y"))
   st_crs(xy.sample) <- st_crs(obj)
   xy.sample <- obj[xy.sample, ]
-
-
-
-
-
-
-
-
-
 
 
 
