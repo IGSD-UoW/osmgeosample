@@ -580,6 +580,7 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
     poly <- st_as_sf(poly)
   } else {
     poly <- poly
+  }
   if (length(size) > 0) {
     if (!is.numeric(size) | size <= 0)
       stop("\n 'size' must be a positive integer") else orig.size <- size
