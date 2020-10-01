@@ -131,15 +131,6 @@
 ##'@export
 
 
-bounding_geom = "Failand, UK"
-sample_size = 70
-delta = 50
-delta.fix = FALSE
-k = 7
-rho = 1
-ntries = 10
-
-
 ###########################################
 
 osm.contin.inhibit.sample <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0,
