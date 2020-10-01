@@ -66,14 +66,12 @@ test_that("osm.random.sample working with shapefile and boundary box instersects
 #> Test passed 😀
 
 test_that("osm.random.sample working with text and boundary box instersects", {
-  skip_on_cran('skip')
   model<-osm.discrete.inhibit.sample(bounding_geom="Failand, UK",boundary=1, join_type = "intersect",  sample_size=70, delta = 5, key ='building', value=NULL, delta.fix = TRUE, k = 0, cp.criterion = 'cp.neighb', zeta = 0.025, ntries = 3, data_return = "osm_polygons")
   expect_output(str(results), 'data.frame')
 })
 #> Test passed 😀
 
 test_that("osm.random.sample working with shapefile and buffer instersects", {
-  skip_on_cran('skip')
   model<-osm.discrete.inhibit.sample(bounding_geom=bounding_geom, join_type = "intersect",  buff_dist = 1000, buff_epsg = 27700, boundary=2, sample_size=70, delta = 5, key ='building', value=NULL, delta.fix = TRUE, k = 0, cp.criterion = 'cp.neighb', zeta = 0.025, ntries = 3, data_return = "osm_polygons")
   expect_output(str(results), 'data.frame')
 })
