@@ -44,16 +44,16 @@ OSM) you want returned. More than one can be selected. The options are
 'osm_multipolygons','osm_multilines','osm_lines'.}
 
 \item{boundary}{A categorical variable to determine whether the exact
-boundary (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a
-buffer around the boundary \code{boundary = 2}) is used for sampling. The
+boundary (\code{boundary = 0}), the bounding box (\code{boundary = 1}) or a
+buffer around the boundary (\code{boundary = 2}) is used for sampling. The
 default is \code{boundary = 0}.}
 
-\item{buff_dist}{If \code{boundary = 2}) then this value determines the size
+\item{buff_dist}{If \code{boundary = 2} then this value determines the size
 of the buffer by distance. The default is \code{buff_dist is NULL}).}
 
-\item{buff_epsg}{If \code{boundary = 2}) then this value determines the local
+\item{buff_epsg}{If \code{boundary = 2} then this value determines the local
 geographic grid reference so that the buffer can be calculated in meters.
-The default is \code{buff_epsg = 4326}) which will use decimal degrees
+The default is \code{buff_epsg = 4326} which will use decimal degrees
 instead of meters. As an example, 27700 relates to the British National
 Grid.}
 
