@@ -18,6 +18,9 @@
 ##'@param plotit_leaflet 'logical' specifying if leaflet (html) graphical output
 ##'  is required. This is prioritised over plotit if both are selected. Default
 ##'  is \code{plotit_leaflet = TRUE}.
+##'@param boundary_or_feature a boolean criteria to determine whether the user
+##'is providing a boundary to search for OSM features to sample on or whether
+##' they are explicitly providing the feautres that they want to sample on.
 ##'@param boundary categorical variable to determine whether the exact boundary
 ##'  provided (\code{boundary = 0}), the bounding box (\code{boundary = 1}) or a
 ##'  buffer around the boundary (\code{boundary = 2}) is used for sampling.
@@ -60,7 +63,9 @@
 ##'proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 ##'
 ##'set.seed(15892)
-##'xy.sample <- osm.random.sample(buff_dist=NULL, bounding_geom = bounding_geom,
+##'xy.sample <- osm.random.sample(buff_dist=NULL,
+##'                               boundary_or_feature = boundary_or_feature,
+##'                               bounding_geom = bounding_geom,
 ##'                               key= 'building', value = NULL, boundary = 0,
 ##'                               buff_epsg = NULL, join_type = 'intersect',
 ##'                               dis_or_cont = 'discrete', sample_size = 70,
@@ -83,19 +88,24 @@
 ##'@import processx
 ##'@import mapview
 ##'@import dplyr
+##'@import tibble
 ##'@export
 
 
 ###########################################
 
-osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL,
-                              data_return = c("osm_polygons", "osm_points", "osm_multipolygons",
-                                              "multilines", "lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326,
-                              join_type = "within", dis_or_cont, sample_size, plotit = TRUE, plotit_leaflet = TRUE)
+osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, boundary_or_feature = "boundary",
+                              feature_geom = NULL, data_return = c("osm_polygons", "osm_points",
+                                                                   "osm_multipolygons","multilines", "lines"),
+                              boundary = 0, buff_dist = 0, buff_epsg = 4326,join_type = "within", dis_or_cont,
+                              sample_size, join_features_to_osm , plotit = TRUE, plotit_leaflet = TRUE)
 {
-    poly <- bounding_geom
     type <- dis_or_cont
     size <- sample_size
+
+    if (boundary_or_feature == "boundary")
+        {
+    poly <- bounding_geom
 
     if (is.null(key))
     {
@@ -493,6 +503,7 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL,
     {
         stop("'type' must be either 'discrete' or 'continuum'")
     }
+
     if (type == "discrete")
     {
         obj.origin <- obj
@@ -603,6 +614,120 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL,
         }
     }
 
+    } else if (boundary_or_feature == "feature")
+    {
+            if (class(feature_geom) == "data.frame")
+            { obj<- SpatialPointsDataFrame(feature_geom[,c("lng", "lat")],
+                                           feature_geom[,c("id","lng", "lat")])
+
+                }
+            else if (class(feature_geom) == "SpatialPointsDataFrame")
+                {
+                 obj<- feature_geom
+            }
+            else
+            {
+                    stop ("when boundary_or_feature= 'feature' is specified
+                            then feature_geom must also be specified and have a
+                             class of dataframe or SpatialPointsDataFrame")
+            }
+
+         if (type == "discrete")
+         {
+            obj.origin <- obj
+
+            myPolygon = Polygon(cbind(c(t(bbox(obj))[1,"lng"],t(bbox(obj))[2,"lng"],t(bbox(obj))[2,"lng"],t(bbox(obj))[1,"lng"],t(bbox(obj))[1,"lng"]),
+                                      c(t(bbox(obj))[1,"lat"],t(bbox(obj))[1,"lat"],t(bbox(obj))[2,"lat"],t(bbox(obj))[2,"lat"],t(bbox(obj))[1,"lat"])))
+
+            myPolygons = Polygons(list(myPolygon), ID = "A")
+            SpPolygon = SpatialPolygons(list(myPolygons))
+            plot(SpPolygon)
+            df = matrix(data = c(0))
+            rownames(df) = "A"
+            poly = SpatialPolygonsDataFrame(SpPolygon, data= as.data.frame(df))
+
+            bounding <- poly
+            proj4string(bounding) <- CRS('+proj=longlat +datum=WGS84')
+
+            if (is.null(obj))
+                 stop("\n'obj' must be provided")
+             if (!inherits(obj, "SpatialPointsDataFrame"))
+             {
+                 if (!inherits(obj, "SpatialPoints"))
+                 {
+                     if (!inherits(obj, "sf") & !inherits(obj, "data.frame"))
+                     {
+                         stop("\n 'obj' must be of class 'sp' or 'sf'")
+                     }
+                 }
+             }
+             if (inherits(obj, "Spatial"))
+             {
+                 obj <- sf::st_as_sf(obj)
+             }
+             # if (any(!is.numeric(sf::st_coordinates(obj)))) stop('\n
+             # non-numerical values in 'obj' coordinates')
+             # if(any(is.na(sf::st_coordinates(obj)))){ warning('\n NA's not
+             # allowed in 'obj' coordinates') obj <-
+             # obj[complete.cases(st_coordinates(obj)), , drop = FALSE] warning('\n
+             # eliminating rows with NA's') }
+             if (length(size) > 0)
+             {
+                 if (!is.numeric(size) | size <= 0)
+                     stop("\n 'size' must be a positive integer")
+             }
+             if (size >= dim(obj)[1])
+                 stop("\n 'size' must be less than the total
+           number of locations to sample from")
+             if (size == 1)
+             {
+                 xy.sample <- obj[sample(1:dim(obj)[1], size, replace = FALSE),
+                 ]
+                 xy.sample <- xy.sample[which(!duplicated(xy.sample$geometry)),
+                 ]
+             } else
+             {
+                 ctr <- 1
+                 while (ctr < size)
+                 {
+                     xy.sample <- obj[sample(1:dim(obj)[1], size, replace = FALSE),
+                     ]
+                     xy.sample <- xy.sample[which(!duplicated(xy.sample$geometry)),
+                     ]
+                     ctr <- dim(xy.sample)[1]
+                 }
+             }
+             res <- xy.sample
+             obj.origin <- obj.origin %>% st_as_sf(coords = c("lat", "lon"), crs = 4326)
+             if (class(xy.sample)[1] != class(obj.origin)[1])
+            {
+                 res <- sf::as_Spatial(xy.sample, "Spatial")
+             }
+         }
+
+
+     if (type == "continuum")
+     {
+         end ("you cannot ask for continuum and provide a set of features.
+                  Please provide a boundary or ask for discrete")
+     }
+
+
+        } else
+    { end("boundary_or_feature must be defined as 'boundary' or 'feature' only")
+    }
+
+
+
+
+
+
+
+
+
+    if (boundary_or_feature == "boundary")
+    {
+
     if (plotit == TRUE && plotit_leaflet == FALSE)
     {
         par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3,
@@ -706,4 +831,333 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL,
         return(results)
 
     }
+
+}
+
+ else if (boundary_or_feature == "feature" && join_features_to_osm == FALSE)
+    {
+    if (plotit == TRUE && plotit_leaflet == FALSE)
+    {
+        par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3,
+                                                                        1, 0), las = 0)
+        if (type == "discrete")
+        {
+            if (class(obj.origin)[1] == "sf")
+            {
+                plot(st_geometry(obj.origin), pch = 19, col = "yellow",
+                     axes = TRUE, xlab = "longitude", ylab = "lattitude",
+                     font.main = 3, cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,",
+                                                                                    size, "points", sep = " "))
+            } else
+            {
+                plot(obj.origin, pch = 19, col = "yellow", axes = TRUE,
+                     xlab = "longitude", ylab = "lattitude", font.main = 3,
+                     cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,",
+                                                                     size, "points", sep = " "))
+            }
+            plot(st_geometry(xy.sample), pch = 19, cex = 0.25, col = 1,
+                 add = TRUE)
+        } else
+        {
+            plot(st_geometry(plot.poly), pch = 19, col = 1, axes = TRUE,
+                 xlab = "longitude", ylab = "lattitude", font.main = 3,
+                 cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,",
+                                                                 size, "points", sep = " "), xlim = c(range(st.poly[,
+                                                                                                                    1])), ylim = c(range(st.poly[, 2])))
+            plot(st_geometry(xy.sample), col = "yellow", add = TRUE)
+        }
+    }
+
+    if (plotit_leaflet == TRUE)
+    {
+        par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3,
+                                                                        1, 0), las = 0)
+        st_crs(xy.sample) <- 4326
+        if (type == "discrete")
+        {
+            st_crs(obj.origin) <- 4326
+            if (class(obj.origin)[1] == "sf")
+            {
+                print(mapview((bounding), map.types = c("OpenStreetMap.DE"),
+                              layer.name = c("Boundary"), color = c("black"), alpha = 0.3,
+                              label = "Boundary") + mapview(st_geometry(obj.origin),
+                                                            add = TRUE, layer.name = c("All Locations"), label = obj.origin$id) +
+                          mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"),
+                                  color = c("yellow"), col.regions = "yellow", label = xy.sample$id,
+                                  lwd = 2))
+            } else
+            {
+                print(mapview((bounding), map.types = c("OpenStreetMap.DE"),
+                              layer.name = c("Boundary"), color = c("black"), alpha = 0.3,
+                              label = "Boundary") + mapview(obj.origin, add = TRUE,
+                                                            layer.name = c("All Locations"), label = obj.origin$id) +
+                          mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"),
+                                  color = c("yellow"), col.regions = "yellow", lwd = 2,
+                                  label = xy.sample$id))
+            }
+        } else
+        {
+            print(mapview((bounding), add = TRUE, layer.name = c("Boundary"),
+                          color = c("black"), alpha = 0.3, label = "Boundary") +
+                      mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"),
+                              color = c("yellow"), col.regions = "yellow", label = xy.sample$id,
+                              lwd = 2))
+        }
+    }
+
+    if (type == "discrete")
+    {
+        xy.sample_df <- as.data.frame(xy.sample)
+        xy.sample_df <- subset (xy.sample_df, select = -lng)
+        xy.sample_df <- subset (xy.sample_df, select = -lat)
+        obj.origin_df <- as.data.frame(obj.origin)
+        obj.origin_df <- subset (obj.origin_df, select = -lng)
+        obj.origin_df <- subset (obj.origin_df, select = -lat)
+        xy.sample_df <- xy.sample_df[, !(names(xy.sample_df) %in% c("geometry"))]
+        xy.sample_df <- as.data.frame(xy.sample_df)
+        obj.origin_df <- obj.origin_df[, !(names(obj.origin_df) %in% c("geometry"))]
+        obj.origin_df <- as.data.frame(obj.origin_df)
+        xy.sample_df$inSample <- 1
+        names(xy.sample_df) <- c("orig_id","inSample")
+        names(obj.origin_df) <- "orig_id"
+        results <- merge(obj.origin_df, xy.sample_df, by = "orig_id", all.x = TRUE)
+        results[is.na(results$inSample), "inSample"] <- 0
+        suppressWarnings({
+            results <- cbind(results, obj.origin %>% st_centroid() %>%
+                                 st_geometry())
+        })
+        results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>%
+                             matrix(ncol = 2, byrow = TRUE) %>% as_tibble() %>% setNames(c("centroid_lon",
+                                                                                           "centroid_lat")))
+        results <- results[, !(names(results) %in% c("geometry"))]
+        assign("results", results, envir = .GlobalEnv)
+    } else
+    {
+        end ("you cannot ask for continuum and provide a set of features.
+                  Please provide a boundary or ask for discrete")
+
+    }
+
+ }  else if (boundary_or_feature == "feature" && join_features_to_osm == TRUE)
+
+    {
+
+     poly <- bounding
+
+     if (is.null(key))
+     {
+         stop("A key must be specified")
+     }
+    if (is.null(value))
+             {
+                 dat <- opq(poly@bbox) %>% add_osm_feature(key = key) %>%
+                     osmdata_sf()  ## Returns all within the bounding box
+             } else
+             {
+                 dat <- opq(poly@bbox) %>% add_osm_feature(key = key, value = value) %>%
+                     osmdata_sf()  ## Returns all within the bounding box
+             }
+
+             dat_tr_ex <- trim_osmdata(dat, poly, exclude = TRUE)  # Returns all buildings that are fully within the specified area
+             dat_tr <- trim_osmdata(dat, poly, exclude = FALSE)  # Returns all buildings that intersect with the specified area
+             bounding <- poly
+         plot(dat_tr$osm_polygons$geometry)
+
+
+         if (is.null(dat_tr_ex$osm_points) && c("osm_points") %in% data_return)
+         {
+             data_return <- data_return[!(data_return) %in% c("osm_points")]
+             stop("OSM have no osm_points within the specified area")
+         }
+         if (is.null(dat_tr_ex$osm_lines) && c("osm_lines") %in% data_return)
+         {
+             data_return <- data_return[!(data_return) %in% c("osm_lines")]
+             stop("OSM have no osm_lines within the specified area")
+         }
+         if (is.null(dat_tr_ex$osm_polygons) && c("osm_polygons") %in% data_return)
+         {
+             data_return <- data_return[!(data_return) %in% c("osm_polygons")]
+             stop("OSM have no osm_polygons within the specified area")
+         }
+         if (is.null(dat_tr_ex$osm_multilines) && c("osm_multilines") %in%
+             data_return)
+         {
+             data_return <- data_return[!(data_return) %in% c("osm_multilines")]
+             stop("OSM have no osm_multilines within the specified area")
+         }
+         if (is.null(dat_tr_ex$osm_multipolygons) && c("osm_multipolygons") %in%
+             data_return)
+         {
+             data_return <- data_return[!(data_return) %in% c("osm_multipolygons")]
+             stop("OSM have no osm_multipolygons within the specified area")
+         }
+
+         if (length(data_return) == 1)
+         {
+             obj_for_join <- dat_tr_ex[[data_return]]
+             obj_for_join <- obj_for_join[c("osm_id", "geometry")]
+         } else
+         {
+             obj_for_join <- dat_tr_ex[data_return]
+             obj3 <- data.frame(NA, NA)
+             names(obj3) <- c("osm_id", "geometry")
+             for (i in 1:length(obj))
+             {
+                 obj2 <- obj_for_join[[i]]
+                 obj3 <- rbind(obj3, obj2[c("osm_id", "geometry")])
+             }
+             obj_for_join <- obj3[-1, ]
+         }
+
+         obj_for_sampling <- obj_for_join
+         obj_for_join <- as.data.frame(obj_for_sampling[!duplicated(obj_for_sampling$osm_id),
+         ])
+         obj_for_join <- obj_for_join[-1, ]
+         obj_for_join <- sf::st_as_sf(obj_for_join)
+         st_crs(obj.origin)<-4326
+         a.data <- st_join(obj_for_join, obj.origin, left = FALSE)
+         names(a.data) <- c("osm_id","input_id","input_lng","input_lat","osm_geometry")
+
+
+     {
+         if (plotit == TRUE && plotit_leaflet == FALSE)
+         {
+             par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3,
+                                                                             1, 0), las = 0)
+             if (type == "discrete")
+             {
+                 if (class(obj.origin)[1] == "sf")
+                 {
+                     plot(st_geometry(a.data$osm_geometry), pch = 19, col = "yellow",
+                          axes = TRUE, xlab = "longitude", ylab = "lattitude",
+                          font.main = 3, cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,",
+                                                                                         size, "points", sep = " "))
+                     DT_sf <- as.data.frame(a.data)
+                     DT_sf <- subset(DT_sf, select = c(osm_id, input_id, input_lng,input_lat))
+                     DT_sf = st_as_sf(DT_sf, coords = c("input_lng", "input_lat"),crs = 4326)
+                     names(DT_sf)<-
+                     plot(DT_sf, add = T, col="red")
+                     plot(st_geometry(xy.sample), pch = 19, col = "red", fill = "red",add = TRUE)
+                 } else
+                 {
+                     plot(obj.origin, pch = 19, col = "yellow", axes = TRUE,
+                          xlab = "longitude", ylab = "lattitude", font.main = 3,
+                          cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,",
+                                                                          size, "points", sep = " "))
+                 }
+                 DT_sf <- as.data.frame(a.data)
+                 DT_sf <- subset(DT_sf, select = c(osm_id, input_id, input_lng,input_lat))
+                 DT_sf = st_as_sf(DT_sf, coords = c("input_lng", "input_lat"),crs = 4326)
+                 names(DT_sf)<-
+                     plot(DT_sf, add = T, col="red")
+                 plot(st_geometry(xy.sample), pch = 19, col = "red", fill = "red",add = TRUE)
+
+             } else
+             {
+                 plot(st_geometry(plot.poly), pch = 19, col = 1, axes = TRUE,
+                      xlab = "longitude", ylab = "lattitude", font.main = 3,
+                      cex.main = 1.2, col.main = "blue", main = paste("Random sampling design,",
+                                                                      size, "points", sep = " "), xlim = c(range(st.poly[,
+                                                                                                                         1])), ylim = c(range(st.poly[, 2])))
+                 DT_sf <- as.data.frame(a.data)
+                 DT_sf <- subset(DT_sf, select = c(osm_id, input_id, input_lng,input_lat))
+                 DT_sf = st_as_sf(DT_sf, coords = c("input_lng", "input_lat"),crs = 4326)
+                 names(DT_sf)<-
+                     plot(DT_sf, add = T, col="red")
+                 plot(st_geometry(xy.sample), pch = 19, col = "red", fill = "red",add = TRUE)
+
+             }
+         }
+
+         if (plotit_leaflet == TRUE)
+         {
+             par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3,
+                                                                             1, 0), las = 0)
+             st_crs(xy.sample) <- 4326
+             if (type == "discrete")
+             {
+                 st_crs(obj.origin) <- 4326
+                 if (class(obj.origin)[1] == "sf")
+                 {
+                     print(mapview((bounding), map.types = c("OpenStreetMap.DE"),
+                                   layer.name = c("Boundary"), color = c("black"), alpha = 0.3,
+                                   label = "Boundary") +
+                               mapview(a.data$osm_geometry,add = TRUE,
+                                       layer.name = c("OSM Fatures"),
+                                       label = a.data$osm_id, lwd = 2) +
+                               mapview(st_geometry(obj.origin),add = TRUE,
+                                       layer.name = c("All Locations"),
+                                       label = obj.origin$id) +
+                               mapview(st_geometry(xy.sample), add = TRUE,
+                                       layer.name = c("Sample Locations"),
+                                       color = c("yellow"),
+                                       col.regions = "yellow",
+                                       label = xy.sample$id,
+                                       lwd = 2))
+                 } else
+                 {
+                     print(mapview((bounding), map.types = c("OpenStreetMap.DE"),
+                                   layer.name = c("Boundary"),
+                                   color = c("black"), alpha = 0.3,
+                                   label = "Boundary") +
+                               mapview(a.data$osm_geometry,add = TRUE,
+                                       layer.name = c("OSM Fatures"),
+                                       label = a.data$osm_id, lwd = 2) +
+                               mapview(obj.origin, add = TRUE,
+                                    layer.name = c("All Locations"),
+                                    label = obj.origin$id) +
+                               mapview(st_geometry(xy.sample), add = TRUE,
+                                       layer.name = c("Sample Locations"),
+                                       color = c("yellow"),
+                                       col.regions = "yellow", lwd = 2,
+                                       label = xy.sample$id))
+                 }
+             } else
+             {
+                 print(mapview((bounding), add = TRUE, layer.name = c("Boundary"),
+                               color = c("black"), alpha = 0.3, label = "Boundary") +
+                           mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"),
+                                   color = c("yellow"), col.regions = "yellow", label = xy.sample$id,
+                                   lwd = 2))
+             }
+         }
+
+         if (type == "discrete")
+         {
+             xy.sample_df <- as.data.frame(xy.sample)
+             xy.sample_df <- subset (xy.sample_df, select = -lng)
+             xy.sample_df <- subset (xy.sample_df, select = -lat)
+             obj.origin_df <- as.data.frame(obj.origin)
+             obj.origin_df <- subset (obj.origin_df, select = -lng)
+             obj.origin_df <- subset (obj.origin_df, select = -lat)
+             xy.sample_df <- xy.sample_df[, !(names(xy.sample_df) %in% c("geometry"))]
+             xy.sample_df <- as.data.frame(xy.sample_df)
+             obj.origin_df <- obj.origin_df[, !(names(obj.origin_df) %in% c("geometry"))]
+             obj.origin_df <- as.data.frame(obj.origin_df)
+             xy.sample_df$inSample <- 1
+             names(xy.sample_df) <- c("input_id","inSample")
+             names(obj.origin_df) <- "input_id"
+             results <- merge(obj.origin_df, xy.sample_df, by = "input_id", all.x = TRUE)
+             results[is.na(results$inSample), "inSample"] <- 0
+             suppressWarnings({
+                 results <- cbind(results, obj.origin %>% st_centroid() %>%
+                                      st_geometry())
+             })
+             results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>%
+                                  matrix(ncol = 2, byrow = TRUE) %>% as_tibble() %>% setNames(c("centroid_lon",
+                                                                                                "centroid_lat")))
+             results <- results[, !(names(results) %in% c("geometry"))]
+             results <- merge(results, a.data, by="input_id")
+             results<-subset(results, select = c(osm_id, input_id, inSample, input_lng, input_lat))
+             assign("results", results, envir = .GlobalEnv)
+         } else
+         {
+             end ("you cannot ask for continuum and provide a set of features.
+                  Please provide a boundary or ask for discrete")
+
+         }
+
+
+}
+}
 }
