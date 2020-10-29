@@ -759,12 +759,10 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
     { obj<- SpatialPointsDataFrame(feature_geom[,c("lng", "lat")],
                                    feature_geom[,c("id","lng", "lat")])
 
-    }
-    else if (class(feature_geom) == "SpatialPointsDataFrame")
+    } else if (class(feature_geom) == "SpatialPointsDataFrame")
     {
       obj<- feature_geom
-    }
-    else
+    } else
     {
       stop ("when boundary_or_feature= 'feature' is specified
                             then feature_geom must also be specified and have a
@@ -778,7 +776,7 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
 
   myPolygons = Polygons(list(myPolygon), ID = "A")
   SpPolygon = SpatialPolygons(list(myPolygons))
-  plot(SpPolygon)
+
   df = matrix(data = c(0))
   rownames(df) = "A"
   poly = SpatialPolygonsDataFrame(SpPolygon, data= as.data.frame(df))
@@ -866,6 +864,9 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
     } else {
       poly.shape <- poly
     }
+
+    st_crs(poly.shape) <- 4326
+
     if (!is.infinite(size) && (size * pi * dsq / 4 > as.numeric(sf::st_area(poly.shape))))
       stop("\n Polygon is too small to fit ", size, " points, with 'k' = ",
            k, " close pairs,", " at minimum separation ", round(delta, digits = 4))
