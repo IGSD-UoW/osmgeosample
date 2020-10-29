@@ -42,6 +42,18 @@
 ##'  returned. More than one can be selected. The options are 'osm_polygons',
 ##'  'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.
 ##'
+##' @param boundary_or_feature specifies whether the user inputs a boundary or
+##' a set of user-inputted features. For example if the user selects "boundary",
+##' they can provide a spatial data frame or OSM locality  which will query the
+##' osm features within that boundary or locality. If the user select "feature"
+##' then they can provide a data frame of features that they want to sample
+##' @param feature_geom  is a user inputted  data frame of features that are
+##' required to be sampled.
+##' @param join_features_to_osm is a TRUE or FALSE variable which allows the
+##' user to specify whether they want their feature geom to be spatially joined
+##'  to OSM features. The output sampling data frame will have an additional
+##'  column showing the joined OSM id.
+##'
 ##'
 ##'@return a \code{df} object named 'results' of dimension \eqn{n} by \code{4}
 ##'  containing the final sampled \code{osm_ids}, centroid locations (named
@@ -64,7 +76,7 @@
 ##'
 ##'set.seed(15892)
 ##'xy.sample <- osm.random.sample(buff_dist=NULL,
-##'                               boundary_or_feature = boundary_or_feature,
+##'                               boundary_or_feature = "boundary",
 ##'                               bounding_geom = bounding_geom,
 ##'                               key= 'building', value = NULL, boundary = 0,
 ##'                               buff_epsg = NULL, join_type = 'intersect',
@@ -523,6 +535,7 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
         if (inherits(obj, "Spatial"))
         {
             obj <- sf::st_as_sf(obj)
+
         }
         # if (any(!is.numeric(sf::st_coordinates(obj)))) stop('\n
         # non-numerical values in 'obj' coordinates')
@@ -546,16 +559,14 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
         {
             xy.sample <- obj[sample(1:dim(obj)[1], size, replace = FALSE),
             ]
-            xy.sample <- xy.sample[which(!duplicated(xy.sample$geometry)),
-            ]
+
+
         } else
         {
             ctr <- 1
             while (ctr < size)
             {
                 xy.sample <- obj[sample(1:dim(obj)[1], size, replace = FALSE),
-                ]
-                xy.sample <- xy.sample[which(!duplicated(xy.sample$geometry)),
                 ]
                 ctr <- dim(xy.sample)[1]
             }
@@ -683,16 +694,13 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
              {
                  xy.sample <- obj[sample(1:dim(obj)[1], size, replace = FALSE),
                  ]
-                 xy.sample <- xy.sample[which(!duplicated(xy.sample$geometry)),
-                 ]
-             } else
+
+                              } else
              {
                  ctr <- 1
                  while (ctr < size)
                  {
                      xy.sample <- obj[sample(1:dim(obj)[1], size, replace = FALSE),
-                     ]
-                     xy.sample <- xy.sample[which(!duplicated(xy.sample$geometry)),
                      ]
                      ctr <- dim(xy.sample)[1]
                  }

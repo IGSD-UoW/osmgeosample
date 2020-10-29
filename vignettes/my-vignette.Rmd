@@ -103,6 +103,19 @@ This function draws a spatially random sample from a either (1)
  returned. More than one can be selected. The options are 'osm_polygons',
  'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.
 
+ *boundary_or_feature* specifies whether the user inputs a boundary or
+ a set of user-inputted features. For example if the user selects "boundary",
+ they can provide a spatial data frame or OSM locality  which will query the
+ osm features within that boundary or locality. If the user select "feature"
+ then they can provide a data frame of features that they want to sample
+ *feature_geom*  is a user inputted  data frame of features that are
+ required to be sampled.
+ *join_features_to_osm* is a TRUE or FALSE variable which allows the
+ user to specify whether they want their feature geom to be spatially joined
+  to OSM features. The output sampling data frame will have an additional
+  column showing the joined OSM id.
+
+
 **Returns**:
 
 A \code{df} object named 'results' of dimension \eqn{n} by \code{4}

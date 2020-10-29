@@ -8,6 +8,8 @@ osm.random.sample(
   bounding_geom = NULL,
   key = NULL,
   value = NULL,
+  boundary_or_feature = "boundary",
+  feature_geom = NULL,
   data_return = c("osm_polygons", "osm_points", "osm_multipolygons", "multilines",
     "lines"),
   boundary = 0,
@@ -16,6 +18,7 @@ osm.random.sample(
   join_type = "within",
   dis_or_cont,
   sample_size,
+  join_features_to_osm,
   plotit = TRUE,
   plotit_leaflet = TRUE
 )
@@ -33,6 +36,15 @@ details.}
 \item{value}{a value for a feature key (\code{key}); can be negated with an
 initial exclamation mark, value = '!this', and can also be a vector, value
 = c ('this', 'that').}
+
+\item{boundary_or_feature}{specifies whether the user inputs a boundary or
+a set of user-inputted features. For example if the user selects "boundary",
+they can provide a spatial data frame or OSM locality  which will query the
+osm features within that boundary or locality. If the user select "feature"
+then they can provide a data frame of features that they want to sample}
+
+\item{feature_geom}{is a user inputted  data frame of features that are
+required to be sampled.}
 
 \item{data_return}{specifies what data types (as specified in OSM) you want
 returned. More than one can be selected. The options are 'osm_polygons',
@@ -61,6 +73,11 @@ independent, compeletely random points.}
 
 \item{sample_size}{a non-negative integer giving the total number of
 locations to be sampled.}
+
+\item{join_features_to_osm}{is a TRUE or FALSE variable which allows the
+user to specify whether they want their feature geom to be spatially joined
+to OSM features. The output sampling data frame will have an additional
+column showing the joined OSM id.}
 
 \item{plotit}{'logical' specifying if graphical output is required. Default
 is \code{plotit = TRUE}.}
@@ -95,7 +112,9 @@ SpatialPolygonsDataFrame(
 proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 
 set.seed(15892)
-xy.sample <- osm.random.sample(buff_dist=NULL, bounding_geom = bounding_geom,
+xy.sample <- osm.random.sample(buff_dist=NULL,
+                              boundary_or_feature = "boundary",
+                              bounding_geom = bounding_geom,
                               key= 'building', value = NULL, boundary = 0,
                               buff_epsg = NULL, join_type = 'intersect',
                               dis_or_cont = 'discrete', sample_size = 70,
