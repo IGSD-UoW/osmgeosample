@@ -41,7 +41,6 @@
 ##'@param data_return specifies what data types (as specified in OSM) you want
 ##'  returned. More than one can be selected. The options are 'osm_polygons',
 ##'  'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.
-##'
 ##' @param boundary_or_feature specifies whether the user inputs a boundary or
 ##' a set of user-inputted features. For example if the user selects "boundary",
 ##' they can provide a spatial data frame or OSM locality  which will query the

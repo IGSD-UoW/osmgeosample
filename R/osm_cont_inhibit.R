@@ -42,7 +42,6 @@
 ##'  \code{'close-pair'}.
 ##'@param ntries number of rejected proposals after which the algorithm will
 ##'  terminate.
-##'
 ##'@details  To draw a simple inhibitory (\bold{SI}) sample of size \code{n}
 ##'  from a spatially continuous region \eqn{A}, with the property that the
 ##'  distance between any two sampled locations is at least \code{delta}, the
