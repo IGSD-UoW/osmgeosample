@@ -1083,7 +1083,7 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
       par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
           las = 0)
       st_crs(xy.sample) <- 4326
-      st_crs(obj.origin) <- 4326
+      proj4string(obj.origin) <- CRS('+proj=longlat +datum=WGS84')
 
       if (class(obj.origin)[1] == "sf") {
         print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"),
@@ -1109,24 +1109,99 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
     obj.origin_df <- obj.origin_df[, !(names(obj.origin_df) %in% c("geometry"))]
     obj.origin_df <- as.data.frame(obj.origin_df)
     xy.sample_df$inSample <- 1
-    names(xy.sample_df) <- c("osm_id", "inSample")
-    names(obj.origin_df) <- "osm_id"
-    results <- merge(obj.origin_df, xy.sample_df, by = "osm_id", all.x = TRUE)
+    xy.sample_df <-
+    xy.sample_df <- xy.sample_df[,c(1,4)]
+    names(xy.sample_df) <- c("origin_id", "inSample")
+    names(obj.origin_df) <- c("origin_id","lon")
+    results <- merge(obj.origin_df, xy.sample_df, by = "origin_id", all.x = TRUE)
+    results<-results[,c(1,6)]
     results[is.na(results$inSample), "inSample"] <- 0
     suppressWarnings({
-      results <- cbind(results, obj.origin %>% st_centroid() %>% st_geometry())
+      results <- cbind(results, st_as_sf(obj.origin))
     })
     results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>%
                        matrix(ncol = 2,byrow = TRUE) %>%
                        as_tibble() %>%
                        setNames(c("centroid_lon", "centroid_lat")))
     results <- results[, !(names(results) %in% c("geometry"))]
+    results<-results[,c(1,2,4,5)]
     assign("results", results, envir = .GlobalEnv)
+
+
+
 
 
 
   }  else if (boundary_or_feature == "feature" && join_features_to_osm == TRUE)
     {
+
+    if (plotit == TRUE && plotit_leaflet == FALSE) {
+      par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+          las = 0)
+
+      if (class(obj.origin)[1] == "sf") {
+        plot(st_geometry(obj.origin), pch = 19, col = "yellow", axes = TRUE,
+             xlab = "longitude", ylab = "lattitude", font.main = 3, cex.main = 1.2,
+             col.main = "blue", main = paste("Random sampling design,", size,
+                                             "points", sep = " "))
+      } else {
+        plot(obj.origin, pch = 19, col = "yellow", axes = TRUE, xlab = "longitude",
+             ylab = "lattitude", font.main = 3, cex.main = 1.2, col.main = "blue",
+             main = paste("Random sampling design,", size, "points", sep = " "))
+      }
+      plot(st_geometry(xy.sample), pch = 19, cex = 0.25, col = 1, add = TRUE)
+
+    }
+
+    if (plotit_leaflet == TRUE) {
+      par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+          las = 0)
+      st_crs(xy.sample) <- 4326
+      proj4string(obj.origin) <- CRS('+proj=longlat +datum=WGS84')
+
+      if (class(obj.origin)[1] == "sf") {
+        print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"),
+                      color = c("black"), alpha.regions = 0.3, label = "Boundary") + mapview(st_geometry(obj.origin),
+                                                                                             add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) +
+                mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"),
+                        color = c("yellow"), col.regions = "yellow", fill = c("yellow"), label = xy.sample$osm_id, lwd = 2))
+      } else {
+        print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"),
+                      color = c("black"), alpha.regions = 0.3, label = "Boundary") + mapview(obj.origin,
+                                                                                             add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) +
+                mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"),
+                        color = c("yellow"), col.regions = "yellow", lwd = 2, label = xy.sample$osm_id))
+      }
+
+    }
+
+
+    xy.sample_df <- as.data.frame(xy.sample)
+    obj.origin_df <- as.data.frame(obj.origin)
+    xy.sample_df <- xy.sample_df[, !(names(xy.sample_df) %in% c("geometry"))]
+    xy.sample_df <- as.data.frame(xy.sample_df)
+    obj.origin_df <- obj.origin_df[, !(names(obj.origin_df) %in% c("geometry"))]
+    obj.origin_df <- as.data.frame(obj.origin_df)
+    xy.sample_df$inSample <- 1
+    xy.sample_df <-
+      xy.sample_df <- xy.sample_df[,c(1,4)]
+    names(xy.sample_df) <- c("origin_id", "inSample")
+    names(obj.origin_df) <- c("origin_id","lon")
+    results <- merge(obj.origin_df, xy.sample_df, by = "origin_id", all.x = TRUE)
+    results<-results[,c(1,6)]
+    results[is.na(results$inSample), "inSample"] <- 0
+    suppressWarnings({
+      results <- cbind(results, st_as_sf(obj.origin))
+    })
+    results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>%
+                       matrix(ncol = 2,byrow = TRUE) %>%
+                       as_tibble() %>%
+                       setNames(c("centroid_lon", "centroid_lat")))
+    results <- results[, !(names(results) %in% c("geometry"))]
+    results<-results[,c(1,2,4,5)]
+    assign("results", results, envir = .GlobalEnv)
+
+
 
   }
 
