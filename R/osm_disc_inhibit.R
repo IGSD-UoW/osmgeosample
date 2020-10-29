@@ -1045,7 +1045,9 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
   xy.sample_df$inSample <- 1
   names(xy.sample_df) <- c("osm_id", "inSample")
   names(obj.origin_df) <- "osm_id"
-  results <- merge(obj.origin_df, xy.sample_df, by = "osm_id", all.x = TRUE)
+  suppressWarnings({
+    results <- merge(obj.origin_df, xy.sample_df, by = "origin_id", all.x = TRUE)
+  })
   results[is.na(results$inSample), "inSample"] <- 0
   suppressWarnings({
     results <- cbind(results, obj.origin %>% st_centroid() %>% st_geometry())
@@ -1113,7 +1115,9 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
     xy.sample_df <- xy.sample_df[,c(1,4)]
     names(xy.sample_df) <- c("origin_id", "inSample")
     names(obj.origin_df) <- c("origin_id","lon")
-    results <- merge(obj.origin_df, xy.sample_df, by = "origin_id", all.x = TRUE)
+    suppressWarnings({
+      results <- merge(obj.origin_df, xy.sample_df, by = "origin_id", all.x = TRUE)
+    })
     results<-results[,c(1,6)]
     results[is.na(results$inSample), "inSample"] <- 0
     suppressWarnings({
@@ -1134,6 +1138,86 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
 
   }  else if (boundary_or_feature == "feature" && join_features_to_osm == TRUE)
     {
+
+
+
+    poly <- bounding
+
+    if (is.null(key))
+    {
+      stop("A key must be specified")
+    }
+    if (is.null(value))
+    {
+      dat <- opq(poly@bbox) %>% add_osm_feature(key = key) %>%
+        osmdata_sf()  ## Returns all within the bounding box
+    } else
+    {
+      dat <- opq(poly@bbox) %>% add_osm_feature(key = key, value = value) %>%
+        osmdata_sf()  ## Returns all within the bounding box
+    }
+
+    dat_tr_ex <- trim_osmdata(dat, poly, exclude = TRUE)  # Returns all buildings that are fully within the specified area
+    dat_tr <- trim_osmdata(dat, poly, exclude = FALSE)  # Returns all buildings that intersect with the specified area
+    bounding <- poly
+
+
+    if (is.null(dat_tr_ex$osm_points) && c("osm_points") %in% data_return)
+    {
+      data_return <- data_return[!(data_return) %in% c("osm_points")]
+      stop("OSM have no osm_points within the specified area")
+    }
+    if (is.null(dat_tr_ex$osm_lines) && c("osm_lines") %in% data_return)
+    {
+      data_return <- data_return[!(data_return) %in% c("osm_lines")]
+      stop("OSM have no osm_lines within the specified area")
+    }
+    if (is.null(dat_tr_ex$osm_polygons) && c("osm_polygons") %in% data_return)
+    {
+      data_return <- data_return[!(data_return) %in% c("osm_polygons")]
+      stop("OSM have no osm_polygons within the specified area")
+    }
+    if (is.null(dat_tr_ex$osm_multilines) && c("osm_multilines") %in%
+        data_return)
+    {
+      data_return <- data_return[!(data_return) %in% c("osm_multilines")]
+      stop("OSM have no osm_multilines within the specified area")
+    }
+    if (is.null(dat_tr_ex$osm_multipolygons) && c("osm_multipolygons") %in%
+        data_return)
+    {
+      data_return <- data_return[!(data_return) %in% c("osm_multipolygons")]
+      stop("OSM have no osm_multipolygons within the specified area")
+    }
+
+    if (length(data_return) == 1)
+    {
+      obj_for_join <- dat_tr_ex[[data_return]]
+      obj_for_join <- obj_for_join[c("osm_id", "geometry")]
+    } else
+    {
+      obj_for_join <- dat_tr_ex[data_return]
+      obj3 <- data.frame(NA, NA)
+      names(obj3) <- c("osm_id", "geometry")
+      for (i in 1:length(obj))
+      {
+        obj2 <- obj_for_join[[i]]
+        obj3 <- rbind(obj3, obj2[c("osm_id", "geometry")])
+      }
+      obj_for_join <- obj3[-1, ]
+    }
+
+    obj_for_sampling <- obj_for_join
+    obj_for_join <- as.data.frame(obj_for_sampling[!duplicated(obj_for_sampling$osm_id),
+    ])
+    obj_for_join <- obj_for_join[-1, ]
+    obj_for_join <- sf::st_as_sf(obj_for_join)
+    obj.origin <- sf::st_as_sf(obj.origin)
+    st_crs(obj.origin)<-4326
+    a.data <- st_join(obj_for_join, obj.origin, left = FALSE)
+    names(a.data) <- c("osm_id","input_id","input_lng","input_lat","osm_geometry")
+
+
 
     if (plotit == TRUE && plotit_leaflet == FALSE) {
       par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
@@ -1156,53 +1240,78 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
     if (plotit_leaflet == TRUE) {
       par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
           las = 0)
-      st_crs(xy.sample) <- 4326
-      proj4string(obj.origin) <- CRS('+proj=longlat +datum=WGS84')
 
-      if (class(obj.origin)[1] == "sf") {
-        print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"),
-                      color = c("black"), alpha.regions = 0.3, label = "Boundary") + mapview(st_geometry(obj.origin),
-                                                                                             add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) +
-                mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"),
-                        color = c("yellow"), col.regions = "yellow", fill = c("yellow"), label = xy.sample$osm_id, lwd = 2))
-      } else {
-        print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"),
-                      color = c("black"), alpha.regions = 0.3, label = "Boundary") + mapview(obj.origin,
-                                                                                             add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) +
-                mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"),
-                        color = c("yellow"), col.regions = "yellow", lwd = 2, label = xy.sample$osm_id))
+      if (class(obj.origin)[1] == "sf")
+      {
+        print(mapview((bounding), map.types = c("OpenStreetMap.DE"),
+                      layer.name = c("Boundary"), color = c("black"), alpha = 0.3,
+                      label = "Boundary") +
+                mapview(a.data$osm_geometry,add = TRUE,
+                        layer.name = c("OSM Fatures"),
+                        label = a.data$osm_id, lwd = 2) +
+                mapview(st_geometry(obj.origin),add = TRUE,
+                        layer.name = c("All Locations"),
+                        label = obj.origin$id) +
+                mapview(st_geometry(xy.sample), add = TRUE,
+                        layer.name = c("Sample Locations"),
+                        color = c("yellow"),
+                        col.regions = "yellow",
+                        label = xy.sample$id,
+                        lwd = 2))
+      } else
+      {
+        print(mapview((bounding), map.types = c("OpenStreetMap.DE"),
+                      layer.name = c("Boundary"),
+                      color = c("black"), alpha = 0.3,
+                      label = "Boundary") +
+                mapview(a.data$osm_geometry,add = TRUE,
+                        layer.name = c("OSM Fatures"),
+                        label = a.data$osm_id, lwd = 2) +
+                mapview(obj.origin, add = TRUE,
+                        layer.name = c("All Locations"),
+                        label = obj.origin$id) +
+                mapview(st_geometry(xy.sample), add = TRUE,
+                        layer.name = c("Sample Locations"),
+                        color = c("yellow"),
+                        col.regions = "yellow", lwd = 2,
+                        label = xy.sample$id))
       }
-
+    } else
+    {
+      print(mapview((bounding), add = TRUE, layer.name = c("Boundary"),
+                    color = c("black"), alpha = 0.3, label = "Boundary") +
+              mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"),
+                      color = c("yellow"), col.regions = "yellow", label = xy.sample$id,
+                      lwd = 2))
     }
+  }
 
-
-    xy.sample_df <- as.data.frame(xy.sample)
-    obj.origin_df <- as.data.frame(obj.origin)
-    xy.sample_df <- xy.sample_df[, !(names(xy.sample_df) %in% c("geometry"))]
-    xy.sample_df <- as.data.frame(xy.sample_df)
-    obj.origin_df <- obj.origin_df[, !(names(obj.origin_df) %in% c("geometry"))]
-    obj.origin_df <- as.data.frame(obj.origin_df)
-    xy.sample_df$inSample <- 1
-    xy.sample_df <-
-      xy.sample_df <- xy.sample_df[,c(1,4)]
-    names(xy.sample_df) <- c("origin_id", "inSample")
-    names(obj.origin_df) <- c("origin_id","lon")
-    results <- merge(obj.origin_df, xy.sample_df, by = "origin_id", all.x = TRUE)
-    results<-results[,c(1,6)]
-    results[is.na(results$inSample), "inSample"] <- 0
-    suppressWarnings({
-      results <- cbind(results, st_as_sf(obj.origin))
-    })
-    results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>%
-                       matrix(ncol = 2,byrow = TRUE) %>%
-                       as_tibble() %>%
-                       setNames(c("centroid_lon", "centroid_lat")))
-    results <- results[, !(names(results) %in% c("geometry"))]
-    results<-results[,c(1,2,4,5)]
-    assign("results", results, envir = .GlobalEnv)
-
+  xy.sample_df <- as.data.frame(xy.sample)
+  xy.sample_df <- subset (xy.sample_df, select = -lng)
+  xy.sample_df <- subset (xy.sample_df, select = -lat)
+  obj.origin_df <- as.data.frame(obj.origin)
+  obj.origin_df <- subset (obj.origin_df, select = -lng)
+  obj.origin_df <- subset (obj.origin_df, select = -lat)
+  xy.sample_df <- xy.sample_df[, !(names(xy.sample_df) %in% c("geometry"))]
+  xy.sample_df <- as.data.frame(xy.sample_df)
+  obj.origin_df <- obj.origin_df[, !(names(obj.origin_df) %in% c("geometry"))]
+  obj.origin_df <- as.data.frame(obj.origin_df)
+  xy.sample_df$inSample <- 1
+  names(xy.sample_df) <- c("input_id","inSample")
+  names(obj.origin_df) <- "input_id"
+  results <- merge(obj.origin_df, xy.sample_df, by = "input_id", all.x = TRUE)
+  results[is.na(results$inSample), "inSample"] <- 0
+  suppressWarnings({
+    results <- cbind(results, obj.origin %>% st_centroid() %>%
+                       st_geometry())
+  })
+  results <- cbind(results, unlist(st_geometry(st_as_sf(results))) %>%
+                     matrix(ncol = 2, byrow = TRUE) %>% as_tibble() %>% setNames(c("centroid_lon",
+                                                                                   "centroid_lat")))
+  results <- results[, !(names(results) %in% c("geometry"))]
+  results <- merge(results, a.data, by="input_id")
+  results<-subset(results, select = c(osm_id, input_id, inSample, input_lng, input_lat))
+  assign("results", results, envir = .GlobalEnv)
 
 
   }
-
-}
