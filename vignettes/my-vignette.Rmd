@@ -24,110 +24,113 @@ knitr::opts_chunk$set(
 ### Henry Crosby, Godwin Yeobah, J. Porto De Albuquerque
 
 **Abstract**:
-We introduce a new *R* package, *OSMGeosample*, for constructing geostatistical sampling designs with OSM data. The new package implements classes of \textit{adaptive} and \textit{non-adaptive} probability-based sampling designs. We illustrate the use of the package through the construction of several sampling designs, using a boundary dataset and OSM building data for a slum in Idikan.
+We introduce a new *R* package, *OSMGeosample*, for constructing geostatistical sampling designs with OSM data. The new package implements random and spatially-regulated sampling designs. We illustrate the use of the package using a boundary dataset and OSM building data for a slum in Idikan. In addition, we provide the ability to sample on user-defined locations which can be joined to OSM features for reproducibility and the extension of information. The user can sample OSM features of one or more data type (point, line, polygon etc) and one or more value and key pairs.
 
-**Keywords**: inhibitory sampling designs, geostatistics, *R*
+*OSMGeosample* can be downloaded from github at https://github.com/IGSD-UoW/osmgeosample.
+
+**Keywords**: inhibitory sampling designs, Geostatistics, *R*
 
 **Address**: Institute for Global Sustainable Development, University of Warwick, Coventry, CV4 7AL, UK
 
 **E-mail**:  [Henry Crosby](henry.crosby@warwick.ac.uk), [Godwin Yeobah](Godwin.Yeobah@warwick.ac.uk), [J. Porto De Albuquerque](J.Porto@warwick.ac.uk)
 
-**URL**: Institute for Global Sustainable Development [visit](https://warwick.ac.uk/fac/arts/schoolforcross-facultystudies/igsd/)
-  
+**URL**: [Institute for Global Sustainable Development.](https://warwick.ac.uk/fac/arts/schoolforcross-facultystudies/igsd/).  
   
   
 
 ## Introduction
 
-osmdata is an R package for downloading and using data from OpenStreetMap (OSM). OSM is a global open access mapping project, which is free and open under the ODbL licence (OpenStreetMap contributors 2017). This has many benefits, ensuring transparent data provenance and ownership, enabling real-time evolution of the database and, by allowing anyone to contribute, encouraging democratic decision making and citizen science (Johnson 2017). See the OSM wiki to find out how to contribute to the world’s open geographical data commons.
+We provide spatial sampling designs for investigating unobserved spatial phenomena, i.e., identifying properties to select for a survey. We create a randomized inhibitory spatial sampling functions to address the problem of spatial prediction (Chipeta et al, 2016). Two functions run `inhibitory designs plus close pairs' on discrete and continuous data. In an inhibitory design, any pair of sample locations must be separated by at least an inhibition distance 𝛿. In addition, a third function runs random sampling for comparison.
 
-Unlike the OpenStreetMap package, which facilitates the download of raster tiles, osmdata provides access to the vector data underlying OSM.
+The motivation for creating the methods in this package is undertake valid spatially-regulated sampling and to conduct a survey in irregular (urban) environments. In fact, in our example our sampling frame is the complete set of geo-located household locations in a slum in Idikan (Watson et al, 2019).
 
-osmdata can be installed from CRAN with
+Unlike the *Geosample* package, the user is able to define a boundary to extract OSM features or use their own data to spatially join it to OSM features. In addition, the output table provides a list of the original and OSM ids with the (centroid) longitudinal and latitudinal values. Furthermore, the user is provided with an interactive map powered by the *mapview* package which shows the full dataset (in red) alongside the sampled dataset (in yellow) and the defined boundary or features.
+
 
 ## OSM Random Sampling (osm.random.sample)
 
-**Description**:
+The osm.random.sample function creates a spatially random sample from either (1) a discrete set of OSM features defined in the function parameters or (2) a continuous surface defined by a user specified geographical region. The OSM features can be a subset of all features based on OSM key and value pairs (i.e., buildings, cafes, restaurants etc). The features can also be a subset of all data based on the feature type (i.e., point, polygon etc). An interactive map and data.frame are returned, both showing the full dataset, geographical locations and sampled data.
 
-This function draws a spatially random sample from a either (1)
- a discrete set of OSM features defined in the function parameters or (2) a
- continuous surface defined by a user definted geographical region.
+### Parameters:
 
-**Parameters**:
-
-*bounding_geom* a \code{sf} or \code{sp} object (with \eqn{N \geq
- \code{size}}) where each line corresponds to one spatial location. It
+**bounding_geom:** an *sf* or *sp* object (with N \geq
+ size) where each line corresponds to one spatial location. It
  should contain values of 2D coordinates, data and, optionally, covariate(s)
  value(s) at the locations. This argument must be provided when sampling
- from a \code{'discrete'} set of points, see \code{'type'} below for
- details.
+ from a 'discrete' set of points, see 'type' below for
+ details. This should only be provided when boundary_or_feature 
+ = 'boundary'.
 
-*dis_or_cont* random sampling, a choice of either \code{'discrete'},
- from a set of \eqn{N} potential sampling points or \code{'continuum'} from
- independent, compeletely random points.
+**dis_or_cont:** a string of either 'discrete',
+ from a set of N potential sampling points or 'continuum' from
+ independent, 'completely' random points.
 
-*sample_size* a non-negative integer giving the total number of
+**sample_size:** a non-negative integer giving the total number of
  locations to be sampled.
 
-*plotit* 'logical' specifying if graphical output is required. Default
- is \code{plotit = TRUE}.
+**plotit:** a 'logical' specifying if graphical output is required. Default
+ is plotit = TRUE.
 
-*plotit_leaflet* 'logical' specifying if leaflet (html) graphical output
+**plotit_leaflet:** a 'logical' specifying if leaflet (html) graphical output
  is required. This is prioritised over plotit if both are selected. Default
- is \code{plotit_leaflet = TRUE}.
+ is plotit_leaflet = TRUE.
 
-*boundary* categorical variable to determine whether the exact boundary
- provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a
- buffer around the boundary \code{boundary = 2}) is used for sampling.
- Default is \code{boundary = 0}.
+**boundary:** a categorical variable to determine whether the exact boundary 
+(boundary = 0), bounding box (boundary = 1) or a
+ buffer around the boundary boundary = 2) is used for sampling.
+ Default is boundary = 0.
 
-*buff_dist* if \code{boundary = 2} then this value determines the size
- of the buffer by distance. The default is \code{buff_dist is NULL}).
+**buff_dist:** if boundary = 2 then this value determines the size
+ of the buffer by distance. The default is buff_dist is NULL).
 
-*buff_epsg* if \code{boundary = 2} then this value determines the local
+**buff_epsg:** if boundary = 2 then this value determines the local
  geographic grid reference so that the buffer can be calculated in meters.
- The default is  \code{buff_epsg = 4326}) which will use decimal degrees
+ The default is  buff_epsg = 4326) which will use decimal degrees
  instead of meters. As an example, 27700 relates to the British National
  Grid.
 
-*join_type* a text value to determine how to spatially join all features
+**join_type:** a text value to determine how to spatially join all features
  with the boundary. The options are 'within' or 'intersect'.
 
-*key* A feature key as defined in OSM. An example is 'building'.
+**key:** A feature key as defined in OSM. An example is 'building'.
 
-*value* a value for a feature key (\code{key}); can be negated with an
+**value:** a value for a feature key ('key'); can be negated with an
  initial exclamation mark, value = '!this', and can also be a vector, value
- = c ('this', 'that').
+ = c ('this', 'that'). An example is 'cafe'.
 
-*data_return* specifies what data types (as specified in OSM) you want
+**data_return:** specifies what data types (as specified in OSM) you want
  returned. More than one can be selected. The options are 'osm_polygons',
  'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.
 
- *boundary_or_feature* specifies whether the user inputs a boundary or
+ **boundary_or_feature:** specifies whether the user inputs a boundary or
  a set of user-inputted features. For example if the user selects "boundary",
- they can provide a spatial data frame or OSM locality  which will query the
- osm features within that boundary or locality. If the user select "feature"
- then they can provide a data frame of features that they want to sample
- *feature_geom*  is a user inputted  data frame of features that are
- required to be sampled.
+ they can provide a spatial data frame or OSM locality which will query the
+ osm features within that boundary or locality. If the user selects "feature"
+ then they can provide a data frame of features that they want to sample.
  
- *join_features_to_osm* is a TRUE or FALSE variable which allows the
+ **feature_geom:**  is a user inputted  data frame of features that are
+ required to be sampled. This should only be provided when boundary_or_feature 
+ = 'feature'.
+ 
+ **join_features_to_osm:** is a TRUE or FALSE variable which allows the
  user to specify whether they want their feature geom to be spatially joined
   to OSM features. The output sampling data frame will have an additional
-  column showing the joined OSM id.
+  column showing the joined 'OSM_id'. The interactive map will also plot the OSM
+  features.
+
+### Returns
+
+(1) A data.frame object named 'results' of length *n*
+ containing the final sampled ids (osm, original or both), centroid longitude and
+ latitude and a 0/1 value determining whether the instance is in the selected
+ sample (named inSample), if sampling from a 'discrete' set of points. A data.frame object of dimension *n* by *3* containing the serial id and centroid 
+ locations for all sample instances,if sampling from a 'continuum'. 
+ 
+(2) An interactive map powered by **mapview** showing the boundary, full dataset and
+sampled data.
 
 
-**Returns**:
-
-A \code{df} object named 'results' of dimension \eqn{n} by \code{4}
- containing the final sampled \code{osm_ids}, centroid locations (named
- \code{x,y}) and whether the instance is in the selected sample (named
- \code{inSample} with a value of \code{0/1}), if sampling from a
- \code{'discrete'} set of points. A \code{df} object of dimension \eqn{n} by
- \code{3} containing the serial id and centroid locations for all sample
- instances,if sampling from a \code{'continuum'}.
-
-**Example**:
+### Example
 
 ```c
 library(sp)
@@ -135,8 +138,14 @@ bounding_geom<-
 SpatialPolygonsDataFrame(
    SpatialPolygons(list(Polygons(list(Polygon(
        cbind(
-           c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
-           c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,7.379483)))), ID=1))),
+           c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,
+           3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,
+           3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,
+           3.892689,3.893294,3.893008,3.893676,3.888959),
+           c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,
+           7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,
+           7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,
+           7.384629,7.384772,7.383269,7.380963,7.379483)))), ID=1))),
    data.frame( ID=1))
 proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 
@@ -151,151 +160,179 @@ xy.sample <- osm.random.sample(buff_dist=NULL, bounding_geom = bounding_geom,
 
 ## OSM Inhibitory Sampling with Discrete Data (osm.discrete.inhibit.sample)
 
+osm.discrete.inhibit.sample creates a spatially discrete sample from a specified 
+set of OSM spatial locations within a polygonal sampling region using
+  'inhibitory plus close pairs'. The OSM features can be a subset all features based on OSM key and value pairs (i.e., buildings, cafes, restaurants etc). The features can also be a of all data based on the feature type, i.e., point, polygon etc. An interactive map and data.frame are both returned, both showing the full dataset, geographical locations and sampled data.
 
-**Description**: Draw a spatially discrete sample from a specified set of OSM
-  spatial locations within a polygonal sampling region according to an
-  \bold{'inhibitory plus close pairs'} specification.
   
-**Parameters**: 
+### Parameters
 
-*delta* The minimum permissible distance between any two locations in
-  preliminary sample. This can be allowed to vary with number of \code{'close
+**bounding_geom:** an *sf* or *sp* object (with N \geq
+ size) where each line corresponds to one spatial location. It
+ should contain values of 2D coordinates, data and, optionally, covariate(s)
+ value(s) at the locations. This argument must be provided when sampling
+ from a 'discrete' set of points, see 'type' below for
+ details. This should only be provided when boundary_or_feature 
+ = 'boundary'.
+ 
+**delta:** The minimum permissible distance between any two locations in
+  preliminary sample. This can be allowed to vary with number of {'close
   pairs'} if a \bold{simple inhibitory} design is compared to one of the
   \bold{inhibitory plus close pairs} design.
 
-*delta.fix* A 'logical' input which specifies whether \code{'delta'} is
-  fixed or allowed to vary with number of close pairs \eqn{k}. Default is
-  \code{delta.fix = FALSE}.
+**delta.fix:** A 'logical' input which specifies whether {'delta'} is
+  fixed or allowed to vary with number of close pairs {k}. Default is
+  {delta.fix = FALSE}.
 
-*k* The number of close-pair locations in the sample. It must be an
-  integer between 0 and \code{size}/2.
+**k:** The number of close-pair locations in the sample. It must be an
+  integer between 0 and {size}/2.
 
-*cp.criterion* The criterion for choosing close pairs \eqn{k}. The
-  \code{'cp.zeta'} criterion chooses locations not included in the initial
-  sample, from the uniform distribution of a disk with radius \code{'zeta'}
-  (NB: \code{zeta} argument must be provided for this criterion). The
-  \code{'cp.neighb'} criterion chooses nearest neighbours amongst locations
-  not included in the initial sample (\code{'zeta'} becomes trivial for
-  \code{'cp.neighb'} criterion).
+**cp.criterion:** The criterion for choosing close pairs {k}. The
+  {'cp.zeta'} criterion chooses locations not included in the initial
+  sample, from the uniform distribution of a disk with radius {'zeta'}
+  (NB: {zeta} argument must be provided for this criterion). The
+  {'cp.neighb'} criterion chooses nearest neighbours amongst locations
+  not included in the initial sample ({'zeta'} becomes trivial for
+  {'cp.neighb'} criterion).
 
-*zeta* The maximum permissible distance (radius of a disk with center
-  \eqn{x^{*}_{j}, j = 1, \ldots, k}) within which a close-pair point is
+**zeta:** The maximum permissible distance (radius of a disk with center
+  {x^{*}_{j}, j = 1, \ldots, k}) within which a close-pair point is
   placed. See \bold{Details}.
 
-*ntries* The number of rejected proposals after which the algorithm
+**ntries:** The number of rejected proposals after which the algorithm
   terminates.
 
-*plotit* A 'logical' input specifying if a graphical output is required.
-  Default is \code{plotit = TRUE}.
+**sample_size:** a non-negative integer giving the total number of
+ locations to be sampled.
 
-*bounding_geom* A \code{sf} or \code{sp} with each line corresponding to
-  one spatial location. It should contain values of 2D coordinates. This
-  argument must be provided when sampling from a \code{'discrete'} set of
-  locations defined in OSM.
+**plotit:** a 'logical' specifying if graphical output is required. Default
+ is plotit = TRUE.
 
-*sample_size* A non-negative integer giving the total number of
-  locations to be sampled.
+**plotit_leaflet:** a 'logical' specifying if leaflet (html) graphical output
+ is required. This is prioritised over plotit if both are selected. Default
+ is plotit_leaflet = TRUE.
 
-*plotit_leaflet* A 'logical' input specifying if leaflet (html)
-  graphical output is required. This is prioritised over plotit if both are
-  selected. Default is \code{plotit_leaflet = TRUE}.
+**boundary:** a categorical variable to determine whether the exact boundary 
+(boundary = 0), bounding box (boundary = 1) or a
+ buffer around the boundary boundary = 2) is used for sampling.
+ Default is boundary = 0.
 
-*boundary* A categorical variable to determine whether the exact
-  boundary (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a
-  buffer around the boundary \code{boundary = 2}) is used for sampling. The
-  default is \code{boundary = 0}.
+**buff_dist:** if boundary = 2 then this value determines the size
+ of the buffer by distance. The default is buff_dist is NULL).
 
-*buff_dist* If \code{boundary = 2}) then this value determines the size
-  of the buffer by distance. The default is \code{buff_dist is NULL}).
+**buff_epsg:** if boundary = 2 then this value determines the local
+ geographic grid reference so that the buffer can be calculated in meters.
+ The default is  buff_epsg = 4326) which will use decimal degrees
+ instead of meters. As an example, 27700 relates to the British National
+ Grid.
 
-*buff_epsg* If \code{boundary = 2}) then this value determines the local
-  geographic grid reference so that the buffer can be calculated in meters.
-  The default is \code{buff_epsg = 4326}) which will use decimal degrees
-  instead of meters. As an example, 27700 relates to the British National
-  Grid.
+**join_type:** a text value to determine how to spatially join all features
+ with the boundary. The options are 'within' or 'intersect'.
 
-*join_type* A text value to determine how to spatially join all features
-  with the boundary. The options are 'within' or 'intersect'.
+**key:** A feature key as defined in OSM. An example is 'building'.
 
-*key* A feature key as defined in OSM. An example is 'building'.
+**value:** a value for a feature key ('key'); can be negated with an
+ initial exclamation mark, value = '!this', and can also be a vector, value
+ = c ('this', 'that'). An example is 'cafe'.
 
-*value* A value for a feature key (\code{key}); can be negated with an
-  initial exclamation mark, value = '!this', and can also be a vector, value
-  = c ('this', 'that'). More details at
-  \url{https://wiki.openstreetmap.org/wiki/Map_Features}.
+**data_return:** specifies what data types (as specified in OSM) you want
+ returned. More than one can be selected. The options are 'osm_polygons',
+ 'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.
 
-*data_return* A list which specifies what data types (as specified in
-  OSM) you want returned. More than one can be selected. The options are
-  'osm_polygons', 'osm_points',
-  'osm_multipolygons','osm_multilines','osm_lines'.
+ **boundary_or_feature:** specifies whether the user inputs a boundary or
+ a set of user-inputted features. For example if the user selects "boundary",
+ they can provide a spatial data frame or OSM locality which will query the
+ osm features within that boundary or locality. If the user selects "feature"
+ then they can provide a data frame of features that they want to sample.
+ 
+ **feature_geom:**  is a user inputted  data frame of features that are
+ required to be sampled. This should only be provided when boundary_or_feature 
+ = 'feature'.
+ 
+ **join_features_to_osm:** is a TRUE or FALSE variable which allows the
+ user to specify whether they want their feature geom to be spatially joined
+  to OSM features. The output sampling data frame will have an additional
+  column showing the joined 'OSM_id'. The interactive map will also plot the OSM
+  features.
 
-**Details** 
+### Returns
 
-To draw a sample of size \eqn{n} from a population of spatial
-  locations \eqn{X_{i} : i  = 1,\ldots,N}, with the property that the
-  distance between any two sampled locations is at least \eqn{\delta}, the
-  function implements the following algorithm. \itemize{ \item{Step 1.} Draw
-  an initial sample of size \eqn{n}  completely at random and call this
-  \eqn{x_{i}  : i  = 1,\dots, n}. \item{Step 2.} Set \eqn{i  = 1}. \item{Step
-  3.} Calculate the smallest distance, \eqn{d_{\min}}, from \eqn{x_{i}}  to
-  all other \eqn{x_{j}}  in the initial sample. \item{Step 4.} If
-  \eqn{d_{\min} \ge \delta}, increase \eqn{i}  by 1 and return to step 2 if
-  \eqn{i \le n}, otherwise stop. \item{Step 5.} If \eqn{d_{\min} < \delta},
-  draw an integer \eqn{j}  at random from \eqn{1,  2,\ldots,N}, set
-  \eqn{x_{i}  = X_{j}}  and return to step 3.}
+(1) A data.frame object named 'results' of length *n*
+ containing the final sampled ids (osm, original or both), centroid longitude and
+ latitude and a 0/1 value determining whether the instance is in the selected
+ sample (named inSample).. 
+ 
+(2) An interactive map powered by **mapview** showing the boundary, full dataset and
+sampled data.
+
+### Details (Taken from (Chipeta, 2019))
+
+  To draw a sample of size n from a population of spatial
+  locations X_{i} : i  = 1,...,N, with the property that the
+  distance between any two sampled locations is at least delta, the
+  function implements the following algorithm. 
+  
+  Step 1. Draw an initial sample of size n completely at random and call this
+    x_i  : i  = 1,...,n.
+  
+  Step 2. Set i  = 1. 
+  
+  Step 3. Calculate the smallest distance, d_min, from x_i  to
+  all other x_j  in the initial sample.
+  
+  Step 4. If d_min >= delta}, increase i by 1 and return to step 2 if
+  {i <= n}, otherwise stop. 
+  
+  Step 5. If d_min < delta,
+  draw an integer j  at random from 1,  2,..,N, set
+  x_i  = X_j  and return to step 3.
 
   Samples generated in this way exhibit  more regular spatial arrangements
-  than would random samples of the same size. The degree of regularity
+  than random samples of the same size. The degree of regularity
   achievable will be influenced by the spatial arrangement of the population
-  \eqn{X_{i}  : i  = 1,\ldots,N}, the specified value of \eqn{\delta}  and
-  the sample size \eqn{n}. For any given population, if \eqn{n}  and/or
-  \eqn{\delta} is too large, a sample of the required size with the distance
-  between any two sampled locations at least \eqn{\delta} will not be
-  achievable; the algorithm will then find \eqn{n_{s} < n} points that can be
+  (X_i  : i  = 1,...,N), the specified value of delta and
+  the sample size, n. For any given population, if n  and/or
+  delta is too large, a sample of the required size with the distance
+  between any two sampled locations at least delta will not be
+  achievable; the algorithm will then find n_s < n points that can be
   placed for the given parameters.
 
-  \bold{Sampling close pairs of points.}
+  **Sampling close pairs of points.**
 
   For some purposes, typically when using the same sample for parameter
   estimation and spatial prediction, it is desirable that a spatial sampling
-  scheme include pairs of closely spaced points \eqn{x}. The function offers
+  scheme include pairs of closely spaced points (x). The OSMGeosample offers
   two ways of specifying close pairs, either as the closest available
-  unsampled point to an existing sampled point \code{(cp.critetrion =
-  cp.neighb)}, or as a random choice from amongst all available unsampled
-  points within distance \eqn{zeta} of an existing sampled point
-  \code{(cp.criterion = cp.zeta)}. The algorithm proceeds as follows.
+  unsampled point to an existing sampled point (cp.critetrion =
+  cp.neighb), or as a random choice from all available unsampled
+  points within distance zeta of an existing sampled point
+  (cp.criterion = cp.zeta). The algorithm proceeds as follows.
 
-  Let \eqn{k} be the required number of close pairs. \itemize{ \item{Step 1.}
-  Construct a simple inhibitory design \bold{SI}\eqn{(n - k, \delta)}.
-  \item{Step 2.} Sample \eqn{k} from \eqn{x_{1}, \ldots, x_{n - k}} without
-  replacement and call this set \eqn{x_{j} : j = 1, \ldots, k}. \item{Step
-  3.} For each \eqn{x_{j}: j = 1, \ldots, k}, select a close pair
-  \eqn{x_{n-k+j}} according to the specified criterion.}
+  Let k be the required number of close pairs. 
+  
+  Step 1. Construct a simple inhibitory design **SI**(n - k, \delta).
+  
+  Step 2. Sample k from x_1,..., x_{n-k} without
+  replacement and call this set x_j : j = 1,..., k}.
+  
+  Step 3. For each x_j: j = 1,..., k}, select a close pair
+  x_{n-k+j} according to the specified criterion.
 
-  \bold{Note:} Depending on the spatial configuration of potential sampling
-  locations and, when the selection criterion \code{cp.criterion = cp.zeta},
-  the specified value of \eqn{zeta}, it is possible that one or more of the
-  selected points  \eqn{x_{j}} in Step 2 will not have an eligible ``close
+### Notes 
+
+(1) Depending on the spatial configuration of potential sampling
+  locations and, when the selection criterion (cp.criterion = cp.zeta),
+  the specified value of zeta, it is possible that one or more of the
+  selected points  x_j in Step 2 will not have an eligible ``close
   pair''. In this case, the algorithm will try  find an alternative
-  \eqn{x_{j}} and report a warning if it fails to do so.
+  x_j and report a warning if it fails to do so.
 
-**return**: a list with the following four components:
-
-**return**: \code{unique.locs:} the number of unique sampled locations.
-
-**return**: \code{delta:} the value of \eqn{\delta} after taking into account the
-  number of close pairs \eqn{k}. If \code{delta.fix = TRUE}, this will be
-  \eqn{\delta} input by the user.
-
-**return**: \eqn{k:} the number of close pairs included in the sample (for
-  \bold{inhibitory plus close pairs} design).
-
-**return**: \code{sample.locs:} a \code{sf} or \code{sp} object containing the
-  final sampled locations and any associated values.
-
-**Note**: If \code{'delta'} is set to 0, a completely random sample is generated.
-  In this case, \emph{'close pairs'} are not permitted and \code{'zeta'}
+(2) If 'delta' is set to 0, a completely random sample is generated.
+  In this case, 'close pairs' are not permitted and 'zeta'
   becomes trivial.
+
+
+### Example 
 
 ```c
  @examples
@@ -303,17 +340,15 @@ To draw a sample of size \eqn{n} from a population of spatial
 bounding_geom<-
 SpatialPolygonsDataFrame(
     SpatialPolygons(list(Polygons(list(Polygon(
-        cbind(
-            c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,
-            3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,
-            3.886692,3.887241,3.888068,3.888323,3.888697,3.889150,3.889548,3.889890,
-            3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,3.892689,3.893294,
-            3.893008,3.893676,3.888959),
-            c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,
-            7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,
-            7.385313,7.385194,7.384868,7.384900,7.385051,7.385067,7.384955,7.384749,
-            7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,7.384629,7.384772,
-            7.383269,7.380963,7.379483)))), ID=1))),
+               cbind(
+           c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,
+           3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,
+           3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,
+           3.892689,3.893294,3.893008,3.893676,3.888959),
+           c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,
+           7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,
+           7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,
+           7.384629,7.384772,7.383269,7.380963,7.379483)))), ID=1))),
     data.frame( ID=1))
 proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 
@@ -328,130 +363,166 @@ xy.sample <- osm.discrete.inhibit.sample(bounding_geom=bounding_geom,
 
 ## OSM Inhibitory Sampling with Continuous Data (osm.contin.inhibit.sample)
 
-**description**: Draws a spatially continous sample of locations within a
-  polygonal sampling region according to an \bold{'inhibitory plus close
-  pairs'} specification. The region can be defined using OSM data or a user
-  defined polygon.
+osm.contin.inhibit.sample creates a spatially continous sample of locations within a
+  polygonal sampling using inhibitory plus close pairs' (Chipeta, 2019). The region can be defined using OSM data or a user defined polygon or features. The OSM features can be a subset all features based on OSM key and value pairs (i.e., buildings, cafes, restaurants etc). The features can also be a of all data based on the feature type, i.e., point, polygon etc. An interactive map and data.frame are both returned, both showing the full dataset, geographical locations and sampled data.
 
-**Parameters**:
-*bounding_geom* a \code{sf} or \code{sp} object (with \eqn{N \geq
-  \code{size}}) where each line corresponds to one spatial location. It
+### Parameters
+
+**bounding_geom:** a {sf} or {sp} object (with {N \geq
+  {size}}) where each line corresponds to one spatial location. It
   should contain values of 2D coordinates, data and, optionally, covariate(s)
   value(s) at the locations. This argument must be provided when sampling
-  from a \code{'discrete'} set of points, see \code{'type'} below for
+  from a {'discrete'} set of points, see {'type'} below for
   details.
 
-*sample_size* a non-negative integer giving the total number of
-  locations to be sampled.
 
-*plotit* 'logical' specifying if graphical output is required. Default
-  is \code{plotit = TRUE}.
+**sample_size:** a non-negative integer giving the total number of
+ locations to be sampled.
 
-*plotit_leaflet* 'logical' specifying if leaflet (html) graphical output
-  is required. This is prioritised over plotit if both are selected. Default
-  is \code{plotit_leaflet = TRUE}.
+**plotit:** a 'logical' specifying if graphical output is required. Default
+ is plotit = TRUE.
 
-*boundary* categorical variable to determine whether the exact boundary
-  provided (\code{boundary = 0}), the bounding box \code{boundary = 1}) or a
-  buffer around the boundary \code{boundary = 2}) is used for sampling.
-  Default is \code{boundary = 0}.
+**plotit_leaflet:** a 'logical' specifying if leaflet (html) graphical output
+ is required. This is prioritised over plotit if both are selected. Default
+ is plotit_leaflet = TRUE.
 
-*buff_dist* if \code{boundary = 2}) then this value determines the size
-  of the buffer by distance. The default is \code{buff_dist is NULL}).
+**boundary:** a categorical variable to determine whether the exact boundary 
+(boundary = 0), bounding box (boundary = 1) or a
+ buffer around the boundary boundary = 2) is used for sampling.
+ Default is boundary = 0.
 
-*buff_epsg* if \code{boundary = 2}) then this value determines the local
-  geographic grid reference so that the buffer can be calculated in meters.
-  The default is  \code{buff_epsg = 4326}) which will use decimal degrees
-  instead of meters. As an example, 27700 relates to the British National
-  Grid.
+**buff_dist:** if boundary = 2 then this value determines the size
+ of the buffer by distance. The default is buff_dist is NULL).
 
-*delta* minimum permissible distance between any two locations in
+**buff_epsg:** if boundary = 2 then this value determines the local
+ geographic grid reference so that the buffer can be calculated in meters.
+ The default is  buff_epsg = 4326) which will use decimal degrees
+ instead of meters. As an example, 27700 relates to the British National
+ Grid.
+
+**join_type:** a text value to determine how to spatially join all features
+ with the boundary. The options are 'within' or 'intersect'.
+
+**key:** A feature key as defined in OSM. An example is 'building'.
+
+**value:** a value for a feature key ('key'); can be negated with an
+ initial exclamation mark, value = '!this', and can also be a vector, value
+ = c ('this', 'that'). An example is 'cafe'.
+
+**data_return:** specifies what data types (as specified in OSM) you want
+ returned. More than one can be selected. The options are 'osm_polygons',
+ 'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.
+
+ **boundary_or_feature:** specifies whether the user inputs a boundary or
+ a set of user-inputted features. For example if the user selects "boundary",
+ they can provide a spatial data frame or OSM locality which will query the
+ osm features within that boundary or locality. If the user selects "feature"
+ then they can provide a data frame of features that they want to sample.
+ 
+ **feature_geom:**  is a user inputted  data frame of features that are
+ required to be sampled. This should only be provided when boundary_or_feature 
+ = 'feature'.
+ 
+ **join_features_to_osm:** is a TRUE or FALSE variable which allows the
+ user to specify whether they want their feature geom to be spatially joined
+  to OSM features. The output sampling data frame will have an additional
+  column showing the joined 'OSM_id'. The interactive map will also plot the OSM
+  features.
+
+**delta:** minimum permissible distance between any two locations in
   preliminary sample. This can be allowed to vary with the number of
- \code{'close pairs'} if a \bold{simple inhibitory} design is compared to
+ {'close pairs'} if a \bold{simple inhibitory} design is compared to
   one of the \bold{inhibitory plus close pairs} design.
 
-*delta.fix* 'logical' specifies whether \code{delta} is fixed or allowed
-to vary with number of close pairs \eqn{k}. Default is \code{delta.fix =
+**delta.fix:** 'logical' specifies whether {delta} is fixed or allowed
+to vary with number of close pairs {k}. Default is {delta.fix =
   FALSE}.
 
-*k* number of locations in preliminary sample to be replaced by near
-  neighbours of other preliminary sample locations to form \code{close pairs}
-  (integer between 0 and \code{size/2}). A \bold{simple inhibitory} deisgn is
-  generated when \eqn{k = 0}.
+**k:** number of locations in preliminary sample to be replaced by near
+  neighbours of other preliminary sample locations to form {close pairs}
+  (integer between 0 and {size/2}). A \bold{simple inhibitory} deisgn is
+  generated when {k = 0}.
 
-*rho* maximum distance between the two locations in a
- \code{'close-pair'}.
+**rho:** maximum distance between the two locations in a
+ {'close-pair'}.
 
-*ntries* number of rejected proposals after which the algorithm will terminate.
+**ntries:** number of rejected proposals after which the algorithm will terminate.
 
 
-**Details**:  To draw a simple inhibitory (\bold{SI}) sample of size \code{n}
-  from a spatially continuous region \eqn{A}, with the property that the
-  distance between any two sampled locations is at least \code{delta}, the
-  following algorithm is used. \itemize{ \item{Step 1.} Set \eqn{i  = 1} and
-  generate a point \eqn{x_{1}}  uniformly distributed on \eqn{{\cal D}}.
-  \item{Step 2.} Generate a point \eqn{x}  uniformly distributed on
-  \eqn{{\cal D}} and calculate the minimum, \eqn{d_{\min}}, of the distances
-  from \eqn{x_{i}} to all \eqn{x_{j}: j \leq i }. \item{Step 3.} If
-  \eqn{d_{\min} \ge \delta}, increase \eqn{i}  by 1, set \eqn{x_{i} = x} and
-  return to step 2 if \eqn{i \le n}, otherwise stop; \item{Step 4.} If
-  \eqn{d_{\min} < \delta}, return to step 2 without increasing \eqn{i}. }
+### Details (Taken from (Chipeta, 2019))
+  To draw a simple inhibitory (**SI**) sample of size n
+  from a spatially continuous region (A), with the property that the
+  distance between any two sampled locations is at least delta, the
+  following algorithm is used. 
+  
+  Step 1. Set i  = 1 and
+  generate a point x_1  uniformly distributed on D.
+  
+  Step 2. Generate a point x  uniformly distributed on
+  D and calculate the minimum, d_min, of the distances
+  from x_i to all x_j: j <= i. 
+  
+  Step 3. If d_min >= delta, increase i  by 1, set x_i = x and
+  return to step 2 if i <= n}, otherwise stop;
+  
+  Step 4. If
+  d_min < delta, return to step 2 without increasing i. 
 
   \bold{Sampling close pairs of points.}
 
   For some purposes, it is desirable that a spatial sampling scheme include
   pairs of closely spaced points, resulting in an inhibitory plus close pairs
-  (\bold{ICP}) design. In this case, the above algorithm requires the
-  following additional steps to be taken. Let \eqn{k}  be the required number
-  of close pairs. Choose a value \code{rho}  such that a close pair  of
+  (**ICP**) design. In this case, the above algorithm requires the
+  following additional steps to be taken. Let k  be the required number
+  of close pairs. Choose a value rho  such that a close pair  of
   points will be a pair of points separated by a distance of at most
-  \code{rho}. \itemize{ \item{Step 5.} Set \eqn{j  = 1} and draw a random
-  sample of size 2 from integers \eqn{1, 2, \ldots, n}, say \eqn{(i_1, i_2)};
-  \item{Step 6.} Replace \eqn{x_{i_{1}}} by \eqn{x_{i_{2}} + u} , where
-  \eqn{u}  is uniformly distributed on the disc with centre \eqn{x_{i_{2}}}
-  and radius \code{rho}, increase \eqn{i} by 1 and return to step 5 if \eqn{i
-  \le k}, otherwise stop. }
+  {rho}. 
+  
+  Step 5. Set j  = 1 and draw a random sample of size 2 from integers 1, 2,..., n, say (i_1, i_2);
+  
+  Step 6. Replace x_i_1 by x_i_2 + u, where
+  u  is uniformly distributed on the disc with centre x_i_2
+  and radius (rho), increase i by 1 and return to step 5 if i
+  <= k, otherwise stop.
 
-  When comparing a \bold{SI} design to one of the \bold{ICP} designs, the
+  When comparing a **SI** design to one of the **ICP** designs, the
   inhibitory components should have the same degree of spatial regularity.
-  This requires \eqn{\delta} to become a function of \eqn{k} namely
-  \deqn{\delta_{k} = \delta_{0}\sqrt{n/(n - k)}} with \eqn{\delta_{0}} held
+  This requires delta to become a function of k namely
+  delta_k = delta_0*(sqrt{n/(n - k)}) with delta_0 held.
 
 
-*returns*: a list with the following four components:
-*returns*: \code{size:} the total number of sampled locations.
-*returns*: \code{delta:} the value of \eqn{\delta} after taking into account the
-  number of close pairs \eqn{k}. If \code{delta.fix = TRUE}, this will be
-  \eqn{\delta} input by the user.
-*returns*: \eqn{k:} the number of close pairs included in the sample (for
-  \bold{inhibitory plus close pairs} design).
-*returns*: \code{sample.locs:} a \code{sf} or \code{sp} object containing
-  coordinates of dimension \code{n} by 2 containing the sampled locations.
+### Returns
 
-**note**: If \code{'delta'} is set to 0, a completely random sample is generated.
-  In this case, \code{'close pairs'} are not permitted and \code{rho} is
+(1) A data.frame object named 'results' of length *n*
+ containing the final sampled osmgeosample_ids, centroid longitude and
+ latitude. 
+ 
+(2) An interactive map powered by **mapview** showing the boundary, full dataset and
+sampled data.
+
+
+### Notes
+
+If 'delta' is set to 0, a completely random sample is generated.
+  In this case, 'close pairs' are not permitted and rho is
   irrelevant.
 
-**see also** \code{\link[osmgeosample:osm.random.sample]{osm.random.sample}} and
-  osm.discrete.inhibit.sample
 
-**Example**:
+### Example:
 ```c
  library(sp)
 bounding_geom<-
 SpatialPolygonsDataFrame(
     SpatialPolygons(list(Polygons(list(Polygon(
         cbind(
-            c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,
-            3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,
-            3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,
-            3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,
-            3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
-            c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,
-            7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,
-            7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,
-            7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,
-            7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,7.379483)))),
+            c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,
+           3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,
+           3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,
+           3.892689,3.893294,3.893008,3.893676,3.888959),
+           c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,
+           7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,
+           7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,
+           7.384629,7.384772,7.383269,7.380963,7.379483)))), ID=1))),
             ID=1))),
     data.frame( ID=1))
 proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
@@ -462,13 +533,18 @@ buff_epsg = NULL, sample_size = 50, plotit = TRUE, plotit_leaflet = TRUE,
                    delta=50, delta.fix = FALSE,k=7,rho=1, ntries = 10)
 ```
 
-
-
-## Additional Functionality
-
 ## Related Packages
 
-osmgeosample builds on Chipeta and Diggle (2019) R package named geosample, which is used for the construction of Geostatistical sampling designs. Note that the geosample package is not present on CRAN, and can not be used for accessing OSM data. osmgeosample utilises a popular OSM mapping r package osmdata which is authored and maintained by Mark Padgham and Robin Lovelace.  In addition, the Mapview R package allows us display our restuls on an interactive map (Appelhans et al,2020)
+osmgeosample builds on Chipeta and Diggle's (2019) R package named geosample, which is used for the construction of Geostatistical sampling designs. Note that the geosample package is not present on CRAN, and can not be used for accessing OSM data. osmgeosample utilises a popular OSM mapping r package named osmdata which is authored and maintained by Mark Padgham and Robin Lovelace.  In addition, the Mapview R package allows us display our results on an interactive map (Appelhans et al, 2020).
+
+## Acknowledgements
+
+This research was funded by the National Institute for Health Research (NIHR). Global Health Research Group on Improving Health in Slums. 
+
+In addition, we would like to show our gratitude to all of the Volunteers from the OpenStreetMap community, HOT and missing maps.
+
+Finally, our collaborators and funders are: the National Institute for Health Research, The University of Warwick, the African Population and Health Research Center, The Aga Khan University, The Humanitarian OpenStreetMap Team, Missing Maps, HeiGIT.
+
 
 ## References
 
@@ -487,5 +563,8 @@ Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis code 
 Chipeta  M G, Terlouw D J, Phiri K S and Diggle P J. (2016b). Inhibitory geostatistical designs for spatial prediction taking account of uncertain covariance structure, Enviromentrics, pp. 1-11.
 https://wiki.openstreetmap.org/wiki/Map_Features
 
+Improving Health in Slums Collaborative. “A protocol for a multi-site, spatially-referenced household survey in slum settings: methods for access, sampling frame construction, sampling, and field data collection.” BMC medical research methodology vol. 19,1 109. 30 May. 2019, doi:10.1186/s12874-019-0732-x
 
+Porto De Albuquerque, Joao & Yeboah, Godwin & Pitidis, Vangelis & Ulbrich, Philipp. (2018). Towards a participatory methodology for community data generation to analyse urban health inequalities: a multi-country case study. 10.13140/RG.2.2.13710.20804. 
 
+Yeboah G, Troilo R, Pitidis V, Porto de Albuquerque, J. Analysis of OpenStreetMap data quality at different stages of a participatory mapping process: Evidence from informal urban settings.State of the Map. Heidelberg. Sep 2019.

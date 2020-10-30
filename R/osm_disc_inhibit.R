@@ -1017,6 +1017,7 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
     par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
         las = 0)
     st_crs(xy.sample) <- 4326
+    obj.origin <- sf::st_as_sf(obj.origin)
     st_crs(obj.origin) <- 4326
 
     if (class(obj.origin)[1] == "sf") {
@@ -1046,7 +1047,7 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
   names(xy.sample_df) <- c("osm_id", "inSample")
   names(obj.origin_df) <- "osm_id"
   suppressWarnings({
-    results <- merge(obj.origin_df, xy.sample_df, by = "origin_id", all.x = TRUE)
+    results <- merge(obj.origin_df, xy.sample_df, by = "osm_id", all.x = TRUE)
   })
   results[is.na(results$inSample), "inSample"] <- 0
   suppressWarnings({
@@ -1284,7 +1285,7 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
                       color = c("yellow"), col.regions = "yellow", label = xy.sample$id,
                       lwd = 2))
     }
-  }
+
 
   xy.sample_df <- as.data.frame(xy.sample)
   xy.sample_df <- subset (xy.sample_df, select = -lng)
@@ -1313,5 +1314,6 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
   results<-subset(results, select = c(osm_id, input_id, inSample, input_lng, input_lat))
   assign("results", results, envir = .GlobalEnv)
 
-
   }
+  }
+

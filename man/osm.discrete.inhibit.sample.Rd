@@ -22,7 +22,10 @@ osm.discrete.inhibit.sample(
   k = 0,
   cp.criterion = NULL,
   zeta,
-  ntries = 10000
+  ntries = 10000,
+  boundary_or_feature = "boundary",
+  join_features_to_osm = FALSE,
+  feature_geom = NULL
 )
 }
 \arguments{
@@ -41,7 +44,10 @@ initial exclamation mark, value = '!this', and can also be a vector, value
 \item{data_return}{A list which specifies what data types (as specified in
 OSM) you want returned. More than one can be selected. The options are
 'osm_polygons', 'osm_points',
-'osm_multipolygons','osm_multilines','osm_lines'.}
+'osm_multipolygons','osm_multilines','osm_lines'.
+##'@param data_return specifies what data types (as specified in OSM) you want
+returned. More than one can be selected. The options are 'osm_polygons',
+'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.}
 
 \item{boundary}{A categorical variable to determine whether the exact
 boundary (\code{boundary = 0}), the bounding box (\code{boundary = 1}) or a
@@ -96,6 +102,20 @@ placed. See \bold{Details}.}
 
 \item{ntries}{The number of rejected proposals after which the algorithm
 terminates.}
+
+\item{boundary_or_feature}{specifies whether the user inputs a boundary or
+a set of user-inputted features. For example if the user selects "boundary",
+they can provide a spatial data frame or OSM locality  which will query the
+osm features within that boundary or locality. If the user select "feature"
+then they can provide a data frame of features that they want to sample}
+
+\item{join_features_to_osm}{is a TRUE or FALSE variable which allows the
+user to specify whether they want their feature geom to be spatially joined
+to OSM features. The output sampling data frame will have an additional
+column showing the joined OSM id.}
+
+\item{feature_geom}{is a user inputted  data frame of features that are
+required to be sampled.}
 }
 \value{
 a list with the following four components:
