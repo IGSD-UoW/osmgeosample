@@ -46,6 +46,21 @@ The motivation for creating the methods in this package is undertake valid spati
 
 Unlike the *Geosample* package, the user is able to define a boundary to extract OSM features or use their own data to spatially join it to OSM features. In addition, the output table provides a list of the original and OSM ids with the (centroid) longitudinal and latitudinal values. Furthermore, the user is provided with an interactive map powered by the *mapview* package which shows the full dataset (in red) alongside the sampled dataset (in yellow) and the defined boundary or features.
 
+## Installing OSM Geosample
+
+If you update the sf package and then try to install osmgeosample it will error “Error: sf was built under R version …”. If you don’t have the latest version of R, updating the version will fix this issue. Alternatively You can get around this by setting 
+
+```
+Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true")
+```
+
+An example script of how to install the package from GITHub.
+
+``` Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true") 
+Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true")
+setwd("/PATH/TO/PACKAGE/")
+devtools::install_local("osmgeosample-master.zip")
+```
 
 ## OSM Random Sampling (osm.random.sample)
 
