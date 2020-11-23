@@ -265,7 +265,7 @@ set of OSM spatial locations within a polygonal sampling region using
 (2) An interactive map powered by **mapview** showing the boundary, full dataset and
 sampled data.
 
-### Details (Taken from (Chipeta, 2019))
+### Details (Chipeta, 2019)
 
   To draw a sample of size n from a population of spatial
   locations X_{i} : i  = 1,...,N, with the property that the
@@ -449,7 +449,7 @@ to vary with number of close pairs {k}. Default is {delta.fix =
 **ntries:** number of rejected proposals after which the algorithm will terminate.
 
 
-### Details (Taken from (Chipeta, 2019))
+### Details (Chipeta, 2019)
   To draw a simple inhibitory (**SI**) sample of size n
   from a spatially continuous region (A), with the property that the
   distance between any two sampled locations is at least delta, the

@@ -20,7 +20,6 @@ Imports:
     processx,
     rgdal,
     sp,
-    sf,
     splancs,
     stats,
     qpdf,
