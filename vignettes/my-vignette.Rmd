@@ -62,9 +62,9 @@ setwd("/PATH/TO/PACKAGE/")
 devtools::install_local("osmgeosample-master.zip")
 ```
 
-## OSM Random Sampling (osm.random.sample)
+## OSM Random Sampling (osm_random_sample)
 
-The osm.random.sample function creates a spatially random sample from either (1) a discrete set of OSM features defined in the function parameters or (2) a continuous surface defined by a user specified geographical region. The OSM features can be a subset of all features based on OSM key and value pairs (i.e., buildings, cafes, restaurants etc). The features can also be a subset of all data based on the feature type (i.e., point, polygon etc). An interactive map and data.frame are returned, both showing the full dataset, geographical locations and sampled data.
+The osm_random_sample function creates a spatially random sample from either (1) a discrete set of OSM features defined in the function parameters or (2) a continuous surface defined by a user specified geographical region. The OSM features can be a subset of all features based on OSM key and value pairs (i.e., buildings, cafes, restaurants etc). The features can also be a subset of all data based on the feature type (i.e., point, polygon etc). An interactive map and data.frame are returned, both showing the full dataset, geographical locations and sampled data.
 
 ### Parameters:
 
@@ -165,7 +165,7 @@ SpatialPolygonsDataFrame(
 proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 
 set.seed(15892)
-xy.sample <- osm.random.sample(buff_dist=NULL, bounding_geom = bounding_geom,
+xy.sample <- osm_random_sample(buff_dist=NULL, bounding_geom = bounding_geom,
                               key= 'building', value = NULL, boundary = 0,
                               buff_epsg = NULL, join_type = 'intersect',
                               dis_or_cont = 'discrete', sample_size = 70,
@@ -173,9 +173,9 @@ xy.sample <- osm.random.sample(buff_dist=NULL, bounding_geom = bounding_geom,
                               data_return= c('osm_polygons'))
 ```
 
-## OSM Inhibitory Sampling with Discrete Data (osm.discrete.inhibit.sample)
+## OSM Inhibitory Sampling with Discrete Data (osm_discrete_inhibit_sample)
 
-osm.discrete.inhibit.sample creates a spatially discrete sample from a specified 
+osm_discrete_inhibit_sample creates a spatially discrete sample from a specified 
 set of OSM spatial locations within a polygonal sampling region using
   'inhibitory plus close pairs'. The OSM features can be a subset all features based on OSM key and value pairs (i.e., buildings, cafes, restaurants etc). The features can also be a of all data based on the feature type, i.e., point, polygon etc. An interactive map and data.frame are both returned, both showing the full dataset, geographical locations and sampled data.
 
@@ -368,7 +368,7 @@ SpatialPolygonsDataFrame(
 proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 
 set.seed(15892)
-xy.sample <- osm.discrete.inhibit.sample(bounding_geom=bounding_geom,
+xy.sample <- osm_discrete_inhibit_sample(bounding_geom=bounding_geom,
   data_return=c('osm_polygons'),boundary=0, buff_dist=NULL, buff_epsg=NULL,
   join_type='within', sample_size=70, plotit=TRUE, plotit_leaflet = TRUE,
   delta = 5, key ='building', value=NULL, delta.fix = TRUE, k = 0,
@@ -376,9 +376,9 @@ xy.sample <- osm.discrete.inhibit.sample(bounding_geom=bounding_geom,
 ```
 
 
-## OSM Inhibitory Sampling with Continuous Data (osm.contin.inhibit.sample)
+## OSM Inhibitory Sampling with Continuous Data (osm_contin_inhibit_sample)
 
-osm.contin.inhibit.sample creates a spatially continous sample of locations within a
+osm_contin_inhibit_sample creates a spatially continous sample of locations within a
   polygonal sampling using inhibitory plus close pairs' (Chipeta, 2019). The region can be defined using OSM data or a user defined polygon or features. The OSM features can be a subset all features based on OSM key and value pairs (i.e., buildings, cafes, restaurants etc). The features can also be a of all data based on the feature type, i.e., point, polygon etc. An interactive map and data.frame are both returned, both showing the full dataset, geographical locations and sampled data.
 
 ### Parameters
@@ -543,7 +543,7 @@ SpatialPolygonsDataFrame(
 proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 
 set.seed(15892)
-osm.contin.inhibit.sample(bounding_geom = bounding_geom, boundary = 0, buff_dist=NULL,
+osm_contin_inhibit_sample(bounding_geom = bounding_geom, boundary = 0, buff_dist=NULL,
 buff_epsg = NULL, sample_size = 50, plotit = TRUE, plotit_leaflet = TRUE,
                    delta=50, delta.fix = FALSE,k=7,rho=1, ntries = 10)
 ```

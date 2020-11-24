@@ -147,7 +147,7 @@
 ##'proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 ##'
 ##'set.seed(15892)
-##'xy.sample <- osm.discrete.inhibit.sample(bounding_geom=bounding_geom,
+##'xy.sample <- osm_discrete_inhibit_sample(bounding_geom=bounding_geom,
 ##'  data_return=c('osm_polygons'),boundary=0, buff_dist=NULL, buff_epsg=NULL,
 ##'  join_type='within', sample_size=70, plotit=TRUE, plotit_leaflet = TRUE,
 ##'  delta = 5, key ='building', value=NULL, delta.fix = TRUE, k = 0,
@@ -184,7 +184,7 @@
 ###########################################
 
 
-osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value = NULL,
+osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value = NULL,
                                     data_return = c("osm_polygons", "osm_points", "osm_multipolygons", "multilines",
                                                     "lines"), boundary = 0, buff_dist = 0, buff_epsg = 4326, join_type = "within",
                                     sample_size, plotit = TRUE, plotit_leaflet = TRUE, delta, delta.fix = FALSE,
@@ -1313,6 +1313,7 @@ osm.discrete.inhibit.sample <- function(bounding_geom = NULL, key = NULL, value 
   results <- merge(results, a.data, by="input_id")
   results<-subset(results, select = c(osm_id, input_id, inSample, input_lng, input_lat))
   assign("results", results, envir = .GlobalEnv)
+  assign("results_sf", xy.sample, envir = .GlobalEnv)
 
   }
   }

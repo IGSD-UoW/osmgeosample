@@ -89,8 +89,8 @@
 ##'  In this case, \code{'close pairs'} are not permitted and \code{rho} is
 ##'  irrelevant.
 ##'
-##'@seealso \code{\link[osmgeosample:osm.random.sample]{osm.random.sample}} and
-##'  osm.discrete.inhibit.sample
+##'@seealso \code{\link[osmgeosample:osm_random_sample]{osm_random_sample}} and
+##'  osm_discrete_inhibit_sample
 ##'
 ##' @examples
 ##' library(sp)
@@ -104,7 +104,7 @@
 ##'proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 ##'
 ##'set.seed(15892)
-##'osm.contin.inhibit.sample(bounding_geom = bounding_geom, boundary = 0, buff_dist=NULL,
+##'osm_contin_inhibit_sample(bounding_geom = bounding_geom, boundary = 0, buff_dist=NULL,
 ##'buff_epsg = NULL, sample_size = 50, plotit = TRUE, plotit_leaflet = TRUE,
 ##'                   delta=50, delta.fix = FALSE,k=7,rho=1, ntries = 10)
 ##'
@@ -133,7 +133,7 @@
 
 ###########################################
 
-osm.contin.inhibit.sample <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0,
+osm_contin_inhibit_sample <- function(bounding_geom = NULL, boundary = 0, buff_dist = 0,
                                buff_epsg = 4326, sample_size, plotit = TRUE, plotit_leaflet = TRUE, delta,
                                delta.fix = FALSE, k = 0, rho = NULL, ntries = 10000) {
 
@@ -424,5 +424,6 @@ osm.contin.inhibit.sample <- function(bounding_geom = NULL, boundary = 0, buff_d
   xy.sample_coords <- (cbind(c(seq_len(nrow(xy.sample_coords))), xy.sample_coords))
   colnames(xy.sample_coords) <- c("id", "lat", "long")
   assign("results", as.data.frame(xy.sample_coords), envir = .GlobalEnv)
+  assign("results_sf", st_as_sf(xy.sample_coords), envir = .GlobalEnv)
 }
 

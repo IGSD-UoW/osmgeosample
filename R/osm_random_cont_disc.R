@@ -74,7 +74,7 @@
 ##'proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 ##'
 ##'set.seed(15892)
-##'xy.sample <- osm.random.sample(buff_dist=NULL,
+##'xy.sample <- osm_random_sample(buff_dist=NULL,
 ##'                               boundary_or_feature = "boundary",
 ##'                               bounding_geom = bounding_geom,
 ##'                               key= 'building', value = NULL, boundary = 0,
@@ -105,7 +105,7 @@
 
 ###########################################
 
-osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, boundary_or_feature = "boundary",
+osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, boundary_or_feature = "boundary",
                               feature_geom = NULL, data_return = c("osm_polygons", "osm_points",
                                                                    "osm_multipolygons","multilines", "lines"),
                               boundary = 0, buff_dist = 0, buff_epsg = 4326,join_type = "within", dis_or_cont,
@@ -1157,6 +1157,7 @@ osm.random.sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
              results <- merge(results, a.data, by="input_id")
              results<-subset(results, select = c(osm_id, input_id, inSample, input_lng, input_lat))
              assign("results", results, envir = .GlobalEnv)
+             assign("results_sf", xy.sample, envir = .GlobalEnv)
          } else
          {
              end ("you cannot ask for continuum and provide a set of features.
