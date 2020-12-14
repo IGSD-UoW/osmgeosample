@@ -569,7 +569,7 @@ Johnson, Peter A. 2017. “Models of Direct Editing of Government Spatial Data: 
 
 Lovelace, Robin. 2014. “Harnessing Open Street Map Data with R and QGIS.” EloGeo.
 
-OpenStreetMap contributors. 2017. “Planet dump retrieved from http://planet.osm.org.” https://www.openstreetmap.org.
+OpenStreetMap contributors. 2017. https://www.openstreetmap.org.
 
 Padgham, Mark. 2016. Osmplotr: Customisable Images of Openstreetmap Data. https://cran.r-project.org/package=osmplotr.
 
