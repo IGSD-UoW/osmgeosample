@@ -26,7 +26,7 @@ Imports:
     Rcpp,
     tibble
 Depends: R (>= 3.0.0), sf, sp
-Suggests: geoR, dplyr, PrevMap, rmarkdown, testthat, viridisLite,raster, knitr,testthat, qpdf 
+Suggests: geoR, dplyr, PrevMap, rmarkdown, markdown, testthat, viridisLite,raster, knitr,testthat, qpdf 
 Description: This package utilises the functoinality provided by the OSMData and 
     geosample to allow users to create spatially continuous or discrete
     random samples from a pre-defined spatial border using OSM data. 

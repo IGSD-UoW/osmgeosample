@@ -420,10 +420,11 @@ osm_contin_inhibit_sample <- function(bounding_geom = NULL, boundary = 0, buff_d
                                                                                  label = xy.sample$geometry, lwd = 2))
   }
   xy.sample_coords <- xy.sample %>% st_cast("MULTIPOINT") %>% st_cast("POINT")
+  assign("results_sf", st_as_sf((xy.sample_coords)), envir = .GlobalEnv)
   xy.sample_coords <- st_coordinates(xy.sample_coords)
   xy.sample_coords <- (cbind(c(seq_len(nrow(xy.sample_coords))), xy.sample_coords))
   colnames(xy.sample_coords) <- c("id", "lat", "long")
   assign("results", as.data.frame(xy.sample_coords), envir = .GlobalEnv)
-  assign("results_sf", st_as_sf(as.data.frame(xy.sample_coords)), envir = .GlobalEnv)
+
 }
 
