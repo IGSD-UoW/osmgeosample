@@ -1025,7 +1025,7 @@ osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value 
                     color = c("black"), alpha.regions = 0.3, label = "Boundary") + mapview(st_geometry(obj.origin),
                                                                                            add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) +
               mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"),
-                      color = c("yellow"), col.regions = "yellow", fill = c("yellow"), label = xy.sample$osm_id, lwd = 2))
+                      color = c("yellow"), col.regions = "yellow", label = xy.sample$osm_id, lwd = 2))
     } else {
       print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"),
                     color = c("black"), alpha.regions = 0.3, label = "Boundary") + mapview(obj.origin,
@@ -1093,7 +1093,7 @@ osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value 
                       color = c("black"), alpha.regions = 0.3, label = "Boundary") + mapview(st_geometry(obj.origin),
                                                                                              add = TRUE, layer.name = c("All Locations"), label = obj.origin$osm_id) +
                 mapview(st_geometry(xy.sample), add = TRUE, layer.name = c("Sample Locations"),
-                        color = c("yellow"), col.regions = "yellow", fill = c("yellow"), label = xy.sample$osm_id, lwd = 2))
+                        color = c("yellow"), col.regions = "yellow", label = xy.sample$osm_id, lwd = 2))
       } else {
         print(mapview((bounding), map.types = c("OpenStreetMap.DE"), layer.name = c("Boundary"),
                       color = c("black"), alpha.regions = 0.3, label = "Boundary") + mapview(obj.origin,
