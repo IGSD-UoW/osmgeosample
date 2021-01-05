@@ -118,7 +118,8 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
                               feature_geom = NULL, data_return = c("osm_polygons", "osm_points",
                                                                    "osm_multipolygons","multilines", "lines"),
                               boundary = 0, buff_dist = 0, buff_epsg = 4326,join_type = "within", dis_or_cont,
-                              sample_size, join_features_to_osm , plotit = TRUE, plotit_leaflet = TRUE)
+                              sample_size, join_features_to_osm , plotit = TRUE, plotit_leaflet = TRUE,
+                              inSample = 0)
 {
     type <- dis_or_cont
     size <- sample_size
@@ -545,12 +546,7 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
             obj <- sf::st_as_sf(obj)
 
         }
-        # if (any(!is.numeric(sf::st_coordinates(obj)))) stop('\n
-        # non-numerical values in 'obj' coordinates')
-        # if(any(is.na(sf::st_coordinates(obj)))){ warning('\n NA's not
-        # allowed in 'obj' coordinates') obj <-
-        # obj[complete.cases(st_coordinates(obj)), , drop = FALSE] warning('\n
-        # eliminating rows with NA's') }
+
         if (is.null(poly))
         {
             poly <- sf::st_convex_hull(sf::st_union(obj))
@@ -684,12 +680,7 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
              {
                  obj <- sf::st_as_sf(obj)
              }
-             # if (any(!is.numeric(sf::st_coordinates(obj)))) stop('\n
-             # non-numerical values in 'obj' coordinates')
-             # if(any(is.na(sf::st_coordinates(obj)))){ warning('\n NA's not
-             # allowed in 'obj' coordinates') obj <-
-             # obj[complete.cases(st_coordinates(obj)), , drop = FALSE] warning('\n
-             # eliminating rows with NA's') }
+
              if (length(size) > 0)
              {
                  if (!is.numeric(size) | size <= 0)
