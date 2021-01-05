@@ -1,58 +1,58 @@
-##'@title OSM discrete Inhibitory sampling.
-##'@description Draw a spatially discrete sample from a specified set of OSM
+##' @title OSM discrete Inhibitory sampling.
+##' @description Draw a spatially discrete sample from a specified set of OSM
 ##'  spatial locations within a polygonal sampling region according to an
 ##'  \bold{'inhibitory plus close pairs'} specification.
-##'@param delta The minimum permissible distance between any two locations in
+##' @param delta The minimum permissible distance between any two locations in
 ##'  preliminary sample. This can be allowed to vary with number of \code{'close
 ##'  pairs'} if a \bold{simple inhibitory} design is compared to one of the
 ##'  \bold{inhibitory plus close pairs} design.
-##'@param delta.fix A 'logical' input which specifies whether \code{'delta'} is
+##' @param delta.fix A 'logical' input which specifies whether \code{'delta'} is
 ##'  fixed or allowed to vary with number of close pairs \eqn{k}. Default is
 ##'  \code{delta.fix = FALSE}.
-##'@param k The number of close-pair locations in the sample. It must be an
+##' @param k The number of close-pair locations in the sample. It must be an
 ##'  integer between 0 and \code{size}/2.
-##'@param cp.criterion The criterion for choosing close pairs \eqn{k}. The
+##' @param cp.criterion The criterion for choosing close pairs \eqn{k}. The
 ##'  \code{'cp.zeta'} criterion chooses locations not included in the initial
 ##'  sample, from the uniform distribution of a disk with radius \code{'zeta'}
 ##'  (NB: \code{zeta} argument must be provided for this criterion). The
 ##'  \code{'cp.neighb'} criterion chooses nearest neighbours amongst locations
 ##'  not included in the initial sample (\code{'zeta'} becomes trivial for
 ##'  \code{'cp.neighb'} criterion).
-##'@param zeta The maximum permissible distance (radius of a disk with center
+##' @param zeta The maximum permissible distance (radius of a disk with center
 ##'  \eqn{x^{*}_{j}, j = 1, \ldots, k}) within which a close-pair point is
 ##'  placed. See \bold{Details}.
-##'@param ntries The number of rejected proposals after which the algorithm
+##' @param ntries The number of rejected proposals after which the algorithm
 ##'  terminates.
-##'@param plotit A 'logical' input specifying if a graphical output is required.
+##' @param plotit A 'logical' input specifying if a graphical output is required.
 ##'  Default is \code{plotit = TRUE}.
-##'@param bounding_geom A \code{sf} or \code{sp} with each line corresponding to
+##' @param bounding_geom A \code{sf} or \code{sp} with each line corresponding to
 ##'  one spatial location. It should contain values of 2D coordinates. This
 ##'  argument must be provided when sampling from a \code{'discrete'} set of
 ##'  locations defined in OSM.
-##'@param sample_size A non-negative integer giving the total number of
+##' @param sample_size A non-negative integer giving the total number of
 ##'  locations to be sampled.
-##'@param plotit_leaflet A 'logical' input specifying if leaflet (html)
+##' @param plotit_leaflet A 'logical' input specifying if leaflet (html)
 ##'  graphical output is required. This is prioritised over plotit if both are
 ##'  selected. Default is \code{plotit_leaflet = TRUE}.
-##'@param boundary A categorical variable to determine whether the exact
+##' @param boundary A categorical variable to determine whether the exact
 ##'  boundary (\code{boundary = 0}), the bounding box (\code{boundary = 1}) or a
 ##'  buffer around the boundary (\code{boundary = 2}) is used for sampling. The
 ##'  default is \code{boundary = 0}.
-##'@param buff_dist If \code{boundary = 2} then this value determines the size
+##' @param buff_dist If \code{boundary = 2} then this value determines the size
 ##'  of the buffer by distance. The default is \code{buff_dist is NULL}).
-##'@param buff_epsg If \code{boundary = 2} then this value determines the local
+##' @param buff_epsg If \code{boundary = 2} then this value determines the local
 ##'  geographic grid reference so that the buffer can be calculated in meters.
 ##'  The default is \code{buff_epsg = 4326} which will use decimal degrees
 ##'  instead of meters. As an example, 27700 relates to the British National
 ##'  Grid.
-##'@param join_type A text value to determine how to spatially join all features
+##' @param join_type A text value to determine how to spatially join all features
 ##'  with the boundary. The options are 'within' or 'intersect'.
-##'@param key A feature key as defined in OSM. An example is 'building'.
-##'@param value A value for a feature key (\code{key}); can be negated with an
+##' @param key A feature key as defined in OSM. An example is 'building'.
+##' @param value A value for a feature key (\code{key}); can be negated with an
 ##'  initial exclamation mark, value = '!this', and can also be a vector, value
 ##'  = c ('this', 'that'). More details at
 ##'  \url{https://wiki.openstreetmap.org/wiki/Map_Features}.
-##'@param data_return A list which specifies what data types (as specified in
+##' @param data_return A list which specifies what data types (as specified in
 ##'  OSM) you want returned. More than one can be selected. The options are
 ##'  'osm_polygons', 'osm_points',
 ##'  'osm_multipolygons','osm_multilines','osm_lines'.
@@ -60,9 +60,9 @@
 ##'  returned. More than one can be selected. The options are 'osm_polygons',
 ##'  'osm_points', 'osm_multipolygons','osm_multilines','osm_lines'.
 ##' @param boundary_or_feature specifies whether the user inputs a boundary or
-##' a set of user-inputted features. For example if the user selects "boundary",
+##' a set of user-inputted features. For example if the user selects 'boundary',
 ##' they can provide a spatial data frame or OSM locality  which will query the
-##' osm features within that boundary or locality. If the user select "feature"
+##' osm features within that boundary or locality. If the user select 'feature'
 ##' then they can provide a data frame of features that they want to sample
 ##' @param feature_geom  is a user inputted  data frame of features that are
 ##' required to be sampled.
@@ -72,7 +72,7 @@
 ##'  column showing the joined OSM id.
 ##'
 ##'
-##'@details To draw a sample of size \eqn{n} from a population of spatial
+##' @details To draw a sample of size \eqn{n} from a population of spatial
 ##'  locations \eqn{X_{i} : i  = 1,\ldots,N}, with the property that the
 ##'  distance between any two sampled locations is at least \eqn{\delta}, the
 ##'  function implements the following algorithm. \itemize{ \item{Step 1.} Draw
@@ -120,31 +120,40 @@
 ##'  pair''. In this case, the algorithm will try  find an alternative
 ##'  \eqn{x_{j}} and report a warning if it fails to do so.
 ##'
-##'@return a list with the following four components:
-##'@return \code{unique.locs:} the number of unique sampled locations.
-##'@return \code{delta:} the value of \eqn{\delta} after taking into account the
+##' @return a list with the following four components:
+##' @return \code{unique.locs:} the number of unique sampled locations.
+##' @return \code{delta:} the value of \eqn{\delta} after taking into account the
 ##'  number of close pairs \eqn{k}. If \code{delta.fix = TRUE}, this will be
 ##'  \eqn{\delta} input by the user.
-##'@return \eqn{k:} the number of close pairs included in the sample (for
+##' @return \eqn{k:} the number of close pairs included in the sample (for
 ##'  \bold{inhibitory plus close pairs} design).
-##'@return \code{sample.locs:} a \code{sf} or \code{sp} object containing the
+##' @return \code{sample.locs:} a \code{sf} or \code{sp} object containing the
 ##'  final sampled locations and any associated values.
 ##'
-##'@note If \code{'delta'} is set to 0, a completely random sample is generated.
+##' @note If \code{'delta'} is set to 0, a completely random sample is generated.
 ##'  In this case, \emph{'close pairs'} are not permitted and \code{'zeta'}
 ##'  becomes trivial.
 ##'
 ##'
 ##' @examples
 ##' library(sp)
-##'bounding_geom<-
-##'SpatialPolygonsDataFrame(
+##' bounding_geom<-
+##' SpatialPolygonsDataFrame(
 ##'    SpatialPolygons(list(Polygons(list(Polygon(
 ##'        cbind(
-##'            c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
-##'            c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,7.379483)))), ID=1))),
+##'            c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,
+##'            3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,
+##'            3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,
+##'            3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,
+##'            3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
+##'            c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,
+##'            7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,
+##'            7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,
+##'            7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,
+##'            7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,
+##'            7.379483)))), ID=1))),
 ##'    data.frame( ID=1))
-##'proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
+##' proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 ##'
 ##'set.seed(15892)
 ##'xy.sample <- osm_discrete_inhibit_sample(bounding_geom=bounding_geom,
@@ -179,7 +188,6 @@
 ##'@import mapview
 ##'@import dplyr
 ##'@export
-
 
 ###########################################
 
@@ -1317,4 +1325,7 @@ osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value 
 
   }
   }
+
+
+
 

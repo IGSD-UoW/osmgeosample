@@ -104,9 +104,9 @@ placed. See \bold{Details}.}
 terminates.}
 
 \item{boundary_or_feature}{specifies whether the user inputs a boundary or
-a set of user-inputted features. For example if the user selects "boundary",
+a set of user-inputted features. For example if the user selects 'boundary',
 they can provide a spatial data frame or OSM locality  which will query the
-osm features within that boundary or locality. If the user select "feature"
+osm features within that boundary or locality. If the user select 'feature'
 then they can provide a data frame of features that they want to sample}
 
 \item{join_features_to_osm}{is a TRUE or FALSE variable which allows the
@@ -197,8 +197,17 @@ bounding_geom<-
 SpatialPolygonsDataFrame(
    SpatialPolygons(list(Polygons(list(Polygon(
        cbind(
-           c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
-           c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,7.379483)))), ID=1))),
+           c(3.888959,3.888744,3.888585,3.888355,3.887893,3.887504,3.886955,
+           3.886565,3.886303,3.886159,3.885650,3.885650,3.885595,3.885404,
+           3.885444,3.885897,3.886692,3.887241,3.888068,3.888323,3.888697,
+           3.889150,3.889548,3.889890,3.890184,3.890828,3.891258,3.891807,
+           3.892061,3.892292,3.892689,3.893294,3.893008,3.893676,3.888959),
+           c(7.379483,7.379785,7.380024,7.380294,7.380629,7.380986,7.381448,
+           7.381861,7.382243,7.382474,7.383277,7.383468,7.383890,7.384263,
+           7.384669,7.385258,7.385313,7.385194,7.384868,7.384900,7.385051,
+           7.385067,7.384955,7.384749,7.384526,7.384120,7.384009,7.384080,
+           7.384430,7.384478,7.384629,7.384772,7.383269,7.380963,
+           7.379483)))), ID=1))),
    data.frame( ID=1))
 proj4string(bounding_geom) <- CRS('+proj=longlat +datum=WGS84')
 
