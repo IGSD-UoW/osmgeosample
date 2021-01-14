@@ -26,9 +26,7 @@ Imports:
     Rcpp,
     tibble,
     sf,
-    methods,
-    graphics,
-    stats
+    methods
 Depends: R (>= 3.0.0)
 Suggests: PrevMap, rmarkdown, markdown, leafem, viridisLite,raster, knitr,testthat 
 Description: This package utilises the functoinality provided by the OSMData and 

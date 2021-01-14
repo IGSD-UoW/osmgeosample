@@ -129,15 +129,23 @@
 ##'  geostatistical designs for spatial prediction taking account of uncertain
 ##'  covariance structure, \emph{Enviromentrics}, pp. 1-11.
 ##'  https://wiki.openstreetmap.org/wiki/Map_Features
+##'
 ##'@import sp
 ##'@import sf
 ##'@importFrom splancs csr
+##'@importFrom dplyr summarise
+##'@importFrom methods as
 ##'@import nngeo
 ##'@import rgdal
 ##'@import osmdata
 ##'@import processx
 ##'@import mapview
-##'@import dplyr
+##'@import graphics
+##'@import stats
+##'@import geoR
+##'@import pdist
+##'@import qpdf
+##'@import tibble
 ##'@export
 
 
@@ -431,11 +439,11 @@ osm_contin_inhibit_sample <- function(bounding_geom = NULL, boundary = 0, buff_d
                                                                                  label = xy.sample$geometry, lwd = 2))
   }
   xy.sample_coords <- xy.sample %>% st_cast("MULTIPOINT") %>% st_cast("POINT")
-  assign("results_sf", st_as_sf((xy.sample_coords)), envir = .GlobalEnv)
+  assign("results_sf", st_as_sf((xy.sample_coords)))
   xy.sample_coords <- st_coordinates(xy.sample_coords)
   xy.sample_coords <- (cbind(c(seq_len(nrow(xy.sample_coords))), xy.sample_coords))
   colnames(xy.sample_coords) <- c("id", "lat", "long")
-  assign("results", as.data.frame(xy.sample_coords), envir = .GlobalEnv)
+  assign("results", as.data.frame(xy.sample_coords))
 
 }
 

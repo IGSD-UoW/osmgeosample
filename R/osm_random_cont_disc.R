@@ -99,17 +99,25 @@
 ##'@references Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern
 ##'  analysis code in S-Plus. Computers and Geosciences, 19, 627-655
 ##'  https://wiki.openstreetmap.org/wiki/Map_Features
+##'
 ##'@import sp
 ##'@import sf
 ##'@importFrom splancs csr
+##'@importFrom dplyr summarise
+##'@importFrom methods as
 ##'@import nngeo
 ##'@import rgdal
 ##'@import osmdata
 ##'@import processx
 ##'@import mapview
-##'@import dplyr
+##'@import graphics
+##'@import stats
+##'@import geoR
+##'@import pdist
+##'@import qpdf
 ##'@import tibble
 ##'@export
+
 
 
 ###########################################
@@ -118,8 +126,7 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
                               feature_geom = NULL, data_return = c("osm_polygons", "osm_points",
                                                                    "osm_multipolygons","multilines", "lines"),
                               boundary = 0, buff_dist = 0, buff_epsg = 4326,join_type = "within", dis_or_cont,
-                              sample_size, join_features_to_osm , plotit = TRUE, plotit_leaflet = TRUE,
-                              inSample = 0)
+                              sample_size, join_features_to_osm , plotit = TRUE, plotit_leaflet = TRUE)
 {
     type <- dis_or_cont
     size <- sample_size
@@ -680,7 +687,12 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
              {
                  obj <- sf::st_as_sf(obj)
              }
-
+             # if (any(!is.numeric(sf::st_coordinates(obj)))) stop('\n
+             # non-numerical values in 'obj' coordinates')
+             # if(any(is.na(sf::st_coordinates(obj)))){ warning('\n NA's not
+             # allowed in 'obj' coordinates') obj <-
+             # obj[complete.cases(st_coordinates(obj)), , drop = FALSE] warning('\n
+             # eliminating rows with NA's') }
              if (length(size) > 0)
              {
                  if (!is.numeric(size) | size <= 0)
@@ -826,7 +838,7 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
                              matrix(ncol = 2, byrow = TRUE) %>% as_tibble() %>% setNames(c("centroid_lon",
                                                                                            "centroid_lat")))
         results <- results[, !(names(results) %in% c("geometry"))]
-        assign("results", results, envir = .GlobalEnv)
+        assign("results", results)
     } else
     {
         xy.sample_coords <- xy.sample %>% st_cast("MULTIPOINT") %>% st_cast("POINT")
@@ -937,7 +949,7 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
                              matrix(ncol = 2, byrow = TRUE) %>% as_tibble() %>% setNames(c("centroid_lon",
                                                                                            "centroid_lat")))
         results <- results[, !(names(results) %in% c("geometry"))]
-        assign("results", results, envir = .GlobalEnv)
+        assign("results", results)
     } else
     {
         end ("you cannot ask for continuum and provide a set of features.
@@ -1156,8 +1168,9 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
              results <- results[, !(names(results) %in% c("geometry"))]
              results <- merge(results, a.data, by="input_id")
              results<-subset(results, select = c(osm_id, input_id, inSample, input_lng, input_lat))
-             assign("results", results, envir = .GlobalEnv)
-             assign("results_sf", xy.sample, envir = .GlobalEnv)
+             assign("results", results)
+             assign("results_sf", xy.sample)
+
          } else
          {
              end ("you cannot ask for continuum and provide a set of features.

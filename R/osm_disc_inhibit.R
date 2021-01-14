@@ -181,12 +181,19 @@
 ##'@import sp
 ##'@import sf
 ##'@importFrom splancs csr
+##'@importFrom dplyr summarise
+##'@importFrom methods as
 ##'@import nngeo
 ##'@import rgdal
 ##'@import osmdata
 ##'@import processx
 ##'@import mapview
-##'@import dplyr
+##'@import graphics
+##'@import stats
+##'@import geoR
+##'@import pdist
+##'@import qpdf
+##'@import tibble
 ##'@export
 
 ###########################################
@@ -1066,7 +1073,7 @@ osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value 
                      as_tibble() %>%
                      setNames(c("centroid_lon", "centroid_lat")))
   results <- results[, !(names(results) %in% c("geometry"))]
-  assign("results", results, envir = .GlobalEnv)
+  assign("results", results)
 
   }  else if (boundary_or_feature == "feature" && join_features_to_osm == FALSE)
     {
@@ -1138,7 +1145,7 @@ osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value 
                        setNames(c("centroid_lon", "centroid_lat")))
     results <- results[, !(names(results) %in% c("geometry"))]
     results<-results[,c(1,2,4,5)]
-    assign("results", results, envir = .GlobalEnv)
+    assign("results", results)
 
 
 
@@ -1320,8 +1327,8 @@ osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value 
   results <- results[, !(names(results) %in% c("geometry"))]
   results <- merge(results, a.data, by="input_id")
   results<-subset(results, select = c(osm_id, input_id, inSample, input_lng, input_lat))
-  assign("results", results, envir = .GlobalEnv)
-  assign("results_sf", xy.sample, envir = .GlobalEnv)
+  assign("results", results)
+  assign("results_sf", xy.sample)
 
   }
   }
