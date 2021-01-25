@@ -93,6 +93,7 @@
 ##'  osm_discrete_inhibit_sample
 ##'
 ##' @examples
+##' \dontrun{
 ##' library(sp)
 ##'bounding_geom<-
 ##'SpatialPolygonsDataFrame(
@@ -118,6 +119,7 @@
 ##'buff_dist=NULL,
 ##'buff_epsg = NULL, sample_size = 50, plotit = TRUE, plotit_leaflet = TRUE,
 ##'                   delta=50, delta.fix = FALSE,k=7,rho=1, ntries = 10)
+##'}
 ##'
 ##'@author Henry J. Crosby \email{henry.crosby@warwick.ac.uk}
 ##'@author Godwin Yeboah \email{godwin.yeboah@warwick.ac.uk}

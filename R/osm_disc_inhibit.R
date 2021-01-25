@@ -136,7 +136,7 @@
 ##'
 ##'
 ##' @examples
-##' library(sp)
+##' \dontrun{library(sp)
 ##' bounding_geom<-
 ##' SpatialPolygonsDataFrame(
 ##'    SpatialPolygons(list(Polygons(list(Polygon(
@@ -161,7 +161,7 @@
 ##'  join_type='within', sample_size=70, plotit=TRUE, plotit_leaflet = TRUE,
 ##'  delta = 5, key ='building', value=NULL, delta.fix = TRUE, k = 0,
 ##'  cp.criterion = 'cp.neighb', zeta = 0.025, ntries = 5)
-##'
+##'}
 ##'
 ##'@references Chipeta  M G, Terlouw D J, Phiri K S and Diggle P J. (2016).
 ##'  Inhibitory geostatistical designs for spatial prediction taking account of

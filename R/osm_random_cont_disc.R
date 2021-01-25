@@ -63,6 +63,7 @@
 ##'  instances,if sampling from a \code{'continuum'}.
 ##'
 ##' @examples
+##' \dontrun{
 ##' library(sp)
 ##'bounding_geom<-
 ##'SpatialPolygonsDataFrame(
@@ -91,6 +92,7 @@
 ##'                               dis_or_cont = 'discrete', sample_size = 70,
 ##'                               plotit = TRUE, plotit_leaflet = TRUE,
 ##'                               data_return= c('osm_polygons'))
+##'}
 ##'
 ##'@author Henry J. Crosby \email{henry.crosby@warwick.ac.uk}
 ##'@author Godwin Yeboah \email{godwin.yeboah@warwick.ac.uk}
