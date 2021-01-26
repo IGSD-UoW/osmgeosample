@@ -1,13 +1,14 @@
 Package: osmgeosample
-Title: Construction of Geostatistical Sampling Designs with OSM data
-Version: 0.0.0.9000
-Authors@R: as.person(c(
-    "Henry Crosby <henry.crosby@warwick.ac.uk> [cre]", 
-    "Godwin Yeobah <Godwin.Yeobah@warwick.ac.uk> [aut]",
-    "J. Porto De Albuquerque <J.Porto@warwick.ac.uk> [aut]",
-    "Michael G Chipeta <mgchipeta@mlw.mw> [cph] (Author of included geosample code)",
-    "Peter J Diggle [cph] (Author of included geosample code)")
-  )
+Title: Construction of Geostatistical Sampling Designs with OSM Data
+Version: 0.1
+Authors@R: c(
+    person("Henry", "Crosby", email = "henry.crosby@warwick.ac.uk",
+    role = "cre"),
+    person("Godwin", "Yeobah", email = "Godwin.Yeobah@warwick.ac.uk", 
+    role = "aut"),
+    person("Joao", "Porto De Albuquerque", email = "J.Porto@warwick.ac.uk", 
+    role = "aut")
+    )
 Maintainer: Henry Crosby <henry.crosby@warwick.ac.uk>
 Imports: 
     dplyr,
@@ -28,10 +29,13 @@ Imports:
     sf,
     methods
 Depends: R (>= 3.0.0)
-Suggests: PrevMap, rmarkdown, markdown, leafem, viridisLite,raster, knitr,testthat 
-Description: This package utilises the functoinality provided by the OSMData and 
+Suggests: PrevMap, rmarkdown, markdown, leafem, viridisLite,raster, knitr,
+    testthat 
+Description: The utilisation of the functoinality provided by the OSMData and 
     geosample to allow users to create spatially continuous or discrete
-    random samples from a pre-defined spatial border using OSM data. 
+    random samples from a pre-defined spatial border using OSM data. Reference:
+    Joao Porto de Albuquerque, Godwin Yeboah, Vangelis Pitidis, Philipp Ulbrich 
+    (2019) <doi: 10.13140/RG.2.2.13710.20804>.
 License: file LICENSE | GPL (>= 2)
 Encoding: UTF-8
 LazyData: true

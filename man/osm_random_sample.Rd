@@ -101,6 +101,7 @@ a discrete set of OSM features defined in the function parameters or (2) a
 continuous surface defined by a user definted geographical region.
 }
 \examples{
+\dontrun{
 library(sp)
 bounding_geom<-
 SpatialPolygonsDataFrame(
@@ -129,6 +130,7 @@ xy.sample <- osm_random_sample(buff_dist=NULL,
                               dis_or_cont = 'discrete', sample_size = 70,
                               plotit = TRUE, plotit_leaflet = TRUE,
                               data_return= c('osm_polygons'))
+}
 
 }
 \references{

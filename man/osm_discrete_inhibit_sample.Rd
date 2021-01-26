@@ -192,7 +192,7 @@ In this case, \emph{'close pairs'} are not permitted and \code{'zeta'}
 becomes trivial.
 }
 \examples{
-library(sp)
+\dontrun{library(sp)
 bounding_geom<-
 SpatialPolygonsDataFrame(
    SpatialPolygons(list(Polygons(list(Polygon(
@@ -217,7 +217,7 @@ xy.sample <- osm_discrete_inhibit_sample(bounding_geom=bounding_geom,
  join_type='within', sample_size=70, plotit=TRUE, plotit_leaflet = TRUE,
  delta = 5, key ='building', value=NULL, delta.fix = TRUE, k = 0,
  cp.criterion = 'cp.neighb', zeta = 0.025, ntries = 5)
-
+}
 
 }
 \references{

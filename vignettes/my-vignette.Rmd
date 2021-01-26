@@ -32,7 +32,7 @@ We introduce a new *R* package, *OSMGeosample*, for constructing geostatistical 
 
 **Address**: Institute for Global Sustainable Development, University of Warwick, Coventry, CV4 7AL, UK
 
-**E-mail**:  [Henry Crosby](henry.crosby@warwick.ac.uk), [Godwin Yeobah](Godwin.Yeobah@warwick.ac.uk), [J. Porto De Albuquerque](J.Porto@warwick.ac.uk)
+**E-mail**:  henry.crosby@warwick.ac.uk, Godwin.Yeobah@warwick.ac.uk, J.Porto@warwick.ac.uk
 
 **URL**: [Institute for Global Sustainable Development.](https://warwick.ac.uk/fac/arts/schoolforcross-facultystudies/igsd/).  
   

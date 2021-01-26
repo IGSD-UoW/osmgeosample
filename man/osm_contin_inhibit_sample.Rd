@@ -132,6 +132,7 @@ In this case, \code{'close pairs'} are not permitted and \code{rho} is
 irrelevant.
 }
 \examples{
+\dontrun{
 library(sp)
 bounding_geom<-
 SpatialPolygonsDataFrame(
@@ -157,6 +158,7 @@ osm_contin_inhibit_sample(bounding_geom = bounding_geom, boundary = 0,
 buff_dist=NULL,
 buff_epsg = NULL, sample_size = 50, plotit = TRUE, plotit_leaflet = TRUE,
                   delta=50, delta.fix = FALSE,k=7,rho=1, ntries = 10)
+}
 
 }
 \references{
