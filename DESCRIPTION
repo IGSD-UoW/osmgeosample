@@ -31,7 +31,7 @@ Imports:
 Depends: R (>= 3.0.0)
 Suggests: PrevMap, rmarkdown, markdown, leafem, viridisLite,raster, knitr,
     testthat 
-Description: The utilisation of the functoinality provided by the OSMData and 
+Description: The utilisation of the functionality provided by the OSMData and 
     geosample to allow users to create spatially continuous or discrete
     random samples from a pre-defined spatial border using OSM data. Reference:
     Joao Porto de Albuquerque, Godwin Yeboah, Vangelis Pitidis, Philipp Ulbrich 
