@@ -751,8 +751,10 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
 
     if (plotit == TRUE && plotit_leaflet == FALSE)
     {
-        par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3,
-                                                                        1, 0), las = 0)
+        oldpar<-par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+                    las = 0)
+        on.exit(par(oldpar))
+
         if (type == "discrete")
         {
             if (class(obj.origin)[1] == "sf")
@@ -783,8 +785,10 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
 
     if (plotit_leaflet == TRUE)
     {
-        par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3,
-                                                                        1, 0), las = 0)
+        oldpar<-par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+                    las = 0)
+        on.exit(par(oldpar))
+
         st_crs(xy.sample) <- 4326
         if (type == "discrete")
         {
@@ -859,8 +863,10 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
     {
     if (plotit == TRUE && plotit_leaflet == FALSE)
     {
-        par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3,
-                                                                        1, 0), las = 0)
+        oldpar<-par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+                    las = 0)
+        on.exit(par(oldpar))
+
         if (type == "discrete")
         {
             if (class(obj.origin)[1] == "sf")
@@ -891,8 +897,10 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
 
     if (plotit_leaflet == TRUE)
     {
-        par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3,
-                                                                        1, 0), las = 0)
+        oldpar<-par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+                    las = 0)
+        on.exit(par(oldpar))
+
         st_crs(xy.sample) <- 4326
         if (type == "discrete")
         {
@@ -1043,8 +1051,10 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
      {
          if (plotit == TRUE && plotit_leaflet == FALSE)
          {
-             par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3,
-                                                                             1, 0), las = 0)
+             oldpar<-par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+                         las = 0)
+             on.exit(par(oldpar))
+
              if (type == "discrete")
              {
                  if (class(obj.origin)[1] == "sf")
@@ -1092,8 +1102,9 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
 
          if (plotit_leaflet == TRUE)
          {
-             par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3,
-                                                                             1, 0), las = 0)
+             oldpar<-par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+                         las = 0)
+             on.exit(par(oldpar))
              st_crs(xy.sample) <- 4326
              if (type == "discrete")
              {
@@ -1180,7 +1191,7 @@ osm_random_sample <- function(bounding_geom = NULL, key = NULL, value = NULL, bo
 
          }
 
-
+         par(mfrow=c(2,2))
 }
 }
 }

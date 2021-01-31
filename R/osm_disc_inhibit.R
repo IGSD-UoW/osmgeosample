@@ -1011,8 +1011,9 @@ osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value 
   if (boundary_or_feature == "boundary") {
 
   if (plotit == TRUE && plotit_leaflet == FALSE) {
-    par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+    oldpar <- par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
         las = 0)
+    on.exit(par(oldpar))
 
     if (class(obj.origin)[1] == "sf") {
       plot(st_geometry(obj.origin), pch = 19, col = "yellow", axes = TRUE,
@@ -1029,8 +1030,9 @@ osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value 
   }
 
   if (plotit_leaflet == TRUE) {
-    par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
-        las = 0)
+    oldpar <- par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+                  las = 0)
+    on.exit(par(oldpar))
     st_crs(xy.sample) <- 4326
     obj.origin <- sf::st_as_sf(obj.origin)
     st_crs(obj.origin) <- 4326
@@ -1080,8 +1082,9 @@ osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value 
 
 
     if (plotit == TRUE && plotit_leaflet == FALSE) {
-      par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
-          las = 0)
+      oldpar <- par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+                    las = 0)
+      on.exit(par(oldpar))
 
       if (class(obj.origin)[1] == "sf") {
         plot(st_geometry(obj.origin), pch = 19, col = "yellow", axes = TRUE,
@@ -1098,8 +1101,9 @@ osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value 
     }
 
     if (plotit_leaflet == TRUE) {
-      par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
-          las = 0)
+      oldpar <- par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+                    las = 0)
+      on.exit(par(oldpar))
       st_crs(xy.sample) <- 4326
       proj4string(obj.origin) <- CRS('+proj=longlat +datum=WGS84')
 
@@ -1236,8 +1240,9 @@ osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value 
 
 
     if (plotit == TRUE && plotit_leaflet == FALSE) {
-      par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
-          las = 0)
+      oldpar <- par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+                    las = 0)
+      on.exit(par(oldpar))
 
       if (class(obj.origin)[1] == "sf") {
         plot(st_geometry(obj.origin), pch = 19, col = "yellow", axes = TRUE,
@@ -1254,8 +1259,9 @@ osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value 
     }
 
     if (plotit_leaflet == TRUE) {
-      par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
-          las = 0)
+      oldpar <- par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+                    las = 0)
+      on.exit(par(oldpar))
 
       if (class(obj.origin)[1] == "sf")
       {
@@ -1329,7 +1335,7 @@ osm_discrete_inhibit_sample <- function(bounding_geom = NULL, key = NULL, value 
   results<-subset(results, select = c(osm_id, input_id, inSample, input_lng, input_lat))
   assign("results", results)
   assign("results_sf", xy.sample)
-
+  par(mfrow=c(2,2))
   }
   }
 

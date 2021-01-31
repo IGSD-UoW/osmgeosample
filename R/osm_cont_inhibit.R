@@ -421,8 +421,9 @@ osm_contin_inhibit_sample <- function(bounding_geom = NULL, boundary = 0, buff_d
   xy.sample <- st_intersection(st_geometry(poly), xy.sample$geometry)
 
     if (plotit == TRUE) {
-    par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+    oldpar<-par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
         las = 0)
+    on.exit(par(oldpar))
     plot(st_geometry(xy.sample), pch = 19, col = 1, axes = TRUE, xlab = "longitude",
          ylab = "lattitude", font.main = 3, cex.main = 1.2, col.main = "blue",
          main = paste("Continuous sampling design,", k, "close pairs", sep = " "),
@@ -431,8 +432,10 @@ osm_contin_inhibit_sample <- function(bounding_geom = NULL, boundary = 0, buff_d
   }
 
   if (plotit_leaflet == TRUE) {
-    par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
-        las = 0)
+    oldpar<-par(oma = c(5, 5, 5, 5.5), mar = c(5.5, 5.1, 4.1, 2.1), mgp = c(3, 1, 0),
+                las = 0)
+    on.exit(par(oldpar))
+
     if(!is.null(buff_epsg)){st_crs(xy.sample) <- buff_epsg} else {st_crs(xy.sample)<-4326}
     if(!is.null(buff_epsg)){st_crs(poly) <- buff_epsg} else {st_crs(xy.sample)<-4326}
     print(mapview(st_geometry(poly), add = TRUE, layer.name = c("Boundary"),
@@ -446,6 +449,6 @@ osm_contin_inhibit_sample <- function(bounding_geom = NULL, boundary = 0, buff_d
   xy.sample_coords <- (cbind(c(seq_len(nrow(xy.sample_coords))), xy.sample_coords))
   colnames(xy.sample_coords) <- c("id", "lat", "long")
   assign("results", as.data.frame(xy.sample_coords))
-
-}
+  par(mfrow=c(2,2))
+  }
 

@@ -31,12 +31,12 @@ Imports:
 Depends: R (>= 3.0.0)
 Suggests: PrevMap, rmarkdown, markdown, leafem, viridisLite,raster, knitr,
     testthat 
-Description: The utilisation of the functionality provided by the OSMData and 
-    geosample to allow users to create spatially continuous or discrete
+Description: The utilisation of the functionality provided by the 'OSMData' and 
+    'geosample' to allow users to create spatially continuous or discrete
     random samples from a pre-defined spatial border using OSM data. Reference:
     Joao Porto de Albuquerque, Godwin Yeboah, Vangelis Pitidis, Philipp Ulbrich 
-    (2019) <doi: 10.13140/RG.2.2.13710.20804>.
-License: file LICENSE | GPL (>= 2)
+    (2019) <doi:10.13140/RG.2.2.13710.20804>.
+License: GPL-2
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
