@@ -36,7 +36,7 @@ Description: The utilisation of the functionality provided by the 'OSMData' and
     random samples from a pre-defined spatial border using OSM data. Reference:
     Joao Porto de Albuquerque, Godwin Yeboah, Vangelis Pitidis, Philipp Ulbrich 
     (2019) <doi:10.13140/RG.2.2.13710.20804>.
-License: GPL-2
+License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
